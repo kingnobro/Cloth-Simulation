@@ -4,30 +4,10 @@
 
 #include "Cloth.h"
 #include "Rigid.h"
-#include "Program.h"
 #include "stb_image.h"
+#include "Camera.h"
+#include "Shader.h"
 
-struct Camera
-{
-    const float speed = 0.05f;
-    const float frustumRatio = 1.0f;
-    
-    glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
-    glm::vec3 front = glm::vec3(0.0f, 0.0f, -2.0f);
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    
-    glm::mat4 uniProjMatrix;
-    glm::mat4 uniViewMatrix;
-    
-    Camera()
-    {
-        /** Projection matrix : The frustum that camera observes **/
-        uniProjMatrix = glm::mat4(1.0f);
-        uniProjMatrix = glm::perspective(glm::radians(45.0f), frustumRatio, 0.1f, 100.0f);
-        /** View Matrix : The camera **/
-        uniViewMatrix = glm::mat4(1.0f);
-    }
-};
 Camera cam;
 
 struct Light
@@ -54,6 +34,8 @@ struct ClothRender // Texture & Lighting
     GLint aPtrPos;
     GLint aPtrTex;
     GLint aPtrNor;
+
+    Shader shader;
     
     ClothRender(Cloth* cloth)
     {
@@ -75,9 +57,9 @@ struct ClothRender // Texture & Lighting
             vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
         }
         
-        /** Build render program **/
-        Program program("Shaders/ClothVS.glsl", "Shaders/ClothFS.glsl");
-        programID = program.ID;
+        /** Build shader **/
+        shader = Shader("Shaders/ClothVS.glsl", "Shaders/ClothFS.glsl");
+        programID = shader.ID;
         std::cout << "Cloth Program ID: " << programID << std::endl;
 
         // Generate ID of VAO and VBOs
@@ -136,20 +118,25 @@ struct ClothRender // Texture & Lighting
         /** Set uniform **/
         glUseProgram(programID); // Active shader before set uniform
         // Set texture sampler
-        glUniform1i(glGetUniformLocation(programID, "uniTex"), 0);
+        shader.setInt("uniTex", 0);
+        // glUniform1i(glGetUniformLocation(programID, "uniTex"), 0);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
+        shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put cloth into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z));
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
+        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
-        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
+        shader.setVec3("uniLightPos", sun.pos);
+        shader.setVec3("uniLightColor", sun.color);
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -201,7 +188,8 @@ struct ClothRender // Texture & Lighting
         
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
+        shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -243,6 +231,8 @@ struct SpringRender
     
     GLint aPtrPos;
     GLint aPtrNor;
+
+    Shader shader;
     
     // Render any spring set, color and modelVector
     void init(std::vector<Spring*> s, glm::vec4 c, glm::vec3 modelVec)
@@ -267,9 +257,9 @@ struct SpringRender
             vboNor[i*2+1] = glm::vec3(node2->normal.x, node2->normal.y, node2->normal.z);
         }
         
-        /** Build render program **/
-        Program program("Shaders/SpringVS.glsl", "Shaders/SpringFS.glsl");
-        programID = program.ID;
+        /** Build shader **/
+        shader = Shader("Shaders/SpringVS.glsl", "Shaders/SpringFS.glsl");
+        programID = shader.ID;
         std::cout << "Spring Program ID: " << programID << std::endl;
 
         // Generate ID of VAO and VBOs
@@ -298,20 +288,25 @@ struct SpringRender
         /** Set uniform **/
         glUseProgram(programID); // Active shader before set uniform
         // Set color
-        glUniform4fv(glGetUniformLocation(programID, "uniSpringColor"), 1, &uniSpringColor[0]);
+        shader.setVec4("uniSpringColor", uniSpringColor);
+        // glUniform4fv(glGetUniformLocation(programID, "uniSpringColor"), 1, &uniSpringColor[0]);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
+        shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put rigid into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
+        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
-        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
+        shader.setVec3("uniLightPos", sun.pos);
+        shader.setVec3("uniLightColor", sun.color);
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -359,7 +354,8 @@ struct SpringRender
         
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
+        shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -407,6 +403,8 @@ struct RigidRender // Single color & Lighting
     
     GLint aPtrPos;
     GLint aPtrNor;
+
+    Shader shader;
     
     // Render any rigid body only with it's faces, color and modelVector
     void init(std::vector<Vertex*> f, glm::vec4 c, glm::vec3 modelVec)
@@ -428,9 +426,9 @@ struct RigidRender // Single color & Lighting
             vboNor[i] = glm::vec3(v->normal.x, v->normal.y, v->normal.z);
         }
         
-        /** Build render program **/
-        Program program("Shaders/RigidVS.glsl", "Shaders/RigidFS.glsl");
-        programID = program.ID;
+        /** Build shader **/
+        shader = Shader("Shaders/RigidVS.glsl", "Shaders/RigidFS.glsl");
+        programID = shader.ID;
         std::cout << "Rigid Program ID: " << programID << std::endl;
 
         // Generate ID of VAO and VBOs
@@ -459,20 +457,25 @@ struct RigidRender // Single color & Lighting
         /** Set uniform **/
         glUseProgram(programID); // Active shader before set uniform
         // Set color
-        glUniform4fv(glGetUniformLocation(programID, "uniRigidColor"), 1, &uniRigidColor[0]);
+        shader.setVec4("uniRigidColor", uniRigidColor);
+        // glUniform4fv(glGetUniformLocation(programID, "uniRigidColor"), 1, &uniRigidColor[0]);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
+        shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put rigid into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
+        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
-        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
+        shader.setVec3("uniLightPos", sun.pos);
+        shader.setVec3("uniLightColor", sun.color);
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
+        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -510,7 +513,8 @@ struct RigidRender // Single color & Lighting
         
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
+        shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
+        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

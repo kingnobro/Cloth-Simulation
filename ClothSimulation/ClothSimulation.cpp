@@ -12,7 +12,6 @@
 #include "Headers/stb_image.h"
 #include "Headers/Cloth.h"
 #include "Headers/Rigid.h"
-#include "Headers/Program.h"
 #include "Headers/Display.h"
 
 #define WIDTH 800

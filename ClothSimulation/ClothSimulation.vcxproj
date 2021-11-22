@@ -145,11 +145,12 @@
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\Cloth.h" />
     <ClInclude Include="Headers\Display.h" />
     <ClInclude Include="Headers\Points.h" />
-    <ClInclude Include="Headers\Program.h" />
     <ClInclude Include="Headers\Rigid.h" />
+    <ClInclude Include="Headers\Shader.h" />
     <ClInclude Include="Headers\Spring.h" />
     <ClInclude Include="Headers\stb_image.h" />
     <ClInclude Include="Headers\Vectors.h" />
