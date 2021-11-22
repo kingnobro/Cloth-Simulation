@@ -119,24 +119,19 @@ struct ClothRender // Texture & Lighting
         glUseProgram(programID); // Active shader before set uniform
         // Set texture sampler
         shader.setInt("uniTex", 0);
-        // glUniform1i(glGetUniformLocation(programID, "uniTex"), 0);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
         shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put cloth into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z));
         shader.setMat4("uniModelMatrix", uniModelMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
         shader.setVec3("uniLightPos", sun.pos);
         shader.setVec3("uniLightColor", sun.color);
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -189,7 +184,6 @@ struct ClothRender // Texture & Lighting
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
         shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -289,24 +283,19 @@ struct SpringRender
         glUseProgram(programID); // Active shader before set uniform
         // Set color
         shader.setVec4("uniSpringColor", uniSpringColor);
-        // glUniform4fv(glGetUniformLocation(programID, "uniSpringColor"), 1, &uniSpringColor[0]);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
         shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put rigid into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
         shader.setMat4("uniModelMatrix", uniModelMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
         shader.setVec3("uniLightPos", sun.pos);
         shader.setVec3("uniLightColor", sun.color);
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -355,7 +344,6 @@ struct SpringRender
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
         shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -458,24 +446,19 @@ struct RigidRender // Single color & Lighting
         glUseProgram(programID); // Active shader before set uniform
         // Set color
         shader.setVec4("uniRigidColor", uniRigidColor);
-        // glUniform4fv(glGetUniformLocation(programID, "uniRigidColor"), 1, &uniRigidColor[0]);
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
         shader.setMat4("uniProjMatrix", cam.uniProjMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put rigid into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
         shader.setMat4("uniModelMatrix", uniModelMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
         shader.setVec3("uniLightPos", sun.pos);
         shader.setVec3("uniLightColor", sun.color);
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
-        // glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -514,7 +497,6 @@ struct RigidRender // Single color & Lighting
         /** View Matrix : The camera **/
         cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
         shader.setMat4("uniViewMatrix", cam.uniViewMatrix);
-        // glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

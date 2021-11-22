@@ -201,7 +201,8 @@ void processInput(GLFWwindow* window)
         cloth.drawMode = Cloth::DRAW_FACES;
     }
 
-    /** Camera control : [W] [S] [A] [D] [Q] [E] **/
+    /** 
+    control : [W] [S] [A] [D] [Q] [E] **/
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cam.pos.y += cam.speed;
     }
