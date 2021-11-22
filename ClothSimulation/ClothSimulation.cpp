@@ -13,6 +13,7 @@
 #include "Headers/Cloth.h"
 #include "Headers/Rigid.h"
 #include "Headers/Display.h"
+#include "Headers/Model.h"
 
 #define WIDTH 800
 #define HEIGHT 800
@@ -54,7 +55,7 @@ glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 Ball ball(ballPos, ballRadius, ballColor);
 // Window and world
 GLFWwindow* window;
-Vec3 bgColor = Vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
+Vec3 bgColor = Vec3(50.0 / 255, 50.0 / 255, 200.0 / 255);
 Vec3 gravity(0.0, -9.8 / cloth.iterationFreq, 0.0);
 
 int main(int argc, const char* argv[])
@@ -107,6 +108,9 @@ int main(int argc, const char* argv[])
     glEnable(GL_DEPTH_TEST);
     glPointSize(3);
 
+    Shader ourShader("Shaders/ModelVS.glsl", "Shaders/ModelFS.glsl");
+    Model ourModel("Models/nanosuit/nanosuit.obj");
+
     /** Redering loop **/
     running = 1;
     while (!glfwWindowShouldClose(window))
@@ -120,24 +124,38 @@ int main(int argc, const char* argv[])
 
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 
-        if (running) {
-            for (int i = 0; i < cloth.iterationFreq; i++) {
-                cloth.computeForce(TIME_STEP, gravity);
-                cloth.integrate(AIR_FRICTION, TIME_STEP);
-                cloth.collisionResponse(&ground, &ball);
-            }
-            cloth.computeNormal();
-        }
+        // if (running) {
+        //     for (int i = 0; i < cloth.iterationFreq; i++) {
+        //         cloth.computeForce(TIME_STEP, gravity);
+        //         cloth.integrate(AIR_FRICTION, TIME_STEP);
+        //         cloth.collisionResponse(&ground, &ball);
+        //     }
+        //     cloth.computeNormal();
+        // }
+        // 
+        // /** Display **/
+        // if (cloth.drawMode == Cloth::DRAW_LINES) {
+        //     clothSpringRender.flush();
+        // }
+        // else {
+        //     clothRender.flush();
+        // }
+        // ballRender.flush();
+        // groundRender.flush();
 
-        /** Display **/
-        if (cloth.drawMode == Cloth::DRAW_LINES) {
-            clothSpringRender.flush();
-        }
-        else {
-            clothRender.flush();
-        }
-        ballRender.flush();
-        groundRender.flush();
+        // draw model
+        ourShader.use();
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -40.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        ourModel.Draw(ourShader);
 
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 

@@ -122,6 +122,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,6 +149,8 @@
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\Cloth.h" />
     <ClInclude Include="Headers\Display.h" />
+    <ClInclude Include="Headers\Mesh.h" />
+    <ClInclude Include="Headers\Model.h" />
     <ClInclude Include="Headers\Points.h" />
     <ClInclude Include="Headers\Rigid.h" />
     <ClInclude Include="Headers\Shader.h" />
@@ -156,18 +159,43 @@
     <ClInclude Include="Headers\Vectors.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Models\nanosuit\nanosuit.blend" />
+    <None Include="Models\nanosuit\nanosuit.mtl" />
     <None Include="Shaders\ClothFS.glsl" />
     <None Include="Shaders\ClothVS.glsl" />
+    <None Include="Shaders\ModelFS.glsl" />
+    <None Include="Shaders\ModelVS.glsl" />
     <None Include="Shaders\RigidFS.glsl" />
     <None Include="Shaders\RigidVS.glsl" />
     <None Include="Shaders\SpringFS.glsl" />
     <None Include="Shaders\SpringVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Models\nanosuit\arm_dif.png" />
+    <Image Include="Models\nanosuit\arm_showroom_ddn.png" />
+    <Image Include="Models\nanosuit\arm_showroom_spec.png" />
+    <Image Include="Models\nanosuit\body_dif.png" />
+    <Image Include="Models\nanosuit\body_showroom_ddn.png" />
+    <Image Include="Models\nanosuit\body_showroom_spec.png" />
+    <Image Include="Models\nanosuit\glass_ddn.png" />
+    <Image Include="Models\nanosuit\glass_dif.png" />
+    <Image Include="Models\nanosuit\hand_dif.png" />
+    <Image Include="Models\nanosuit\hand_showroom_ddn.png" />
+    <Image Include="Models\nanosuit\hand_showroom_spec.png" />
+    <Image Include="Models\nanosuit\helmet_diff.png" />
+    <Image Include="Models\nanosuit\helmet_showroom_ddn.png" />
+    <Image Include="Models\nanosuit\helmet_showroom_spec.png" />
+    <Image Include="Models\nanosuit\leg_dif.png" />
+    <Image Include="Models\nanosuit\leg_showroom_ddn.png" />
+    <Image Include="Models\nanosuit\leg_showroom_spec.png" />
     <Image Include="Textures\tex1.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="lib\assimp-vc142-mt.lib" />
     <Library Include="lib\glfw3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Models\nanosuit\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

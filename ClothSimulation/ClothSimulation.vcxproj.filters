@@ -25,6 +25,12 @@
     <Filter Include="源文件\lib">
       <UniqueIdentifier>{97bc02fa-6ec8-4bb1-a7de-00f02cf0027e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\Models">
+      <UniqueIdentifier>{9a46c7a7-887f-4b5e-856d-f1c047e527c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\Models\nanosuit">
+      <UniqueIdentifier>{405f046d-4087-422d-8769-635f3ae3a9d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClothSimulation.cpp">
@@ -62,6 +68,12 @@
     <ClInclude Include="Headers\Shader.h">
       <Filter>头文件\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Mesh.h">
+      <Filter>头文件\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Model.h">
+      <Filter>头文件\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\RigidFS.glsl">
@@ -82,15 +94,86 @@
     <None Include="Shaders\ClothVS.glsl">
       <Filter>资源文件\Shaders</Filter>
     </None>
+    <None Include="Models\nanosuit\nanosuit.blend">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </None>
+    <None Include="Models\nanosuit\nanosuit.mtl">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </None>
+    <None Include="Shaders\ModelFS.glsl">
+      <Filter>资源文件\Shaders</Filter>
+    </None>
+    <None Include="Shaders\ModelVS.glsl">
+      <Filter>资源文件\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\tex1.jpg">
       <Filter>资源文件\Textures</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\hand_showroom_spec.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\helmet_diff.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\helmet_showroom_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\helmet_showroom_spec.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\leg_dif.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\leg_showroom_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\leg_showroom_spec.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\arm_dif.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\arm_showroom_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\arm_showroom_spec.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\body_dif.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\body_showroom_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\body_showroom_spec.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\glass_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\glass_dif.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\hand_dif.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="Models\nanosuit\hand_showroom_ddn.png">
+      <Filter>资源文件\Models\nanosuit</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib">
       <Filter>源文件\lib</Filter>
     </Library>
+    <Library Include="lib\assimp-vc142-mt.lib">
+      <Filter>源文件\lib</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Models\nanosuit\LICENSE.txt">
+      <Filter>资源文件\Models\nanosuit</Filter>
+    </Text>
   </ItemGroup>
 </Project>
