@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <vector>
 #include <cmath>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -18,7 +19,6 @@
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 800
 
-#define AIR_FRICTION 0.02
 #define TIME_STEP 0.01
 
 /** Executing Flow **/
@@ -37,13 +37,11 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 int windForceScale = 15;
 
 // Cloths
-Vec3 clothPos(-3, 7.5, -2);
+int clothNumber = 0;
 Vec2 clothSize(6, 6);
-Cloth cloth(clothPos, clothSize);
-
-Vec3 clothPos2(-3, 7.5, -3);
-Vec2 clothSize2(6, 6);
-Cloth cloth2(clothPos2, clothSize2);
+//			 Position           Size       clothID
+Cloth cloth1(Vec3(-3, 7.5, -2), clothSize, ++clothNumber);
+Cloth cloth2(Vec3(-3, 7.5, -5), clothSize, ++clothNumber);
 
 // Ground
 Vec3 groundPos(-5, 1.5, 0);
@@ -73,240 +71,257 @@ bool firstMouse = true;
 
 int main(int argc, const char* argv[])
 {
-    /** Prepare for rendering **/
-    // Initialize GLFW
-    glfwInit();
-    // Set OpenGL version number as 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // Use the core profile
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // MacOS is forward compatible
+	/** Prepare for rendering **/
+	// Initialize GLFW
+	glfwInit();
+	// Set OpenGL version number as 3.3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	// Use the core profile
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// MacOS is forward compatible
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    /** Create a GLFW window **/
-    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Cloth Simulation", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Failed to create GLFW window." << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    // Set the context of this window as the main context of current thread
-    glfwMakeContextCurrent(window);
+	/** Create a GLFW window **/
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Cloth Simulation", NULL, NULL);
+	if (window == NULL) {
+		std::cout << "Failed to create GLFW window." << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	// Set the context of this window as the main context of current thread
+	glfwMakeContextCurrent(window);
 
-    // Initialize GLAD : this should be done before using any openGL function
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD." << std::endl;
-        glfwTerminate(); // This line isn't in the official source code, but I think that it should be added here.
-        return -1;
-    }
+	// Initialize GLAD : this should be done before using any openGL function
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Failed to initialize GLAD." << std::endl;
+		glfwTerminate(); // This line isn't in the official source code, but I think that it should be added here.
+		return -1;
+	}
 
-    /** Register callback functions **/
-    // Callback functions should be registered after creating window and before initializing render loop
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, mouse_position_callback);
+	/** Register callback functions **/
+	// Callback functions should be registered after creating window and before initializing render loop
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetCursorPosCallback(window, mouse_position_callback);
 
-    /** Renderers **/
-    ClothRender clothRender(&cloth);
-    ClothSpringRender clothSpringRender(&cloth);
-    GroundRender groundRender(&ground);
-    BallRender ballRender(&ball);
+	/** Generate Renderers, Add Initial Force **/
+	// vector<ClothRender> clothRenders = {
+	// 	ClothRender(&cloth1),
+	// };
+	// vector<ClothSpringRender> clothSpringRenders = {
+	// 	ClothSpringRender(&cloth1),
+	// };
+	Vec3 initForce(10.0, 40.0, 20.0);
+	cloth1.addForce(initForce);
+	cloth2.addForce(initForce);
+	ClothRender clothRender(&cloth1);
+	ClothRender clothRender2(&cloth2);
+	ClothSpringRender clothSpringRender(&cloth1);
+	ClothSpringRender clothSpringRender2(&cloth2);
+	// for (size_t i = 0; i < cloths.size(); i += 1)
+	// {
+	// 	Cloth cloth = cloths[i];
+	// 	clothRenders.push_back(ClothRender(&cloth));
+	// 	clothSpringRenders.push_back(ClothSpringRender(&cloth));
+	//     cloth.addForce(initForce);
+	// }
 
-    ClothRender clothRender2(&cloth2);
-    ClothSpringRender clothSpringRender2(&cloth2);
-    
-    Vec3 initForce(10.0, 40.0, 20.0);
-    cloth.addForce(initForce);
-    cloth2.addForce(initForce);
+	GroundRender groundRender(&ground);
+	BallRender ballRender(&ball);
 
-    glEnable(GL_DEPTH_TEST);
-    glPointSize(3);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(3);
 
-    // Shader ourShader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
-    // Model ourModel("resources/Models/nanosuit/nanosuit.obj");
+	// Shader ourShader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
+	// Model ourModel("resources/Models/nanosuit/nanosuit.obj");
 
-    /** Redering loop **/
-    running = 1;
-    while (!glfwWindowShouldClose(window))
-    {
-        // per-frame time logic
-        // --------------------
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+	/** Redering loop **/
+	running = 1;
+	while (!glfwWindowShouldClose(window))
+	{
+		// per-frame time logic
+		// --------------------
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-        /** Check for events **/
-        processInput(window);
+		/** Check for events **/
+		processInput(window);
 
-        /** Set background color **/
-        glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		/** Set background color **/
+		glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /** -------------------------------- Simulation & Rendering -------------------------------- **/
+		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
-        if (running) {
-            for (int i = 0; i < Cloth::iterationFreq; i++) {
-                cloth.computeForce(TIME_STEP, gravity);
-                cloth.integrate(AIR_FRICTION, TIME_STEP);
-                cloth.collisionResponse(&ground, &ball);
+		if (running) {
+			for (int i = 0; i < Cloth::iterationFreq; i++)
+			{
+				cloth1.computeForce(TIME_STEP, gravity);
+				cloth1.integrate(TIME_STEP);
+				cloth1.collisionResponse(&ground, &ball);
 
-                cloth2.computeForce(TIME_STEP, gravity);
-                cloth2.integrate(AIR_FRICTION, TIME_STEP);
-                cloth2.collisionResponse(&ground, &ball);
-            }
-            cloth.computeNormal();
-            cloth2.computeNormal();
-        }
-        
-        /** Display **/
-        if (Cloth::drawMode == DRAW_LINES) {
-            clothSpringRender.flush();
-            clothSpringRender2.flush();
-        }
-        else {
-            clothRender.flush();
-            clothRender2.flush();
-        }
-        ballRender.flush();
-        groundRender.flush();
+				cloth2.computeForce(TIME_STEP, gravity);
+				cloth2.integrate(TIME_STEP);
+				cloth2.collisionResponse(&ground, &ball);
+			}
+			cloth1.computeNormal();
+			cloth2.computeNormal();
+		}
 
-        // // draw model
-        // ourShader.use();
-        // // view/projection transformations
-        // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        // glm::mat4 view = glm::mat4(1.0f);
-        // ourShader.setMat4("projection", projection);
-        // ourShader.setMat4("view", view);
-        // // render the loaded model
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(0.0f, 0.0f, -40.0f)); // translate it down so it's at the center of the scene
-        // model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        // ourShader.setMat4("model", model);
-        // ourModel.Draw(ourShader);
+		/** Display **/
+		if (Cloth::drawMode == DRAW_LINES)
+		{
+			//clothSpringRenders[i].flush();
+			clothSpringRender.flush();
+			clothSpringRender2.flush();
+		}
+		else
+		{
+			//clothRenders[i].flush();
+			clothRender.flush();
+			clothRender2.flush();
+		}
+		ballRender.flush();
+		groundRender.flush();
 
-        /** -------------------------------- Simulation & Rendering -------------------------------- **/
+		// // draw model
+		// ourShader.use();
+		// // view/projection transformations
+		// glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		// glm::mat4 view = glm::mat4(1.0f);
+		// ourShader.setMat4("projection", projection);
+		// ourShader.setMat4("view", view);
+		// // render the loaded model
+		// glm::mat4 model = glm::mat4(1.0f);
+		// model = glm::translate(model, glm::vec3(0.0f, 0.0f, -40.0f)); // translate it down so it's at the center of the scene
+		// model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		// ourShader.setMat4("model", model);
+		// ourModel.Draw(ourShader);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents(); // Update the status of window
-    }
+		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
-    glfwTerminate();
+		glfwSwapBuffers(window);
+		glfwPollEvents(); // Update the status of window
+	}
 
-    return 0;
+	glfwTerminate();
+
+	return 0;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    camera.SetAspect(width, height);
-    glViewport(0, 0, width, height);
+	camera.SetAspect(width, height);
+	glViewport(0, 0, width, height);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start wind
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-    }
-    // if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running) // Start wind
-    // {
-    //     // glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
-    //     for (Node* n : cloth.nodes)
-    //     {
-    //         n->position = n->position - Vec3(0.2f, 0.0f, 0.0f);
-    //     }
-    // }
-    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
-    // {
-    // 
-    // }
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start wind
+	{
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+	}
+	// if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running) // Start wind
+	// {
+	//     // glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
+	//     for (Node* n : cloth.nodes)
+	//     {
+	//         n->position = n->position - Vec3(0.2f, 0.0f, 0.0f);
+	//     }
+	// }
+	// if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
+	// {
+	// 
+	// }
 }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+	lastX = xpos;
+	lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void processInput(GLFWwindow* window)
 {
-    /** Keyboard control **/ // If key did not get pressed it will return GLFW_RELEASE
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
+	/** Keyboard control **/ // If key did not get pressed it will return GLFW_RELEASE
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
 
-    /** Set draw mode **/
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        Cloth::drawMode = DRAW_NODES;
-    }
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        Cloth::drawMode = DRAW_LINES;
-    }
-    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-        Cloth::drawMode = DRAW_FACES;
-    }
+	/** Set draw mode **/
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+		Cloth::drawMode = DRAW_NODES;
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+		Cloth::drawMode = DRAW_LINES;
+	}
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+		Cloth::drawMode = DRAW_FACES;
+	}
 
-    /** 
-    control : [W] [S] [A] [D] **/
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-    }
+	/**
+	control : [W] [S] [A] [D] **/
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
 
-    /** Pause simulation **/
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-        running = 0;
-        printf("Paused.\n");
-    }
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        running = 1;
-        printf("Running..\n");
-    }
+	/** Pause simulation **/
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+		running = 0;
+		printf("Paused.\n");
+	}
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		running = 1;
+		printf("Running..\n");
+	}
 
-    /** Drop the cloth **/
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && running) {
-        cloth.unPin(cloth.pin1);
-    }
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && running) {
-        cloth.unPin(cloth.pin2);
-    }
+	/** Drop the cloth **/
+	// if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && running) {
+	// 	cloth.unPin(cloth.pin1);
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && running) {
+	// 	cloth.unPin(cloth.pin2);
+	// }
 
-    /** Pull cloth **/
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(0.0, 0.0, -windForceScale));
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(0.0, 0.0, windForceScale));
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(-windForceScale, 0.0, 0.0));
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(windForceScale, 0.0, 0.0));
-    }
+	/** Pull cloth **/
+	// if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
+	// 	cloth.addForce(Vec3(0.0, 0.0, -windForceScale));
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
+	// 	cloth.addForce(Vec3(0.0, 0.0, windForceScale));
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
+	// 	cloth.addForce(Vec3(-windForceScale, 0.0, 0.0));
+	// }
+	// if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
+	// 	cloth.addForce(Vec3(windForceScale, 0.0, 0.0));
+	// }
 }

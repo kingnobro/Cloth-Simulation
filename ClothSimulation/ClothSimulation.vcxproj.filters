@@ -1185,9 +1185,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\tex1.jpg">
-      <Filter>资源文件\resources\Textures</Filter>
-    </Image>
     <Image Include="Models\nanosuit\hand_showroom_spec.png">
       <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
@@ -1238,6 +1235,9 @@
     </Image>
     <Image Include="Models\nanosuit\hand_showroom_ddn.png">
       <Filter>资源文件\resources\Models\nanosuit</Filter>
+    </Image>
+    <Image Include="resources\Textures\tex1.jpg">
+      <Filter>资源文件\resources\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

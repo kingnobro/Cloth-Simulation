@@ -535,7 +535,7 @@
     <Image Include="Models\nanosuit\leg_dif.png" />
     <Image Include="Models\nanosuit\leg_showroom_ddn.png" />
     <Image Include="Models\nanosuit\leg_showroom_spec.png" />
-    <Image Include="Textures\tex1.jpg" />
+    <Image Include="resources\Textures\tex1.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\assimp-vc142-mt.lib" />
