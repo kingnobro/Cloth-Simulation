@@ -508,14 +508,14 @@
     <None Include="include\glm\gtx\wrap.inl" />
     <None Include="Models\nanosuit\nanosuit.blend" />
     <None Include="Models\nanosuit\nanosuit.mtl" />
-    <None Include="Shaders\ClothFS.glsl" />
-    <None Include="Shaders\ClothVS.glsl" />
-    <None Include="Shaders\ModelFS.glsl" />
-    <None Include="Shaders\ModelVS.glsl" />
-    <None Include="Shaders\RigidFS.glsl" />
-    <None Include="Shaders\RigidVS.glsl" />
-    <None Include="Shaders\SpringFS.glsl" />
-    <None Include="Shaders\SpringVS.glsl" />
+    <None Include="resources\Shaders\ClothFS.glsl" />
+    <None Include="resources\Shaders\ClothVS.glsl" />
+    <None Include="resources\Shaders\ModelFS.glsl" />
+    <None Include="resources\Shaders\ModelVS.glsl" />
+    <None Include="resources\Shaders\RigidFS.glsl" />
+    <None Include="resources\Shaders\RigidVS.glsl" />
+    <None Include="resources\Shaders\SpringFS.glsl" />
+    <None Include="resources\Shaders\SpringVS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Models\nanosuit\arm_dif.png" />

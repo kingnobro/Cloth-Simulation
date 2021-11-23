@@ -30,33 +30,37 @@ void processInput(GLFWwindow* window);
 /** Callback functions **/
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 /** Global **/
 // Wind
-int windBlowing = 0;
 int windForceScale = 15;
-Vec3 windStartPos;
-Vec3 windDir;
-Vec3 wind;
-// Cloth
+
+// Cloths
 Vec3 clothPos(-3, 7.5, -2);
 Vec2 clothSize(6, 6);
 Cloth cloth(clothPos, clothSize);
+
+Vec3 clothPos2(-3, 7.5, -3);
+Vec2 clothSize2(6, 6);
+Cloth cloth2(clothPos2, clothSize2);
+
 // Ground
 Vec3 groundPos(-5, 1.5, 0);
 Vec2 groundSize(10, 10);
 glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
 Ground ground(groundPos, groundSize, groundColor);
+
 // Ball
 Vec3 ballPos(0, 3, -2);
 int ballRadius = 1;
 glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 Ball ball(ballPos, ballRadius, ballColor);
+
 // Window and world
 GLFWwindow* window;
-Vec3 bgColor = Vec3(50.0 / 255, 50.0 / 255, 200.0 / 255);
-Vec3 gravity(0.0, -9.8 / cloth.iterationFreq, 0.0);
+Vec3 bgColor = Vec3(255.0 / 255, 255.0 / 255, 222.0 / 255);
+Vec3 gravity(0.0, -9.8 / Cloth::iterationFreq, 0.0);
 
 // timing
 float deltaTime = 0.0f;
@@ -103,7 +107,7 @@ int main(int argc, const char* argv[])
     // Callback functions should be registered after creating window and before initializing render loop
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_position_callback);
 
     /** Renderers **/
     ClothRender clothRender(&cloth);
@@ -111,8 +115,12 @@ int main(int argc, const char* argv[])
     GroundRender groundRender(&ground);
     BallRender ballRender(&ball);
 
+    ClothRender clothRender2(&cloth2);
+    ClothSpringRender clothSpringRender2(&cloth2);
+    
     Vec3 initForce(10.0, 40.0, 20.0);
     cloth.addForce(initForce);
+    cloth2.addForce(initForce);
 
     glEnable(GL_DEPTH_TEST);
     glPointSize(3);
@@ -140,20 +148,27 @@ int main(int argc, const char* argv[])
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 
         if (running) {
-            for (int i = 0; i < cloth.iterationFreq; i++) {
+            for (int i = 0; i < Cloth::iterationFreq; i++) {
                 cloth.computeForce(TIME_STEP, gravity);
                 cloth.integrate(AIR_FRICTION, TIME_STEP);
                 cloth.collisionResponse(&ground, &ball);
+
+                cloth2.computeForce(TIME_STEP, gravity);
+                cloth2.integrate(AIR_FRICTION, TIME_STEP);
+                cloth2.collisionResponse(&ground, &ball);
             }
             cloth.computeNormal();
+            cloth2.computeNormal();
         }
         
         /** Display **/
-        if (cloth.drawMode == DRAW_LINES) {
+        if (Cloth::drawMode == DRAW_LINES) {
             clothSpringRender.flush();
+            clothSpringRender2.flush();
         }
         else {
             clothRender.flush();
+            clothRender2.flush();
         }
         ballRender.flush();
         groundRender.flush();
@@ -193,22 +208,26 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start wind
     {
-        windBlowing = 1;
-        // Set start point of wind direction
-        windStartPos.setZeroVec();
-        glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
-        windStartPos.y = -windStartPos.y; // Reverse y since the screen local in the fourth quadrant
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
     }
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
-    {
-        windBlowing = 0;
-        windDir.setZeroVec();
-    }
+    // if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running) // Start wind
+    // {
+    //     // glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
+    //     for (Node* n : cloth.nodes)
+    //     {
+    //         n->position = n->position - Vec3(0.2f, 0.0f, 0.0f);
+    //     }
+    // }
+    // if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
+    // {
+    // 
+    // }
 }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
     {
@@ -235,13 +254,13 @@ void processInput(GLFWwindow* window)
 
     /** Set draw mode **/
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        cloth.drawMode = DRAW_NODES;
+        Cloth::drawMode = DRAW_NODES;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        cloth.drawMode = DRAW_LINES;
+        Cloth::drawMode = DRAW_LINES;
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-        cloth.drawMode = DRAW_FACES;
+        Cloth::drawMode = DRAW_FACES;
     }
 
     /** 

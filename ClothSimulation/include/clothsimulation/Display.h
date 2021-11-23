@@ -12,6 +12,8 @@ glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
 glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
 Camera camera(glm::vec3(0.0f, 4.0f, 12.0f));
 
+Draw_Mode Cloth::drawMode = DRAW_FACES;
+
 struct ClothRender // Texture & Lighting
 {
     const Cloth* cloth;
@@ -183,7 +185,7 @@ struct ClothRender // Texture & Lighting
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         /** Draw **/
-        switch (cloth->drawMode) {
+        switch (Cloth::drawMode) {
             case DRAW_NODES:
                 glDrawArrays(GL_POINTS, 0, nodeCount);
                 break;

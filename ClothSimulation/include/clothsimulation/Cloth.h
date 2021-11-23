@@ -15,12 +15,12 @@ class Cloth
 {
 public:
     const int nodesDensity = 4;
-    const int iterationFreq = 25;
+    const static int iterationFreq = 10;
     const double structuralCoef = 1000.0;
     const double shearCoef = 50.0;
     const double bendingCoef = 400.0;
     
-    Draw_Mode drawMode = DRAW_FACES;
+    static Draw_Mode drawMode;
     
     Vec3 clothPos;
     
@@ -75,7 +75,7 @@ public:
     }
     
 	void init()
-	{
+    {
         nodesPerRow = width * nodesDensity;
         nodesPerCol = height * nodesDensity;
         
@@ -105,7 +105,7 @@ public:
                 /** Structural **/
                 if (i < nodesPerRow-1) springs.push_back(new Spring(getNode(i, j), getNode(i+1, j), structuralCoef));
                 if (j < nodesPerCol-1) springs.push_back(new Spring(getNode(i, j), getNode(i, j+1), structuralCoef));
-                /** Shear: 剪切力, 由对角的两个质点组成 **/
+                /** Shear: 切应力, 由对角位置的两个质点组成弹簧 **/
                 if (i < nodesPerRow-1 && j < nodesPerCol-1) {
                     springs.push_back(new Spring(getNode(i, j), getNode(i+1, j+1), shearCoef));
                     springs.push_back(new Spring(getNode(i+1, j), getNode(i, j+1), shearCoef));

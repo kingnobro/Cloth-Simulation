@@ -790,35 +790,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\RigidFS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\RigidVS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\SpringFS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\SpringVS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ClothFS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ClothVS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
     <None Include="Models\nanosuit\nanosuit.blend">
       <Filter>资源文件\resources\Models\nanosuit</Filter>
     </None>
     <None Include="Models\nanosuit\nanosuit.mtl">
       <Filter>资源文件\resources\Models\nanosuit</Filter>
-    </None>
-    <None Include="Shaders\ModelFS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
-    </None>
-    <None Include="Shaders\ModelVS.glsl">
-      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="include\glm\detail\func_common.inl">
       <Filter>头文件\include\glm\detail</Filter>
@@ -1182,6 +1158,30 @@
     </None>
     <None Include="include\assimp\vector3.inl">
       <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="resources\Shaders\ModelVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\RigidFS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\RigidVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\SpringFS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\SpringVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\ClothFS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\ClothVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\ModelFS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
