@@ -5,6 +5,12 @@
 #include "Spring.h"
 #include "Rigid.h"
 
+enum Draw_Mode {
+    DRAW_NODES,
+    DRAW_LINES,
+    DRAW_FACES
+};
+
 class Cloth
 {
 public:
@@ -14,12 +20,7 @@ public:
     const double shearCoef = 50.0;
     const double bendingCoef = 400.0;
     
-    enum DrawModeEnum{
-        DRAW_NODES,
-        DRAW_LINES,
-        DRAW_FACES
-    };
-    DrawModeEnum drawMode = DRAW_FACES;
+    Draw_Mode drawMode = DRAW_FACES;
     
     Vec3 clothPos;
     
@@ -50,7 +51,10 @@ public:
 	}
  
 public:
-    Node* getNode(int x, int y) { return nodes[y*nodesPerRow+x]; }
+    Node* getNode(int x, int y) 
+    { 
+        return nodes[y*nodesPerRow+x]; 
+    }
     Vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
     {
         return Vec3::cross(n2->position - n1->position, n3->position - n1->position);

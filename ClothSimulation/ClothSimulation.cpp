@@ -62,6 +62,7 @@ Vec3 gravity(0.0, -9.8 / cloth.iterationFreq, 0.0);
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+// initial mouse position
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -148,7 +149,7 @@ int main(int argc, const char* argv[])
         }
         
         /** Display **/
-        if (cloth.drawMode == Cloth::DRAW_LINES) {
+        if (cloth.drawMode == DRAW_LINES) {
             clothSpringRender.flush();
         }
         else {
@@ -184,6 +185,7 @@ int main(int argc, const char* argv[])
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    camera.SetAspect(width, height);
     glViewport(0, 0, width, height);
 }
 
@@ -203,17 +205,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         windDir.setZeroVec();
     }
 }
-
-// void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
-// {
-//     /** Wind **/
-//     if (windBlowing && running) {
-//         windDir = Vec3(xpos, -ypos, 0) - windStartPos;
-//         windDir.normalize();
-//         wind = windDir * windForceScale;
-//         cloth.addForce(wind);
-//     }
-// }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
@@ -244,13 +235,13 @@ void processInput(GLFWwindow* window)
 
     /** Set draw mode **/
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        cloth.drawMode = Cloth::DRAW_NODES;
+        cloth.drawMode = DRAW_NODES;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        cloth.drawMode = Cloth::DRAW_LINES;
+        cloth.drawMode = DRAW_LINES;
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-        cloth.drawMode = Cloth::DRAW_FACES;
+        cloth.drawMode = DRAW_FACES;
     }
 
     /** 

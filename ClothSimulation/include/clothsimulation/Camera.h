@@ -18,6 +18,7 @@ const float PITCH = 0.0f;
 const float SPEED = 7.5f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
+const float ASPECT = 1.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -36,9 +37,10 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+    float Aspect;
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -2.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -2.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM), Aspect(ASPECT)
     {
         Position = position;
         WorldUp = up;
@@ -64,8 +66,11 @@ public:
 
     glm::mat4 GetProjectionMatrix()
     {
-        // 1.0f should be (float)SCR_WIDTH / (float)SCR_HEIGHT
         return glm::perspective(glm::radians(Zoom), 1.0f, 0.1f, 100.0f);
+    }
+
+    void SetAspect(int SCR_Width, int SCR_Height) {
+        Aspect = (float)SCR_Width / (float)SCR_Height;
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -129,27 +134,4 @@ private:
         Up = glm::normalize(glm::cross(Right, Front));
     }
 };
-
-//struct Camera
-//{
-//    const float speed = 0.2f;
-//    const float frustumRatio = 1.0f;
-//
-//    glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
-//    glm::vec3 front = glm::vec3(0.0f, 0.0f, -2.0f);
-//    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-//
-//    glm::mat4 uniProjMatrix;
-//    glm::mat4 uniViewMatrix;
-//
-//    Camera()
-//    {
-//        /** Projection matrix : The frustum that camera observes **/
-//        uniProjMatrix = glm::mat4(1.0f);
-//        uniProjMatrix = glm::perspective(glm::radians(45.0f), frustumRatio, 0.1f, 100.0f);
-//        /** View Matrix : The camera **/
-//        uniViewMatrix = glm::mat4(1.0f);
-//    }
-//};
-//
 #endif

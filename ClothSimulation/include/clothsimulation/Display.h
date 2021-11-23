@@ -8,14 +8,9 @@
 #include "Camera.h"
 #include "Shader.h"
 
+glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
+glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
 Camera camera(glm::vec3(0.0f, 4.0f, 12.0f));
-
-struct Light
-{
-    glm::vec3 pos = glm::vec3(-5.0f, 7.0f, 6.0f);
-    glm::vec3 color = glm::vec3(0.7f, 0.7f, 1.0f);
-};
-Light sun;
 
 struct ClothRender // Texture & Lighting
 {
@@ -130,8 +125,8 @@ struct ClothRender // Texture & Lighting
         shader.setMat4("uniModelMatrix", uniModelMatrix);
         
         /** Light **/
-        shader.setVec3("uniLightPos", sun.pos);
-        shader.setVec3("uniLightColor", sun.color);
+        shader.setVec3("uniLightPos", lightPos);
+        shader.setVec3("uniLightColor", lightColor);
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -189,10 +184,10 @@ struct ClothRender // Texture & Lighting
         
         /** Draw **/
         switch (cloth->drawMode) {
-            case Cloth::DRAW_NODES:
+            case DRAW_NODES:
                 glDrawArrays(GL_POINTS, 0, nodeCount);
                 break;
-            case Cloth::DRAW_LINES:
+            case DRAW_LINES:
                 glDrawArrays(GL_LINES, 0, nodeCount);
                 break;
             default:
@@ -293,8 +288,8 @@ struct SpringRender
         shader.setMat4("uniModelMatrix", uniModelMatrix);
         
         /** Light **/
-        shader.setVec3("uniLightPos", sun.pos);
-        shader.setVec3("uniLightColor", sun.color);
+        shader.setVec3("uniLightPos", lightPos);
+        shader.setVec3("uniLightColor", lightColor);
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -455,8 +450,8 @@ struct RigidRender // Single color & Lighting
         shader.setMat4("uniModelMatrix", uniModelMatrix);
         
         /** Light **/
-        shader.setVec3("uniLightPos", sun.pos);
-        shader.setVec3("uniLightColor", sun.color);
+        shader.setVec3("uniLightPos", lightPos);
+        shader.setVec3("uniLightColor", lightColor);
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
