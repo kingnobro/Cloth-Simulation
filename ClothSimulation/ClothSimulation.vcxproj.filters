@@ -13,23 +13,62 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\Headers">
+    <Filter Include="头文件\include">
       <UniqueIdentifier>{92ada554-c269-46ea-86a1-aef645ec8199}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\Shaders">
-      <UniqueIdentifier>{7cd96188-7d7e-40c1-b2eb-5ca6c833eea0}</UniqueIdentifier>
+    <Filter Include="头文件\include\glad">
+      <UniqueIdentifier>{7cf24a7b-7121-449e-a96a-d009bb977752}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\Textures">
-      <UniqueIdentifier>{2d5c1dcf-6e52-41be-9ffa-f4180a6077fa}</UniqueIdentifier>
+    <Filter Include="头文件\include\GLFW">
+      <UniqueIdentifier>{c3bf4be5-bc21-4835-8120-50d3677a69dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\lib">
-      <UniqueIdentifier>{97bc02fa-6ec8-4bb1-a7de-00f02cf0027e}</UniqueIdentifier>
+    <Filter Include="头文件\include\glm">
+      <UniqueIdentifier>{0ec641ea-1e0e-4fd7-ab36-1a54f07f6810}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\Models">
+    <Filter Include="头文件\include\glm\detail">
+      <UniqueIdentifier>{e506de4f-4c52-4c81-ba70-208a27b795c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\glm\gtc">
+      <UniqueIdentifier>{b3dd7cb4-0420-47e8-a01d-2845ec58947f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\glm\gtx">
+      <UniqueIdentifier>{21174289-8870-4caf-9b39-4d927675cd33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\glm\simd">
+      <UniqueIdentifier>{47002d97-9bfb-481e-af05-cae995106d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\assimp">
+      <UniqueIdentifier>{1c7726f1-dc4d-4ac5-83b1-cc5c1726fb23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\assimp\Compiler">
+      <UniqueIdentifier>{2ca98eef-1356-4105-a5be-b99983ef5024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\assimp\port">
+      <UniqueIdentifier>{09c5bceb-95af-4c9e-b864-387c72fc1b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\assimp\port\AndroidJNI">
+      <UniqueIdentifier>{cc3c7b04-a6bf-4318-8284-e04c116df73b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\clothsimulation">
+      <UniqueIdentifier>{2f5f2dde-27c7-4a19-a203-99154b7e5311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources">
+      <UniqueIdentifier>{85dc7ded-7e92-4262-93f2-097a9d70220e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Models">
       <UniqueIdentifier>{9a46c7a7-887f-4b5e-856d-f1c047e527c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件\Models\nanosuit">
+    <Filter Include="资源文件\resources\Models\nanosuit">
       <UniqueIdentifier>{405f046d-4087-422d-8769-635f3ae3a9d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Shaders">
+      <UniqueIdentifier>{7cd96188-7d7e-40c1-b2eb-5ca6c833eea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Textures">
+      <UniqueIdentifier>{2d5c1dcf-6e52-41be-9ffa-f4180a6077fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\lib">
+      <UniqueIdentifier>{97bc02fa-6ec8-4bb1-a7de-00f02cf0027e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -41,139 +80,1180 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Points.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\glad\glad.h">
+      <Filter>头文件\include\glad</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Rigid.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\GLFW\glfw3.h">
+      <Filter>头文件\include\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Spring.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\GLFW\glfw3native.h">
+      <Filter>头文件\include\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\common.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\exponential.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\ext.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\fwd.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\geometric.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\glm.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\integer.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat2x2.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat2x3.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat2x4.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat3x2.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat3x3.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat3x4.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat4x2.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat4x3.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\mat4x4.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\matrix.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\packing.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\trigonometric.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\vec2.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\vec3.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\vec4.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\vector_relational.hpp">
+      <Filter>头文件\include\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_features.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_fixes.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_noise.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_swizzle.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_swizzle_func.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\_vectorize.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_common.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_exponential.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_geometric.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_integer.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_matrix.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_packing.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_trigonometric.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\func_vector_relational.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\precision.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\setup.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_float.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_gentype.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_half.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_int.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat2x2.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat2x3.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat2x4.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat3x2.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat3x3.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat3x4.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat4x2.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat4x3.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_mat4x4.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_vec.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_vec1.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_vec2.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_vec3.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\detail\type_vec4.hpp">
+      <Filter>头文件\include\glm\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\bitfield.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\color_encoding.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\color_space.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\constants.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\epsilon.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\functions.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\integer.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\matrix_access.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\matrix_integer.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\matrix_inverse.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\matrix_transform.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\noise.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\packing.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\quaternion.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\random.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\reciprocal.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\round.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\type_aligned.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\type_precision.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\type_ptr.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\ulp.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtc\vec1.hpp">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\associated_min_max.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\bit.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\closest_point.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\color_space.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\color_space_YCoCg.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\common.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\compatibility.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\component_wise.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\dual_quaternion.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\euler_angles.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\extend.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\extended_min_max.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\fast_exponential.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\fast_square_root.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\fast_trigonometry.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\gradient_paint.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\handed_coordinate_space.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\hash.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\integer.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\intersect.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\io.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\log_base.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_cross_product.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_decompose.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_interpolation.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_major_storage.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_operation.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_query.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\matrix_transform_2d.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\mixed_product.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\norm.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\normal.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\normalize_dot.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\number_precision.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\optimum_pow.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\orthonormalize.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\perpendicular.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\polar_coordinates.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\projection.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\quaternion.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\range.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\raw_data.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\rotate_normalized_axis.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\rotate_vector.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\scalar_multiplication.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\scalar_relational.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\spline.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\std_based_type.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\string_cast.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\transform.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\transform2.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\type_aligned.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\type_trait.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\vector_angle.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\vector_query.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\gtx\wrap.hpp">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\common.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\exponential.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\geometric.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\integer.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\matrix.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\packing.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\platform.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\trigonometric.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glm\simd\vector_relational.h">
+      <Filter>头文件\include\glm\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\aabb.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\ai_assert.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\anim.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\BaseImporter.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Bitmap.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\BlobIOSystem.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\ByteSwapper.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\camera.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\cexport.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\cfileio.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\cimport.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\color4.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\config.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\CreateAnimMesh.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\DefaultIOStream.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\DefaultIOSystem.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\DefaultLogger.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Defines.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\defs.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Exceptional.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Exporter.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\fast_atof.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\GenericProperty.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Hash.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Importer.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\importerdesc.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\IOStream.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\IOStreamBuffer.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\IOSystem.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\irrXMLWrapper.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\light.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\LineSplitter.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\LogAux.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Logger.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\LogStream.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Macros.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\material.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\MathFunctions.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\matrix3x3.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\matrix4x4.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\MemoryIOWrapper.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\mesh.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\metadata.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\NullLogger.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\ParsingUtils.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\pbrmaterial.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\postprocess.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Profiler.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\ProgressHandler.hpp">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\qnan.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\quaternion.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\RemoveComments.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\scene.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\SceneCombiner.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\SGSpatialSort.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\SkeletonMeshBuilder.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\SmoothingGroups.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\SpatialSort.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\StandardShapes.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\StreamReader.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\StreamWriter.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\StringComparison.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\StringUtils.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Subdivision.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\texture.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\TinyFormatter.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\types.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\vector2.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\vector3.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\version.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Vertex.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\XMLTools.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\ZipArchiveIOSystem.h">
+      <Filter>头文件\include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Compiler\poppack1.h">
+      <Filter>头文件\include\assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Compiler\pstdint.h">
+      <Filter>头文件\include\assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\Compiler\pushpack1.h">
+      <Filter>头文件\include\assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h">
+      <Filter>头文件\include\assimp\port\AndroidJNI</Filter>
     </ClInclude>
     <ClInclude Include="Headers\stb_image.h">
-      <Filter>头文件\Headers</Filter>
+      <Filter>头文件\include</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Vectors.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Mesh.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Cloth.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Model.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Display.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Points.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Camera.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Rigid.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Shader.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Shader.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Mesh.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Spring.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Model.h">
-      <Filter>头文件\Headers</Filter>
+    <ClInclude Include="include\clothsimulation\Vectors.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\Camera.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\Cloth.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\Display.h">
+      <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\RigidFS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\RigidVS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\SpringFS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\SpringVS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\ClothFS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\ClothVS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Models\nanosuit\nanosuit.blend">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </None>
     <None Include="Models\nanosuit\nanosuit.mtl">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </None>
     <None Include="Shaders\ModelFS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="Shaders\ModelVS.glsl">
-      <Filter>资源文件\Shaders</Filter>
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="include\glm\detail\func_common.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_common_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_exponential.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_exponential_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_geometric.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_geometric_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_integer.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_integer_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_matrix.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_matrix_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_packing.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_packing_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_trigonometric.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_trigonometric_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_vector_relational.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\func_vector_relational_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_gentype.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_half.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat2x2.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat2x3.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat2x4.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat3x2.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat3x3.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat3x4.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat4x2.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat4x3.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat4x4.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_mat4x4_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec1.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec2.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec3.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec4.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\detail\type_vec4_simd.inl">
+      <Filter>头文件\include\glm\detail</Filter>
+    </None>
+    <None Include="include\glm\gtc\bitfield.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\color_encoding.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\color_space.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\constants.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\epsilon.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\functions.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\integer.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\matrix_access.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\matrix_inverse.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\matrix_transform.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\noise.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\packing.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\quaternion.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\quaternion_simd.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\random.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\reciprocal.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\round.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\type_precision.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\type_ptr.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\ulp.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtc\vec1.inl">
+      <Filter>头文件\include\glm\gtc</Filter>
+    </None>
+    <None Include="include\glm\gtx\associated_min_max.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\bit.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\closest_point.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\color_space.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\color_space_YCoCg.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\common.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\compatibility.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\component_wise.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\dual_quaternion.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\euler_angles.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\extend.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\extended_min_max.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\fast_exponential.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\fast_square_root.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\fast_trigonometry.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\float_notmalize.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\gradient_paint.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\handed_coordinate_space.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\hash.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\integer.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\intersect.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\io.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\log_base.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_cross_product.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_decompose.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_interpolation.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_major_storage.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_operation.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_query.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\matrix_transform_2d.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\mixed_product.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\norm.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\normal.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\normalize_dot.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\number_precision.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\optimum_pow.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\orthonormalize.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\perpendicular.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\polar_coordinates.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\projection.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\quaternion.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\raw_data.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\rotate_normalized_axis.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\rotate_vector.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\scalar_relational.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\spline.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\std_based_type.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\string_cast.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\transform.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\transform2.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\type_aligned.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\type_trait.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\vector_angle.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\vector_query.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\glm\gtx\wrap.inl">
+      <Filter>头文件\include\glm\gtx</Filter>
+    </None>
+    <None Include="include\assimp\.editorconfig">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\color4.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\config.h.in">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\material.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\matrix3x3.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\matrix4x4.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\quaternion.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\SmoothingGroups.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\vector2.inl">
+      <Filter>头文件\include\assimp</Filter>
+    </None>
+    <None Include="include\assimp\vector3.inl">
+      <Filter>头文件\include\assimp</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\tex1.jpg">
-      <Filter>资源文件\Textures</Filter>
+      <Filter>资源文件\resources\Textures</Filter>
     </Image>
     <Image Include="Models\nanosuit\hand_showroom_spec.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\helmet_diff.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\helmet_showroom_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\helmet_showroom_spec.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\leg_dif.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\leg_showroom_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\leg_showroom_spec.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\arm_dif.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\arm_showroom_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\arm_showroom_spec.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\body_dif.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\body_showroom_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\body_showroom_spec.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\glass_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\glass_dif.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\hand_dif.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
     <Image Include="Models\nanosuit\hand_showroom_ddn.png">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib">
-      <Filter>源文件\lib</Filter>
+      <Filter>头文件\lib</Filter>
     </Library>
     <Library Include="lib\assimp-vc142-mt.lib">
-      <Filter>源文件\lib</Filter>
+      <Filter>头文件\lib</Filter>
     </Library>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Models\nanosuit\LICENSE.txt">
-      <Filter>资源文件\Models\nanosuit</Filter>
+      <Filter>资源文件\resources\Models\nanosuit</Filter>
+    </Text>
+    <Text Include="include\glm\CMakeLists.txt">
+      <Filter>头文件\include\glm</Filter>
     </Text>
   </ItemGroup>
 </Project>
