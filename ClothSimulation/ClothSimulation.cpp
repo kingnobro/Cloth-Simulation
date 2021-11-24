@@ -37,11 +37,13 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 int windForceScale = 15;
 
 // Cloths
+Cloth* selectedCloth = nullptr;
 int clothNumber = 0;
 Vec2 clothSize(6, 6);
 //			 Position           Size       clothID
 Cloth cloth1(Vec3(-3, 7.5, -2), clothSize, ++clothNumber);
-Cloth cloth2(Vec3(-3, 7.5, -5), clothSize, ++clothNumber);
+Cloth cloth2(Vec3(-3, 7.5, -4), clothSize, ++clothNumber);
+std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 
 // Ground
 Vec3 groundPos(-5, 1.5, 0);
@@ -51,13 +53,13 @@ Ground ground(groundPos, groundSize, groundColor);
 
 // Ball
 Vec3 ballPos(0, 3, -2);
-int ballRadius = 1;
+int ballRadius = 2;
 glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 Ball ball(ballPos, ballRadius, ballColor);
 
 // Window and world
 GLFWwindow* window;
-Vec3 bgColor = Vec3(255.0 / 255, 255.0 / 255, 222.0 / 255);
+Vec3 bgColor = Vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
 Vec3 gravity(0.0, -9.8 / Cloth::iterationFreq, 0.0);
 
 // timing
@@ -108,26 +110,15 @@ int main(int argc, const char* argv[])
 	glfwSetCursorPosCallback(window, mouse_position_callback);
 
 	/** Generate Renderers, Add Initial Force **/
-	// vector<ClothRender> clothRenders = {
-	// 	ClothRender(&cloth1),
-	// };
-	// vector<ClothSpringRender> clothSpringRenders = {
-	// 	ClothSpringRender(&cloth1),
-	// };
+	vector<ClothRender> clothRenders;
+	vector<ClothSpringRender> clothSpringRenders;
 	Vec3 initForce(10.0, 40.0, 20.0);
-	cloth1.addForce(initForce);
-	cloth2.addForce(initForce);
-	ClothRender clothRender(&cloth1);
-	ClothRender clothRender2(&cloth2);
-	ClothSpringRender clothSpringRender(&cloth1);
-	ClothSpringRender clothSpringRender2(&cloth2);
-	// for (size_t i = 0; i < cloths.size(); i += 1)
-	// {
-	// 	Cloth cloth = cloths[i];
-	// 	clothRenders.push_back(ClothRender(&cloth));
-	// 	clothSpringRenders.push_back(ClothSpringRender(&cloth));
-	//     cloth.addForce(initForce);
-	// }
+	for (Cloth* cloth : cloths)
+	{
+		cloth->addForce(initForce);
+		clothRenders.push_back(ClothRender(cloth));
+		clothSpringRenders.push_back(ClothSpringRender(cloth));
+	}
 
 	GroundRender groundRender(&ground);
 	BallRender ballRender(&ball);
@@ -156,34 +147,28 @@ int main(int argc, const char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
-
-		if (running) {
-			for (int i = 0; i < Cloth::iterationFreq; i++)
-			{
-				cloth1.computeForce(TIME_STEP, gravity);
-				cloth1.integrate(TIME_STEP);
-				cloth1.collisionResponse(&ground, &ball);
-
-				cloth2.computeForce(TIME_STEP, gravity);
-				cloth2.integrate(TIME_STEP);
-				cloth2.collisionResponse(&ground, &ball);
+		for (size_t i = 0; i < cloths.size(); i += 1)
+		{
+			Cloth* cloth = cloths[i];
+			if (running) {
+				for (int i = 0; i < Cloth::iterationFreq; i++)
+				{
+					cloth->computeForce(TIME_STEP, gravity);
+					cloth->integrate(TIME_STEP);
+					cloth->collisionResponse(&ground, &ball);
+				}
+				cloth->computeNormal();
 			}
-			cloth1.computeNormal();
-			cloth2.computeNormal();
-		}
 
-		/** Display **/
-		if (Cloth::drawMode == DRAW_LINES)
-		{
-			//clothSpringRenders[i].flush();
-			clothSpringRender.flush();
-			clothSpringRender2.flush();
-		}
-		else
-		{
-			//clothRenders[i].flush();
-			clothRender.flush();
-			clothRender2.flush();
+			/** Display **/
+			if (Cloth::drawMode == DRAW_LINES)
+			{
+				clothSpringRenders[i].flush();
+			}
+			else
+			{
+				clothRenders[i].flush();
+			}
 		}
 		ballRender.flush();
 		groundRender.flush();
@@ -221,23 +206,22 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start wind
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start Sewing
 	{
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
+		std::cout << "Start Sewing\n";
+		Cloth* cloth1 = cloths[0];
+		Cloth* cloth2 = cloths[1];
+		double deltaZ = std::abs(cloth1->clothPos.z - cloth2->clothPos.z) / 2;
+		std::cout << "deltaZ " << deltaZ << std::endl;
+		for (int i = 0; i < cloth1->nodesPerRow; i++) {
+			Node* n1 = cloth1->getNode(i, 0);
+			Node* n2 = cloth2->getNode(i, 0);
+			// std::cout << n1->position.x << " " << n1->position.y << " " << n1->position.z << std::endl;
+			// std::cout << n2->position.x << " " << n2->position.y << " " << n2->position.z << std::endl;
+			n1->position.z -= deltaZ;
+			n2->position.z += deltaZ;
+		}
 	}
-	// if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running) // Start wind
-	// {
-	//     // glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
-	//     for (Node* n : cloth.nodes)
-	//     {
-	//         n->position = n->position - Vec3(0.2f, 0.0f, 0.0f);
-	//     }
-	// }
-	// if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
-	// {
-	// 
-	// }
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -278,8 +262,7 @@ void processInput(GLFWwindow* window)
 		Cloth::drawMode = DRAW_FACES;
 	}
 
-	/**
-	control : [W] [S] [A] [D] **/
+	/** control : [W] [S] [A] [D] **/
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	}
@@ -303,25 +286,44 @@ void processInput(GLFWwindow* window)
 		printf("Running..\n");
 	}
 
-	/** Drop the cloth **/
-	// if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && running) {
-	// 	cloth.unPin(cloth.pin1);
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && running) {
-	// 	cloth.unPin(cloth.pin2);
-	// }
+	/** Select Cloths **/
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+		for (Cloth* cloth : cloths)
+		{
+			if (cloth->clothID == 1)
+			{
+				selectedCloth = cloth;
+				std::cout << "select cloth 1\n";
+				break;
+			}
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		for (Cloth* cloth : cloths)
+		{
+			if (cloth->clothID == 2)
+			{
+				selectedCloth = cloth;
+				std::cout << "select cloth 2\n";
+				break;
+			}
+		}
+	}
 
-	/** Pull cloth **/
-	// if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
-	// 	cloth.addForce(Vec3(0.0, 0.0, -windForceScale));
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
-	// 	cloth.addForce(Vec3(0.0, 0.0, windForceScale));
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
-	// 	cloth.addForce(Vec3(-windForceScale, 0.0, 0.0));
-	// }
-	// if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
-	// 	cloth.addForce(Vec3(windForceScale, 0.0, 0.0));
-	// }
+	/** Move Cloth **/
+	if (selectedCloth != nullptr)
+	{
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
+			selectedCloth->move(Vec3(0.0f, 0.2f, 0.0f));
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
+			selectedCloth->move(Vec3(0.0f, -0.2f, 0.0f));
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
+			selectedCloth->move(Vec3(-0.2f, 0.0f, 0.0f));
+		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
+			selectedCloth->move(Vec3(0.2f, 0.0f, 0.0f));
+		}
+	}
 }

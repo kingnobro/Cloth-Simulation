@@ -16,9 +16,12 @@ class Cloth
 public:
 	const int nodesDensity = 4;
 	const static int iterationFreq = 10;
-	const double structuralCoef = 1000.0;
-	const double shearCoef = 50.0;
-	const double bendingCoef = 400.0;
+	// const double structuralCoef = 1000.0;
+	// const double shearCoef = 50.0;
+	// const double bendingCoef = 400.0;
+	const double structuralCoef = 250.0;
+	const double shearCoef = 12.5;
+	const double bendingCoef = 100.0;
 
 	static Draw_Mode drawMode;
 
@@ -32,8 +35,7 @@ public:
 	std::vector<Spring*> springs;
 	std::vector<Node*> faces;
 
-	Vec2 pin1;
-	Vec2 pin2;
+	std::vector<Vec2> pins;
 
 	Cloth(Vec3 pos, Vec2 size, int ID)
 	{
@@ -69,16 +71,18 @@ public:
 		return Vec3::cross(n2->position - n1->position, n3->position - n1->position);
 	}
 
-	void pin(Vec2 index, Vec3 offset) // Pin cloth's (x, y) node with offset
+	void pin(Vec2 index)  // Unpin cloth's (x, y) node
 	{
-		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) {
-			getNode(index.x, index.y)->position += offset;
+		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) 
+		{
 			getNode(index.x, index.y)->isFixed = true;
 		}
 	}
+
 	void unPin(Vec2 index) // Unpin cloth's (x, y) node
 	{
-		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) {
+		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol))
+		{
 			getNode(index.x, index.y)->isFixed = false;
 		}
 	}
@@ -88,8 +92,10 @@ public:
 		nodesPerRow = width * nodesDensity;
 		nodesPerCol = height * nodesDensity;
 
-		pin1 = Vec2(0, 0);
-		pin2 = Vec2(nodesPerRow - 1, 0);
+		for (int i = 0; i < nodesPerRow; i += 1)
+		{
+			pins.push_back(Vec2(i, 0));
+		}
 
 		/** Add nodes **/
 		printf("Init cloth with %d nodes\n", nodesPerRow * nodesPerCol);
@@ -125,8 +131,10 @@ public:
 			}
 		}
 
-		pin(pin1, Vec3(1.0, 0.0, 0.0));
-		pin(pin2, Vec3(-1.0, 0.0, 0.0));
+		for (const Vec2& p : pins)
+		{
+			pin(p);
+		}
 
 		/** Triangle faces **/
 		for (int i = 0; i < nodesPerRow - 1; i++) {
@@ -232,6 +240,14 @@ public:
 				setWorldPos(nodes[i], distVec * safeDist + ball->center);
 				nodes[i]->velocity = nodes[i]->velocity * ball->friction;
 			}
+		}
+	}
+
+	void move(Vec3 offset)
+	{
+		for (Node* n : nodes)
+		{
+			n->position += offset;
 		}
 	}
 };
