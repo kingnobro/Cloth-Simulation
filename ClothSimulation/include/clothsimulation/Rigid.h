@@ -193,8 +193,9 @@ public:
 	}
 };
 
-struct Ball
+class Ball
 {
+public:
 	Vec3 center;
 	int radius;
 	glm::vec4 color;

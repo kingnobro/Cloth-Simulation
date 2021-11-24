@@ -34,7 +34,6 @@ public:
 	std::vector<Node*> nodes;
 	std::vector<Spring*> springs;
 	std::vector<Node*> faces;
-
 	std::vector<Vec2> pins;
 
 	Cloth(Vec3 pos, Vec2 size, int ID)
@@ -61,14 +60,19 @@ public:
 		faces.clear();
 	}
 
-public:
 	Node* getNode(int x, int y)
 	{
 		return nodes[y * nodesPerRow + x];
 	}
+
 	Vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
 	{
 		return Vec3::cross(n2->position - n1->position, n3->position - n1->position);
+	}
+
+	static void modifyDrawMode(Draw_Mode mode)
+	{
+		drawMode = mode;
 	}
 
 	void pin(Vec2 index)  // Unpin cloth's (x, y) node
@@ -221,7 +225,7 @@ public:
 		n->position = pos - clothPos;
 	}
 
-	void collisionResponse(Ground* ground, Ball* ball)
+	void collisionResponse(Ground* ground)
 	{
 		for (int i = 0; i < nodes.size(); i++)
 		{
@@ -232,14 +236,14 @@ public:
 			}
 
 			/** Ball collision **/
-			Vec3 distVec = getWorldPos(nodes[i]) - ball->center;
-			double distLen = distVec.length();
-			double safeDist = ball->radius * 1.05;
-			if (distLen < safeDist) {
-				distVec.normalize();
-				setWorldPos(nodes[i], distVec * safeDist + ball->center);
-				nodes[i]->velocity = nodes[i]->velocity * ball->friction;
-			}
+			// Vec3 distVec = getWorldPos(nodes[i]) - ball->center;
+			// double distLen = distVec.length();
+			// double safeDist = ball->radius * 1.05;
+			// if (distLen < safeDist) {
+			// 	distVec.normalize();
+			// 	setWorldPos(nodes[i], distVec * safeDist + ball->center);
+			// 	nodes[i]->velocity = nodes[i]->velocity * ball->friction;
+			// }
 		}
 	}
 
