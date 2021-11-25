@@ -19,13 +19,13 @@ public:
 	// const double structuralCoef = 1000.0;
 	// const double shearCoef = 50.0;
 	// const double bendingCoef = 400.0;
-	const double structuralCoef = 250.0;
-	const double shearCoef = 12.5;
-	const double bendingCoef = 100.0;
+	const float structuralCoef = 250.0;
+	const float shearCoef = 12.5;
+	const float bendingCoef = 100.0;
 
 	static Draw_Mode drawMode;
 
-	Vec3 clothPos;
+	glm::vec3 clothPos;
 
 	int width, height;
 	int nodesPerRow, nodesPerCol;
@@ -34,9 +34,9 @@ public:
 	std::vector<Node*> nodes;
 	std::vector<Spring*> springs;
 	std::vector<Node*> faces;
-	std::vector<Vec2> pins;
+	std::vector<glm::vec2> pins;
 
-	Cloth(Vec3 pos, Vec2 size, int ID)
+	Cloth(glm::vec3 pos, glm::vec2 size, int ID)
 	{
 		clothPos = pos;
 		width = size.x;
@@ -65,9 +65,9 @@ public:
 		return nodes[y * nodesPerRow + x];
 	}
 
-	Vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
+	glm::vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
 	{
-		return Vec3::cross(n2->position - n1->position, n3->position - n1->position);
+		return glm::cross(n2->position - n1->position, n3->position - n1->position);
 	}
 
 	static void modifyDrawMode(Draw_Mode mode)
@@ -75,7 +75,7 @@ public:
 		drawMode = mode;
 	}
 
-	void pin(Vec2 index)  // Unpin cloth's (x, y) node
+	void pin(glm::vec2 index)  // Unpin cloth's (x, y) node
 	{
 		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) 
 		{
@@ -83,7 +83,7 @@ public:
 		}
 	}
 
-	void unPin(Vec2 index) // Unpin cloth's (x, y) node
+	void unPin(glm::vec2 index) // Unpin cloth's (x, y) node
 	{
 		if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol))
 		{
@@ -98,7 +98,7 @@ public:
 
 		for (int i = 0; i < nodesPerRow; i += 1)
 		{
-			pins.push_back(Vec2(i, 0));
+			pins.push_back(glm::vec2(i, 0));
 		}
 
 		/** Add nodes **/
@@ -106,10 +106,10 @@ public:
 		for (int i = 0; i < nodesPerRow; i++) {
 			for (int j = 0; j < nodesPerCol; j++) {
 				/** Create node by position **/
-				Node* node = new Node(Vec3((double)j / nodesDensity, -((double)i / nodesDensity), 0));
+				Node* node = new Node(glm::vec3((float)j / nodesDensity, -((float)i / nodesDensity), 0));
 				/** Set texture coordinates **/
-				node->texCoord.x = (double)j / (nodesPerRow - 1);
-				node->texCoord.y = (double)i / (1 - nodesPerCol);
+				node->texCoord.x = (float)j / (nodesPerRow - 1);
+				node->texCoord.y = (float)i / (1 - nodesPerCol);
 				/** Add node to cloth **/
 				nodes.push_back(node);
 
@@ -135,7 +135,7 @@ public:
 			}
 		}
 
-		for (const Vec2& p : pins)
+		for (const glm::vec2& p : pins)
 		{
 			pin(p);
 		}
@@ -158,7 +158,7 @@ public:
 	void computeNormal()
 	{
 		/** Reset nodes' normal **/
-		Vec3 normal(0.0, 0.0, 0.0);
+		glm::vec3 normal(0.0, 0.0, 0.0);
 		for (int i = 0; i < nodes.size(); i++) {
 			nodes[i]->normal = normal;
 		}
@@ -177,11 +177,11 @@ public:
 		}
 
 		for (int i = 0; i < nodes.size(); i++) {
-			nodes[i]->normal.normalize();
+			nodes[i]->normal = glm::normalize(nodes[i]->normal);
 		}
 	}
 
-	void addForce(Vec3 force)
+	void addForce(glm::vec3 force)
 	{
 		for (int i = 0; i < nodes.size(); i++)
 		{
@@ -189,7 +189,7 @@ public:
 		}
 	}
 
-	void computeForce(double timeStep, Vec3 gravity)
+	void computeForce(float timeStep, glm::vec3 gravity)
 	{
 		/** Nodes **/
 		for (int i = 0; i < nodes.size(); i++)
@@ -206,7 +206,7 @@ public:
 		}
 	}
 
-	void integrate(double timeStep)
+	void integrate(float timeStep)
 	{
 		/** Node **/
 		for (int i = 0; i < nodes.size(); i++)
@@ -215,12 +215,12 @@ public:
 		}
 	}
 
-	Vec3 getWorldPos(Node* n)
+	glm::vec3 getWorldPos(Node* n)
 	{
 		return clothPos + n->position;
 	}
 
-	void setWorldPos(Node* n, Vec3 pos)
+	void setWorldPos(Node* n, glm::vec3 pos)
 	{
 		n->position = pos - clothPos;
 	}
@@ -247,7 +247,7 @@ public:
 		}
 	}
 
-	void move(Vec3 offset)
+	void move(glm::vec3 offset)
 	{
 		clothPos += offset;
 	}

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Vector.h"
+#include <glm/glm.hpp>
 
 // Default Point Values
-const double MASS = 1.0;
+const float MASS = 1.0;
 const bool ISFIXED = false;
-const Vec3 POSITION = Vec3(0, 0, 0);
+const glm::vec3 POSITION = glm::vec3(0);
 
 struct Vertex
 {
 public:
-	Vec3 position;
-	Vec3 normal;
+	glm::vec3 position;
+	glm::vec3 normal;
 
 	Vertex() {}
-	Vertex(Vec3 pos)
+	Vertex(glm::vec3 pos)
 	{
 		position = pos;
 	}
@@ -24,28 +24,28 @@ public:
 class Node
 {
 public:
-	double  mass;           // In this project it will always be 1
-	bool    isFixed;        // Use to pin the cloth
-	Vec2    texCoord;       // Texture coord
-	Vec3    normal;         // For smoothly shading
-	Vec3	position;
-	Vec3    velocity;
-	Vec3    force;
-	Vec3	acceleration;
+	float  mass;				// In this project it will always be 1
+	bool    isFixed;			// Use to pin the cloth
+	glm::vec2	texCoord;       // Texture coord
+	glm::vec3	normal;         // For smoothly shading
+	glm::vec3	position;
+	glm::vec3   velocity;
+	glm::vec3   force;
+	glm::vec3	acceleration;
 
 public:
-	Node(Vec3 pos = POSITION)
+	Node(glm::vec3 pos = POSITION)
 	{
 		mass = MASS;
 		isFixed = ISFIXED;
 		position = pos;
-		velocity.setZeroVec();
-		force.setZeroVec();
-		acceleration.setZeroVec();
+		velocity = glm::vec3(0);
+		force = glm::vec3(0);
+		acceleration = glm::vec3(0);
 	}
 	~Node(void) {}
 
-	void addForce(Vec3 force)
+	void addForce(glm::vec3 force)
 	{
 		this->force += force;
 	}
@@ -53,16 +53,16 @@ public:
 	/*
 	 * Only non-fixed points get integrated
 	 */
-	void integrate(double timeStep)
+	void integrate(float timeStep)
 	{
 		// Verlet integration
 		if (!isFixed)
 		{
 			// Newton's second law of motion
-			acceleration = force / mass;
+			acceleration = force / (float) mass;
 			velocity += acceleration * timeStep;
 			position += velocity * timeStep;
 		}
-		force.setZeroVec();
+		force = glm::vec3(0);
 	}
 };

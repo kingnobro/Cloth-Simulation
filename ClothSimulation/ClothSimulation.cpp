@@ -40,16 +40,16 @@ int windForceScale = 15;
 
 // Cloths
 int clothNumber = 0;
-Vec2 clothSize(6, 6);
+glm::vec2 clothSize(6, 6);
 //			 Position           Size       clothID
-Cloth cloth1(Vec3(-3, 7.5, -2), clothSize, ++clothNumber);
-Cloth cloth2(Vec3(-3, 7.5, -4), clothSize, ++clothNumber);
+Cloth cloth1(glm::vec3(-3, 7.5, -2), clothSize, ++clothNumber);
+Cloth cloth2(glm::vec3(-3, 7.5, -4), clothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
 // Ground
-Vec3 groundPos(-5, 1.5, 0);
-Vec2 groundSize(10, 10);
+glm::vec3 groundPos(-5, 1.5, 0);
+glm::vec2 groundSize(10, 10);
 glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
 Ground ground(groundPos, groundSize, groundColor);
 
@@ -61,8 +61,8 @@ Ground ground(groundPos, groundSize, groundColor);
 
 // Window and world
 GLFWwindow* window;
-Vec3 bgColor = Vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
-Vec3 gravity(0.0, -9.8 / Cloth::iterationFreq, 0.0);
+glm::vec3 bgColor = glm::vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
+glm::vec3 gravity(0.0, -9.8 / Cloth::iterationFreq, 0.0);
 
 // timing
 float deltaTime = 0.0f;
@@ -118,7 +118,7 @@ int main(int argc, const char* argv[])
 	/** Generate Object Renderers, Add Initial Force to Cloths **/
 	vector<ClothRender> clothRenders;
 	vector<ClothSpringRender> clothSpringRenders;
-	Vec3 initForce(10.0, 40.0, 20.0);
+	glm::vec3 initForce(10.0, 40.0, 20.0);
 	for (Cloth* cloth : cloths)
 	{
 		cloth->addForce(initForce);
@@ -310,16 +310,16 @@ void processInput(GLFWwindow* window)
 	if (selectedCloth != nullptr)
 	{
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			selectedCloth->move(Vec3(0.0f, 0.2f, 0.0f));
+			selectedCloth->move(glm::vec3(0.0f, 0.2f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			selectedCloth->move(Vec3(0.0f, -0.2f, 0.0f));
+			selectedCloth->move(glm::vec3(0.0f, -0.2f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			selectedCloth->move(Vec3(-0.2f, 0.0f, 0.0f));
+			selectedCloth->move(glm::vec3(-0.2f, 0.0f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			selectedCloth->move(Vec3(0.2f, 0.0f, 0.0f));
+			selectedCloth->move(glm::vec3(0.2f, 0.0f, 0.0f));
 		}
 	}
 }

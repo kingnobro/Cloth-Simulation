@@ -10,19 +10,19 @@
 
 struct Ground
 {
-	Vec3 position;
+	glm::vec3 position;
 	int width, height;
 	glm::vec4 color;
-	const double friction = 0.9;
+	const float friction = (float) 0.9;
 
 	std::vector<Vertex*> vertexes;
 	std::vector<Vertex*> faces;
 
-	Ground(Vec3 position, Vec2 size, glm::vec4 color) {
+	Ground(glm::vec3 position, glm::vec2 size, glm::vec4 color) {
 		this->position = position;
 		this->color = color;
-		width = size.x;
-		height = size.y;
+		width = (int)size.x;
+		height = (int)size.y;
 
 		init();
 	}
@@ -38,13 +38,13 @@ struct Ground
 
 	void init()
 	{
-		vertexes.push_back(new Vertex(Vec3(0.0, 0.0, 0.0)));
-		vertexes.push_back(new Vertex(Vec3(width, 0.0, 0.0)));
-		vertexes.push_back(new Vertex(Vec3(0.0, 0.0, -height)));
-		vertexes.push_back(new Vertex(Vec3(width, 0.0, -height)));
+		vertexes.push_back(new Vertex(glm::vec3(0.0f)));
+		vertexes.push_back(new Vertex(glm::vec3(width, 0.0, 0.0)));
+		vertexes.push_back(new Vertex(glm::vec3(0.0, 0.0, -height)));
+		vertexes.push_back(new Vertex(glm::vec3(width, 0.0, -height)));
 
 		for (int i = 0; i < vertexes.size(); i++) {
-			vertexes[i]->normal = Vec3(0.0, 1.0, 0.0); // It's not neccessery to normalize here
+			vertexes[i]->normal = glm::vec3(0.0, 1.0, 0.0); // It's not neccessery to normalize here
 
 			// Debug info
 			printf("Ground[%d]: (%f, %f, %f) - (%f, %f, %f)\n", i, vertexes[i]->position.x, vertexes[i]->position.y, vertexes[i]->position.z, vertexes[i]->normal.x, vertexes[i]->normal.y, vertexes[i]->normal.z);
@@ -108,14 +108,14 @@ public:
 		return vertexes[vertexes.size() - 1]; 
 	}
 
-	Vec3 computeFaceNormal(Vertex* v1, Vertex* v2, Vertex* v3)
+	glm::vec3 computeFaceNormal(Vertex* v1, Vertex* v2, Vertex* v3)
 	{
-		return Vec3::cross(v2->position - v1->position, v3->position - v1->position);
+		return glm::cross(v2->position - v1->position, v3->position - v1->position);
 	}
 
 	void computeSphereNormal()
 	{
-		Vec3 normal(0.0, 0.0, 0.0);
+		glm::vec3 normal(0.0f);
 		for (int i = 0; i < vertexes.size(); i++) {
 			vertexes[i]->normal = normal;
 		}
@@ -134,32 +134,32 @@ public:
 
 		for (int i = 0; i < vertexes.size(); i++)
 		{
-			vertexes[i]->normal.normalize();
+			vertexes[i]->normal = glm::normalize(vertexes[i]->normal);
 		}
 	}
 
 	void init() // Initialize vertices coord and slice faces
 	{
 		/** Compute vertex position **/
-		double cycleInterval = radius * 2.0 / (parallelNum + 1);
-		double radianInterval = 2.0 * M_PI / meridianNum;
+		float cycleInterval = radius * 2.0 / (parallelNum + 1);
+		float radianInterval = 2.0 * M_PI / meridianNum;
 
 
-		Vec3 pos(0.0, radius, 0.0);
+		glm::vec3 pos(0.0, radius, 0.0);
 		vertexes.push_back(new Vertex(pos)); // Top vertex
 
 		for (int i = 0; i < parallelNum; i++) {
 			pos.y -= cycleInterval;
 			for (int j = 0; j < meridianNum; j++) {
-				double xzLen = radius * sqrt(1.0 - pow(pos.y / radius, 2));
-				double xRadian = j * radianInterval;  // The length of projection line on X-Z pane
+				float xzLen = radius * sqrt(1.0 - pow(pos.y / radius, 2));
+				float xRadian = j * radianInterval;  // The length of projection line on X-Z pane
 
 				pos.x = xzLen * sin(xRadian);
 				pos.z = xzLen * cos(xRadian);
 				vertexes.push_back(new Vertex(pos));
 			}
 		}
-		pos = Vec3(0.0, -radius, 0.0);
+		pos = glm::vec3(0.0, -radius, 0.0);
 		vertexes.push_back(new Vertex(pos)); // Bottom vertex
 
 		/** Slice faces **/
@@ -196,14 +196,14 @@ public:
 class Ball
 {
 public:
-	Vec3 center;
+	glm::vec3 center;
 	int radius;
 	glm::vec4 color;
-	const double friction = 0.8;
+	const float friction = 0.8;
 
 	Sphere* sphere;
 
-	Ball(Vec3 center, int radius, glm::vec4 color)
+	Ball(glm::vec3 center, int radius, glm::vec4 color)
 	{
 		this->center = center;
 		this->radius = radius;

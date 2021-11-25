@@ -236,7 +236,6 @@
     <ClInclude Include="include\clothsimulation\Rigid.h" />
     <ClInclude Include="include\clothsimulation\Shader.h" />
     <ClInclude Include="include\clothsimulation\Spring.h" />
-    <ClInclude Include="include\clothsimulation\Vector.h" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />

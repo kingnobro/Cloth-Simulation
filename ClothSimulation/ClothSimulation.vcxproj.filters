@@ -776,9 +776,6 @@
     <ClInclude Include="include\clothsimulation\Spring.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="include\clothsimulation\Vector.h">
-      <Filter>头文件\include\clothsimulation</Filter>
-    </ClInclude>
     <ClInclude Include="include\clothsimulation\Camera.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
