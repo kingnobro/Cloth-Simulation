@@ -1,5 +1,4 @@
-#ifndef CLOTHPICKER_H
-#define CLOTHPICKER_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -50,5 +49,3 @@ public:
 private:
 	Camera* camera;
 };
-
-#endif

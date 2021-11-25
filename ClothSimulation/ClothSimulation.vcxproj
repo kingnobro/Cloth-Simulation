@@ -232,11 +232,11 @@
     <ClInclude Include="include\clothsimulation\Mesh.h" />
     <ClInclude Include="include\clothsimulation\Model.h" />
     <ClInclude Include="include\clothsimulation\MouseRay.h" />
-    <ClInclude Include="include\clothsimulation\Points.h" />
+    <ClInclude Include="include\clothsimulation\Point.h" />
     <ClInclude Include="include\clothsimulation\Rigid.h" />
     <ClInclude Include="include\clothsimulation\Shader.h" />
     <ClInclude Include="include\clothsimulation\Spring.h" />
-    <ClInclude Include="include\clothsimulation\Vectors.h" />
+    <ClInclude Include="include\clothsimulation\Vector.h" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />

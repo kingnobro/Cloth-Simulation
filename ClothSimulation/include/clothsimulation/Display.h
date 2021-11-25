@@ -23,7 +23,6 @@ struct ClothRender // Texture & Lighting
 	glm::vec2* vboTex; // Texture
 	glm::vec3* vboNor; // Normal
 
-	GLuint programID;
 	GLuint vaoID;
 	GLuint vboIDs[3];
 	GLuint texID;
@@ -58,8 +57,7 @@ struct ClothRender // Texture & Lighting
 
 		/** Build shader **/
 		shader = Shader("resources/Shaders/ClothVS.glsl", "resources/Shaders/ClothFS.glsl");
-		programID = shader.ID;
-		std::cout << "Cloth Program ID: " << programID << std::endl;
+		std::cout << "Cloth Program ID: " << shader.ID << std::endl;
 
 		// Generate ID of VAO and VBOs
 		glGenVertexArrays(1, &vaoID);
@@ -116,20 +114,16 @@ struct ClothRender // Texture & Lighting
 		stbi_image_free(data);
 
 		/** Set uniform **/
-		glUseProgram(programID); // Active shader before set uniform
+		shader.use(); // Active shader before set uniform
 		// Set texture sampler
 		shader.setInt("uniTex", 0);
 
-		/** Projection matrix : The frustum that camera observes **/
-		// Since projection matrix rarely changes, set it outside the rendering loop for only onec time
+		/** Set Matrix **/
+		glm::mat4 uniModelMatrix = cloth->GetModelMatrix();
 		shader.setMat4("uniProjMatrix", camera.GetProjectionMatrix());
-
-		/** Model Matrix : Put cloth into the world **/
-		glm::mat4 uniModelMatrix = glm::mat4(1.0f);
-		uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z));
 		shader.setMat4("uniModelMatrix", uniModelMatrix);
 
-		/** Light **/
+		/** Set Light **/
 		shader.setVec3("uniLightPos", lightPos);
 		shader.setVec3("uniLightColor", lightColor);
 
@@ -150,10 +144,10 @@ struct ClothRender // Texture & Lighting
 			glDeleteBuffers(3, vboIDs);
 			vaoID = 0;
 		}
-		if (programID)
+		if (shader.ID)
 		{
-			glDeleteProgram(programID);
-			programID = 0;
+			glDeleteProgram(shader.ID);
+			shader.ID = 0;
 		}
 	}
 
@@ -167,7 +161,7 @@ struct ClothRender // Texture & Lighting
 			vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
 		}
 
-		glUseProgram(programID);
+		shader.use();
 
 		glBindVertexArray(vaoID);
 
@@ -182,8 +176,10 @@ struct ClothRender // Texture & Lighting
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texID);
 
-		/** View Matrix : The camera **/
+		/** Update Matrix **/
+		glm::mat4 uniModelMatrix = cloth->GetModelMatrix();
 		shader.setMat4("uniViewMatrix", camera.GetViewMatrix());
+		shader.setMat4("uniModelMatrix", uniModelMatrix);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -220,7 +216,6 @@ struct SpringRender
 	glm::vec3* vboPos; // Position
 	glm::vec3* vboNor; // Normal
 
-	GLuint programID;
 	GLuint vaoID;
 	GLuint vboIDs[2];
 
@@ -254,8 +249,7 @@ struct SpringRender
 
 		/** Build shader **/
 		shader = Shader("resources/Shaders/SpringVS.glsl", "resources/Shaders/SpringFS.glsl");
-		programID = shader.ID;
-		std::cout << "Spring Program ID: " << programID << std::endl;
+		std::cout << "Spring Program ID: " << shader.ID << std::endl;
 
 		// Generate ID of VAO and VBOs
 		glGenVertexArrays(1, &vaoID);
@@ -281,7 +275,7 @@ struct SpringRender
 		glEnableVertexAttribArray(aPtrNor);
 
 		/** Set uniform **/
-		glUseProgram(programID); // Active shader before set uniform
+		shader.use(); // Active shader before set uniform
 		// Set color
 		shader.setVec4("uniSpringColor", uniSpringColor);
 
@@ -314,10 +308,10 @@ struct SpringRender
 			glDeleteBuffers(2, vboIDs);
 			vaoID = 0;
 		}
-		if (programID)
+		if (shader.ID)
 		{
-			glDeleteProgram(programID);
-			programID = 0;
+			glDeleteProgram(shader.ID);
+			shader.ID = 0;
 		}
 	}
 
@@ -333,7 +327,7 @@ struct SpringRender
 			vboNor[i * 2 + 1] = glm::vec3(node2->normal.x, node2->normal.y, node2->normal.z);
 		}
 
-		glUseProgram(programID);
+		shader.use();
 
 		glBindVertexArray(vaoID);
 
@@ -385,7 +379,6 @@ struct RigidRender // Single color & Lighting
 	glm::vec3* vboPos; // Position
 	glm::vec3* vboNor; // Normal
 
-	GLuint programID;
 	GLuint vaoID;
 	GLuint vboIDs[2];
 
@@ -416,8 +409,7 @@ struct RigidRender // Single color & Lighting
 
 		/** Build shader **/
 		shader = Shader("resources/Shaders/RigidVS.glsl", "resources/Shaders/RigidFS.glsl");
-		programID = shader.ID;
-		std::cout << "Rigid Program ID: " << programID << std::endl;
+		std::cout << "Rigid Program ID: " << shader.ID << std::endl;
 
 		// Generate ID of VAO and VBOs
 		glGenVertexArrays(1, &vaoID);
@@ -443,7 +435,7 @@ struct RigidRender // Single color & Lighting
 		glEnableVertexAttribArray(aPtrNor);
 
 		/** Set uniform **/
-		glUseProgram(programID); // Active shader before set uniform
+		shader.use(); // Active shader before set uniform
 		// Set color
 		shader.setVec4("uniRigidColor", uniRigidColor);
 
@@ -476,16 +468,16 @@ struct RigidRender // Single color & Lighting
 			glDeleteBuffers(2, vboIDs);
 			vaoID = 0;
 		}
-		if (programID)
+		if (shader.ID)
 		{
-			glDeleteProgram(programID);
-			programID = 0;
+			glDeleteProgram(shader.ID);
+			shader.ID = 0;
 		}
 	}
 
 	void flush() // Rigid does not move, thus do not update vertexes' data
 	{
-		glUseProgram(programID);
+		shader.use();
 
 		glBindVertexArray(vaoID);
 

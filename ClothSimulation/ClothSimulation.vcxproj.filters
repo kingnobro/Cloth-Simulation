@@ -764,7 +764,7 @@
     <ClInclude Include="include\clothsimulation\Model.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="include\clothsimulation\Points.h">
+    <ClInclude Include="include\clothsimulation\Point.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
     <ClInclude Include="include\clothsimulation\Rigid.h">
@@ -776,7 +776,7 @@
     <ClInclude Include="include\clothsimulation\Spring.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="include\clothsimulation\Vectors.h">
+    <ClInclude Include="include\clothsimulation\Vector.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
     <ClInclude Include="include\clothsimulation\Camera.h">

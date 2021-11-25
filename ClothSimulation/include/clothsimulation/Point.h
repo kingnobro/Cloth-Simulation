@@ -1,6 +1,11 @@
 #pragma once
 
-#include "Vectors.h"
+#include "Vector.h"
+
+// Default Point Values
+const double MASS = 1.0;
+const bool ISFIXED = false;
+const Vec3 POSITION = Vec3(0, 0, 0);
 
 struct Vertex
 {
@@ -29,17 +34,10 @@ public:
 	Vec3	acceleration;
 
 public:
-	Node(void) {
-		mass = 1.0;
-		isFixed = false;
-		velocity.setZeroVec();
-		force.setZeroVec();
-		acceleration.setZeroVec();
-	}
-	Node(Vec3 pos)
+	Node(Vec3 pos = POSITION)
 	{
-		mass = 1.0;
-		isFixed = false;
+		mass = MASS;
+		isFixed = ISFIXED;
 		position = pos;
 		velocity.setZeroVec();
 		force.setZeroVec();
@@ -52,11 +50,15 @@ public:
 		this->force += force;
 	}
 
-	void integrate(double timeStep) // Only non-fixed nodes take integration
+	/*
+	 * Only non-fixed points get integrated
+	 */
+	void integrate(double timeStep)
 	{
-		if (!isFixed) // Verlet integration
+		// Verlet integration
+		if (!isFixed)
 		{
-			// a=F/m, v=at, p=vt
+			// Newton's second law of motion
 			acceleration = force / mass;
 			velocity += acceleration * timeStep;
 			position += velocity * timeStep;

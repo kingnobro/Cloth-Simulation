@@ -202,7 +202,7 @@ public:
 		{
 			// 质点是由弹簧连接
 			// 每个 timestep 都要重新计算弹簧力
-			springs[i]->applyInternalForce(timeStep);
+			springs[i]->computeInternalForce(timeStep);
 		}
 	}
 
@@ -250,5 +250,12 @@ public:
 	void move(Vec3 offset)
 	{
 		clothPos += offset;
+	}
+
+	glm::mat4 GetModelMatrix() const
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(clothPos.x, clothPos.y, clothPos.z));
+		return model;
 	}
 };

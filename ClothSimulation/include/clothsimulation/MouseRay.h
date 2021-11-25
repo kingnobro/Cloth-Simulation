@@ -1,5 +1,4 @@
-#ifndef MOUSERAY_H
-#define MOUSERAY_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include "Camera.h"
@@ -62,4 +61,3 @@ private:
 
 	Camera* camera;
 };
-#endif
