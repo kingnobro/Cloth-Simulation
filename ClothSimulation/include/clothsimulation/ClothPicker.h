@@ -23,9 +23,9 @@ public:
 		Cloth* selectedCloth = nullptr;
 		for (Cloth* cloth : cloths)
 		{
-			glm::vec3 pointLeftUpper = glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z);
-			glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->width, 0, 0);
-			glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->width, -cloth->height, 0);
+			glm::vec3 pointLeftUpper = cloth->GetClothPosition();
+			glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->GetWidth(), 0, 0);
+			glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->GetWidth(), -cloth->GetHeight(), 0);
 
 			// normal vector of the cloth
 			glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);
@@ -39,7 +39,7 @@ public:
 				if (selectedCloth == nullptr)
 				{
 					selectedCloth = cloth;
-					std::cout << "Cloth " << selectedCloth->clothID << " Selected\n";
+					std::cout << "Cloth " << selectedCloth->GetClothID() << " Selected\n";
 					break;
 				}
 			}

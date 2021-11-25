@@ -50,9 +50,9 @@ struct ClothRender // Texture & Lighting
 		for (int i = 0; i < nodeCount; i++) 
 		{
 			Node* n = cloth->faces[i];
-			vboPos[i] = glm::vec3(n->position.x, n->position.y, n->position.z);
-			vboTex[i] = glm::vec2(n->texCoord.x, n->texCoord.y); // Texture coord will only be set here
-			vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
+			vboPos[i] = n->position;
+			vboTex[i] = n->texCoord; // Texture coord will only be set here
+			vboNor[i] = n->normal;
 		}
 
 		/** Build shader **/
@@ -101,7 +101,7 @@ struct ClothRender // Texture & Lighting
 		/** Load image and configure texture **/
 		stbi_set_flip_vertically_on_load(true);
 		int texW, texH, colorChannels; // After loading the image, stb_image will fill them
-		unsigned char* data = stbi_load("resources/Textures/tex1.jpg", &texW, &texH, &colorChannels, 0);
+		unsigned char* data = stbi_load("resources/Textures/fiber2.jpg", &texW, &texH, &colorChannels, 0);
 		if (data) {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			// Automatically generate all the required mipmaps for the currently bound texture.
@@ -157,8 +157,8 @@ struct ClothRender // Texture & Lighting
 		for (int i = 0; i < nodeCount; i++) 
 		{ // Tex coordinate dose not change
 			Node* n = cloth->faces[i];
-			vboPos[i] = glm::vec3(n->position.x, n->position.y, n->position.z);
-			vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
+			vboPos[i] = n->position;
+			vboNor[i] = n->normal;
 		}
 
 		shader.use();
@@ -241,10 +241,10 @@ struct SpringRender
 		for (int i = 0; i < springCount; i++) {
 			Node* node1 = springs[i]->node1;
 			Node* node2 = springs[i]->node2;
-			vboPos[i * 2] = glm::vec3(node1->position.x, node1->position.y, node1->position.z);
-			vboPos[i * 2 + 1] = glm::vec3(node2->position.x, node2->position.y, node2->position.z);
-			vboNor[i * 2] = glm::vec3(node1->normal.x, node1->normal.y, node1->normal.z);
-			vboNor[i * 2 + 1] = glm::vec3(node2->normal.x, node2->normal.y, node2->normal.z);
+			vboPos[i * 2] = node1->position;
+			vboPos[i * 2 + 1] = node2->position;
+			vboNor[i * 2] = node1->normal;
+			vboNor[i * 2 + 1] = node2->normal;
 		}
 
 		/** Build shader **/
@@ -362,8 +362,8 @@ struct ClothSpringRender
 	ClothSpringRender(Cloth* c)
 	{
 		cloth = c;
-		defaultColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-		render.init(cloth->springs, defaultColor, glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z));
+		defaultColor = glm::vec4(1.0f);
+		render.init(cloth->springs, defaultColor, cloth->GetClothPosition());
 	}
 
 	void flush() { render.flush(); }
@@ -503,15 +503,16 @@ struct RigidRender // Single color & Lighting
 	}
 };
 
-struct GroundRender
+class GroundRender
 {
+public:
 	Ground* ground;
 	RigidRender render;
 
 	GroundRender(Ground* g)
 	{
 		ground = g;
-		render.init(ground->faces, ground->color, glm::vec3(ground->position.x, ground->position.y, ground->position.z));
+		render.init(ground->faces, ground->color, ground->position);
 	}
 
 	void flush() 
@@ -520,15 +521,16 @@ struct GroundRender
 	}
 };
 
-struct BallRender
+class BallRender
 {
+public:
 	Ball* ball;
 	RigidRender render;
 
 	BallRender(Ball* b)
 	{
 		ball = b;
-		render.init(ball->sphere->faces, ball->color, glm::vec3(ball->center.x, ball->center.y, ball->center.z));
+		render.init(ball->sphere->faces, ball->color, ball->center);
 	}
 
 	void flush() 

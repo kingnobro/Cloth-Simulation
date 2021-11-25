@@ -8,12 +8,17 @@
 
 #include "Point.h"
 
-struct Ground
+// Defaults
+const float FRICTION = 0.8;
+
+class Ground
 {
+public:
 	glm::vec3 position;
-	int width, height;
 	glm::vec4 color;
-	const float friction = (float) 0.9;
+	int width;
+	int height;
+	const float friction = FRICTION;
 
 	std::vector<Vertex*> vertexes;
 	std::vector<Vertex*> faces;
@@ -36,6 +41,7 @@ struct Ground
 		faces.clear();
 	}
 
+private:
 	void init()
 	{
 		vertexes.push_back(new Vertex(glm::vec3(0.0f)));
@@ -138,6 +144,7 @@ public:
 		}
 	}
 
+private:
 	void init() // Initialize vertices coord and slice faces
 	{
 		/** Compute vertex position **/
@@ -196,11 +203,10 @@ public:
 class Ball
 {
 public:
-	glm::vec3 center;
 	int radius;
+	glm::vec3 center;
 	glm::vec4 color;
-	const float friction = 0.8;
-
+	const float friction = FRICTION;
 	Sphere* sphere;
 
 	Ball(glm::vec3 center, int radius, glm::vec4 color)

@@ -7,7 +7,7 @@ const float MASS = 1.0;
 const bool ISFIXED = false;
 const glm::vec3 POSITION = glm::vec3(0);
 
-struct Vertex
+class Vertex
 {
 public:
 	glm::vec3 position;
@@ -33,7 +33,6 @@ public:
 	glm::vec3   force;
 	glm::vec3	acceleration;
 
-public:
 	Node(glm::vec3 pos = POSITION)
 	{
 		mass = MASS;
@@ -43,11 +42,26 @@ public:
 		force = glm::vec3(0);
 		acceleration = glm::vec3(0);
 	}
-	~Node(void) {}
+	~Node() {}
 
 	void addForce(glm::vec3 force)
 	{
 		this->force += force;
+	}
+
+	void setPosition(glm::vec3 pos)
+	{
+		position = pos;
+	}
+
+	void setTextureCoord(glm::vec2 texCoord)
+	{
+		this->texCoord = texCoord;
+	}
+
+	void setNormal(glm::vec3 normal)
+	{
+		this->normal = normal;
 	}
 
 	/*

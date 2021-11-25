@@ -18,13 +18,11 @@
 #include "clothsimulation/MouseRay.h"
 #include "clothsimulation/ClothPicker.h"
 
-int scr_width = 800;
-int scr_height = 800;
-
 #define TIME_STEP 0.01
 
-/** Executing Flow **/
-int running = 1;
+int scr_width = 800;
+int scr_height = 800;
+extern const int iterationFreq = 7;
 
 /** Functions **/
 void processInput(GLFWwindow* window);
@@ -62,7 +60,7 @@ Ground ground(groundPos, groundSize, groundColor);
 // Window and world
 GLFWwindow* window;
 glm::vec3 bgColor = glm::vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
-glm::vec3 gravity(0.0, -9.8 / Cloth::iterationFreq, 0.0);
+extern glm::vec3 gravity(0.0, -9.8 / iterationFreq, 0.0);
 
 // timing
 float deltaTime = 0.0f;
@@ -118,10 +116,8 @@ int main(int argc, const char* argv[])
 	/** Generate Object Renderers, Add Initial Force to Cloths **/
 	vector<ClothRender> clothRenders;
 	vector<ClothSpringRender> clothSpringRenders;
-	glm::vec3 initForce(10.0, 40.0, 20.0);
 	for (Cloth* cloth : cloths)
 	{
-		cloth->addForce(initForce);
 		clothRenders.push_back(ClothRender(cloth));
 		clothSpringRenders.push_back(ClothSpringRender(cloth));
 	}
@@ -137,7 +133,6 @@ int main(int argc, const char* argv[])
 	// Model ourModel("resources/Models/nanosuit/nanosuit.obj");
 
 	/** Redering loop **/
-	running = 1;
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -157,15 +152,7 @@ int main(int argc, const char* argv[])
 		for (size_t i = 0; i < cloths.size(); i += 1)
 		{
 			Cloth* cloth = cloths[i];
-			if (running) {
-				for (int i = 0; i < Cloth::iterationFreq; i++)
-				{
-					cloth->computeForce(TIME_STEP, gravity);
-					cloth->integrate(TIME_STEP);
-					cloth->collisionResponse(&ground);
-				}
-				cloth->computeNormal();
-			}
+			cloth->update((double)TIME_STEP, &ground);
 
 			/** Display **/
 			if (Cloth::drawMode == DRAW_LINES)
@@ -226,21 +213,51 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		selectedCloth = clothPicker.pickCloth(cloths, ray);
 	}
 	// Sewing
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running)
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 	{
 		std::cout << "Start Sewing\n";
 		Cloth* cloth1 = cloths[0];
 		Cloth* cloth2 = cloths[1];
-		double deltaZ = std::abs(cloth1->clothPos.z - cloth2->clothPos.z) / 2;
-		std::cout << "deltaZ " << deltaZ << std::endl;
-		for (int i = 0; i < cloth1->nodesPerRow; i++) {
-			Node* n1 = cloth1->getNode(i, 0);
-			Node* n2 = cloth2->getNode(i, 0);
-			// std::cout << n1->position.x << " " << n1->position.y << " " << n1->position.z << std::endl;
-			// std::cout << n2->position.x << " " << n2->position.y << " " << n2->position.z << std::endl;
-			n1->position.z -= deltaZ;
-			n2->position.z += deltaZ;
-		}
+
+		glm::vec3 delta = glm::abs(cloth1->GetClothPosition() - cloth2->GetClothPosition()) / (float) 2;
+
+		// 这种方法的缝合不是动态的,
+		// 修改了 clothPos, 就会修改 model 矩阵, 下一个渲染循环, 衣片会瞬间移动
+		// cloth1->clothPos -= glm::vec3(0, 0, deltaZ);
+		// cloth2->clothPos += glm::vec3(0, 0, deltaZ);
+
+		// 需要修改缝合边的局部坐标
+		// n->position 是局部坐标
+		// for (int i = 0; i < cloth1->nodesPerRow; i++) {
+		// 	Node* n1 = cloth1->getNode(i, 0);
+		// 	Node* n2 = cloth2->getNode(i, 0);
+		// 
+		// 	if (cloth1->getWorldPos(n1).x > cloth2->getWorldPos(n2).x) {
+		// 		n1->position.x -= delta.x;
+		// 		n2->position.x += delta.x;
+		// 	} else {
+		// 		n1->position.x += delta.x;
+		// 		n2->position.x -= delta.x;
+		// 	}
+		// 
+		// 	if (cloth1->getWorldPos(n1).y > cloth2->getWorldPos(n2).y) {
+		// 		n1->position.y -= delta.y;
+		// 		n2->position.y += delta.y;
+		// 	}
+		// 	else {
+		// 		n1->position.y += delta.y;
+		// 		n2->position.y -= delta.y;
+		// 	}
+		// 
+		// 	if (cloth1->getWorldPos(n1).z > cloth2->getWorldPos(n2).z) {
+		// 		n1->position.z -= delta.z;
+		// 		n2->position.z += delta.z;
+		// 	}
+		// 	else {
+		// 		n1->position.z += delta.z;
+		// 		n2->position.z -= delta.z;
+		// 	}
+		// }
 	}
 }
 
@@ -294,16 +311,6 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
-	}
-
-	/** Pause simulation **/
-	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-		running = 0;
-		printf("Paused.\n");
-	}
-	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-		running = 1;
-		printf("Running..\n");
 	}
 
 	/** Move Cloth **/
