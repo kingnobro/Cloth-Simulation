@@ -788,6 +788,12 @@
     <ClInclude Include="include\clothsimulation\Display.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
+    <ClInclude Include="include\clothsimulation\MouseRay.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\ClothPicker.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Models\nanosuit\nanosuit.blend">

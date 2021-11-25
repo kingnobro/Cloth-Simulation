@@ -15,9 +15,11 @@
 #include "clothsimulation/Rigid.h"
 #include "clothsimulation/Display.h"
 #include "clothsimulation/Model.h"
+#include "clothsimulation/MouseRay.h"
+#include "clothsimulation/ClothPicker.h"
 
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 800
+int scr_width = 800;
+int scr_height = 800;
 
 #define TIME_STEP 0.01
 
@@ -67,9 +69,13 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // initial mouse position
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+float lastX = scr_width / 2.0f;
+float lastY = scr_height / 2.0f;
 bool firstMouse = true;
+
+// 3D raycast picker
+MouseRay mouseRay = MouseRay(&camera);
+ClothPicker clothPicker = ClothPicker(&camera);
 
 int main(int argc, const char* argv[])
 {
@@ -87,7 +93,7 @@ int main(int argc, const char* argv[])
 #endif
 
 	/** Create a GLFW window **/
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Cloth Simulation", NULL, NULL);
+	window = glfwCreateWindow(scr_width, scr_height, "Cloth Simulation", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window." << std::endl;
 		glfwTerminate();
@@ -203,88 +209,23 @@ int main(int argc, const char* argv[])
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	camera.SetAspect(width, height);
+	scr_width = width;
+	scr_height = height;
 	glViewport(0, 0, width, height);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	// 3D Picking: https://antongerdelan.net/opengl/raycasting.html
+	// 3D Picking
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
-		// 衣服上一点经过 MVP 变换后的坐标，为什么在裁剪空间中的坐标范围不是 [-1,1]?
-		// glm::vec3 clothPos = glm::vec3(-3, 7.5, -2);
-		// glm::mat4 model = glm::mat4(1.0f);
-		// model = glm::translate(model, glm::vec3(clothPos.x, clothPos.y, clothPos.z));
-		// glm::vec4 pos = camera.GetProjectionMatrix() * camera.GetViewMatrix() * model * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		// std::cout << "cloth_x: " << pos.x / pos.w << " cloth_y: " << pos.y / pos.w << " cloth_z: " << pos.z / pos.w << std::endl;
-		// 2D Viewport Coordinates
-		// get the mouse x,y pixel coordinates
-		// range [0:width, height:0]
 		double mouse_x, mouse_y;
-		GLfloat mouse_z;
-
 		glfwGetCursorPos(window, &mouse_x, &mouse_y);
-		glReadPixels((int)mouse_x, (int)SCR_HEIGHT - 1 - (int)mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &mouse_z);
-		std::cout << "mouse_x: " << mouse_x << " mouse_y: " << mouse_y << " mouse_z: " << mouse_z << std::endl;
 
-		// 3D Normalised Device Coordinates
-		// scale the range of x,y and reverse the direction of y
-		// we don't actually need to specify a z yet, but I put one in (for the craic)
-		// range [-1:1, -1:1, -1:1]
-		// TODO: SCR_WIDTH 要随窗口大小改变而改变
-		float nds_x = (2.0f * mouse_x) / (double)SCR_WIDTH - 1.0f;
-		float nds_y = 1.0f - (2.0f * mouse_y) / (double)SCR_HEIGHT;
-		float nds_z = 1.0;
-		glm::vec3 ray_nds = glm::vec3(nds_x, nds_y, nds_z);
-		std::cout << "nds_x: " << nds_x << " nds_y: " << nds_y << " nds_z: " << nds_z << std::endl;
-
-		// 4D Homogeneous Clip Coordinates
-		// We want our ray's z to point forwards - this is usually the negative z direction in OpenGL style
-		// range [-1:1, -1:1, -1:1, -1:1]
-		// glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, -1.0, 1.0);
-		glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, -1.0, 1.0);
-		std::cout << "clip_x: " << ray_clip.x << " clip_y: " << ray_clip.y << " clip_z: " << ray_clip.z << std::endl;
-
-		// 4D Eye(Camera) Coordinates
-		// Normally, to get into clip space from eye space we multiply the vector by a projection matrix
-		// We can go backwards by multiplying by the inverse of this matrix
-		glm::vec4 ray_eye = glm::inverse(camera.GetProjectionMatrix()) * ray_clip;
-		// Now, we only needed to un-project the x,y part, so let's manually set the z,w part to mean "forwards, and not a point"
-		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-		std::cout << "eye_x: " << ray_eye.x << " eye_y: " << ray_eye.y << " eye_z: " << ray_eye.z << std::endl;
-
-		// 4D World Coordinates
-		glm::vec3 ray_world = glm::inverse(camera.GetViewMatrix()) * ray_eye;
-		ray_world = glm::normalize(ray_world);
-		std::cout << "world_x: " << ray_world.x << " world_y: " << ray_world.y << " world_z: " << ray_world.z << std::endl;
-
-
-		// vector from camera to ray_world
-		// glm::vec3 ray = ray_world - glm::normalize(camera.Position);
-		// glm::vec3 ray = camera.Front;
-		glm::vec3 ray = ray_world;
-		glm::vec3 pointLeftUpper = glm::vec3(cloths[0]->clothPos.x, cloths[0]->clothPos.y, cloths[0]->clothPos.z);
-		glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloths[0]->width, 0, 0);
-		glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloths[0]->width, -cloths[0]->height, 0);
-		std::cout << "x1: " << pointLeftUpper.x << " y1: " << pointLeftUpper.y << " z1: " << pointLeftUpper.z << std::endl;
-		std::cout << "x2: " << pointRightUpper.x << " y2: " << pointRightUpper.y << " z2: " << pointRightUpper.z << std::endl;
-		std::cout << "x3: " << pointRightBottom.x << " y3: " << pointRightBottom.y << " z3: " << pointRightBottom.z << std::endl;
-		// 平面的法向量, 和平面的交点是 pointLeftUpper
-		glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);
-		// std::cout << "normal x: " << normal.x << " y: " << normal.y << " z: " << normal.z << std::endl;
-		std::cout << "camera x: " << camera.Position.x << " camera y: " << camera.Position.y << " camera z: " << camera.Position.z << std::endl;
-		std::cout << "front x: " << camera.Front.x << " front y: " << camera.Front.y << " front z: " << camera.Front.z << std::endl;
-		double t = glm::dot(pointLeftUpper - camera.Position, normal) / glm::dot(ray, normal);
-		glm::vec3 intersect = camera.Position + glm::vec3(ray.x * t, ray.y * t, ray.z * t);
-		std::cout << "t: " << t << std::endl;
-		std::cout << "intersect x: " << intersect.x << " y: " << intersect.y << " z: " << intersect.z << std::endl;
-		if (intersect.x >= pointLeftUpper.x && intersect.x <= pointRightUpper.x && intersect.y <= pointLeftUpper.y && intersect.y >= pointRightBottom.y)
-			std::cout << "hit!\n\n";
-		else
-			std::cout << "miss!\n\n";
-
+		glm::vec3 ray = mouseRay.calculateMouseRay(mouse_x, mouse_y, (int)scr_width, (int)scr_height);
+		selectedCloth = clothPicker.pickCloth(cloths, ray);
 	}
-	// Start Sewing
+	// Sewing
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && running)
 	{
 		std::cout << "Start Sewing\n";
@@ -365,44 +306,19 @@ void processInput(GLFWwindow* window)
 		printf("Running..\n");
 	}
 
-	/** Select Cloths **/
-	// TODO: 不能用数字选衣服的方法。如果衣服数量很多怎么办？
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-		for (Cloth* cloth : cloths)
-		{
-			if (cloth->clothID == 1)
-			{
-				selectedCloth = cloth;
-				std::cout << "select cloth 1\n";
-				break;
-			}
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-		for (Cloth* cloth : cloths)
-		{
-			if (cloth->clothID == 2)
-			{
-				selectedCloth = cloth;
-				std::cout << "select cloth 2\n";
-				break;
-			}
-		}
-	}
-
 	/** Move Cloth **/
 	if (selectedCloth != nullptr)
 	{
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			selectedCloth->move(Vec3(0.0f, 0.2f, 0.0f));
 		}
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 			selectedCloth->move(Vec3(0.0f, -0.2f, 0.0f));
 		}
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 			selectedCloth->move(Vec3(-0.2f, 0.0f, 0.0f));
 		}
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 			selectedCloth->move(Vec3(0.2f, 0.0f, 0.0f));
 		}
 	}

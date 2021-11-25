@@ -249,9 +249,6 @@ public:
 
 	void move(Vec3 offset)
 	{
-		for (Node* n : nodes)
-		{
-			n->position += offset;
-		}
+		clothPos += offset;
 	}
 };
