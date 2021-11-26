@@ -7,6 +7,9 @@ const float MASS = 1.0;
 const bool ISFIXED = false;
 const glm::vec3 POSITION = glm::vec3(0);
 
+/*
+ * 用于表示面(face)上的顶点, 需要同时有位置和法线向量 
+ */
 class Vertex
 {
 public:
@@ -24,8 +27,8 @@ public:
 class Node
 {
 public:
-	float  mass;				// In this project it will always be 1
-	bool    isFixed;			// Use to pin the cloth
+	float		mass;
+	bool		isFixed;		// Use to pin the cloth
 	glm::vec2	texCoord;       // Texture coord
 	glm::vec3	normal;         // For smoothly shading
 	glm::vec3	position;
@@ -44,28 +47,14 @@ public:
 	}
 	~Node() {}
 
-	void addForce(glm::vec3 force)
+	void addForce(const glm::vec3 &force)
 	{
 		this->force += force;
 	}
 
-	void setPosition(glm::vec3 pos)
-	{
-		position = pos;
-	}
-
-	void setTextureCoord(glm::vec2 texCoord)
-	{
-		this->texCoord = texCoord;
-	}
-
-	void setNormal(glm::vec3 normal)
-	{
-		this->normal = normal;
-	}
-
 	/*
-	 * Only non-fixed points get integrated
+	 * calculate movement of point
+	 * only non-fixed points get integrated
 	 */
 	void integrate(float timeStep)
 	{

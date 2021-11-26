@@ -228,6 +228,7 @@
     <ClInclude Include="include\clothsimulation\Camera.h" />
     <ClInclude Include="include\clothsimulation\Cloth.h" />
     <ClInclude Include="include\clothsimulation\ClothPicker.h" />
+    <ClInclude Include="include\clothsimulation\ClothSewMachine.h" />
     <ClInclude Include="include\clothsimulation\Display.h" />
     <ClInclude Include="include\clothsimulation\Mesh.h" />
     <ClInclude Include="include\clothsimulation\Model.h" />

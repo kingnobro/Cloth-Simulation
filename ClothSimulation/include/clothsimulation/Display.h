@@ -363,7 +363,7 @@ struct ClothSpringRender
 	{
 		cloth = c;
 		defaultColor = glm::vec4(1.0f);
-		render.init(cloth->springs, defaultColor, cloth->GetClothPosition());
+		render.init(cloth->springs, defaultColor, cloth->clothPos);
 	}
 
 	void flush() { render.flush(); }

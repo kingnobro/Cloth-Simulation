@@ -26,6 +26,16 @@ class Cloth
 public:
 	static Draw_Mode drawMode;
 
+	const int nodesDensity = NODE_DENSITY;
+	const float structuralCoef = STRUCTURAL_COEF;
+	const float shearCoef = SHEAR_COEF;
+	const float bendingCoef = BENDING_COEF;
+	int width;
+	int height;
+	int nodesPerRow;
+	int nodesPerCol;
+	glm::vec3 clothPos;
+
 	std::vector<Node*> nodes;
 	std::vector<Node*> faces;
 	std::vector<Spring*> springs;
@@ -36,6 +46,12 @@ public:
 		width = size.x;
 		height = size.y;
 		clothID = ID;
+		sewed = false;
+
+		// 避免一开始和球穿模
+		glm::vec3 initForce(10.0, 40.0, 20.0);
+		addForce(initForce);
+
 		init();
 	}
 
@@ -62,13 +78,13 @@ public:
 	/*
 	 * update force, movement, collision and normals in every render loop
 	 */
-	void update(double timeStep, Ground *ground)
+	void update(double timeStep, Ground *ground, Ball *ball)
 	{
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
 			integrate(timeStep);
-			collisionResponse(ground);
+			collisionResponse(ground, ball);
 		}
 		computeNormal();
 	}
@@ -83,7 +99,7 @@ public:
 		n->position = pos - clothPos;
 	}
 
-	void move(glm::vec3 offset)
+	void moveCloth(glm::vec3 offset)
 	{
 		clothPos += offset;
 	}
@@ -95,24 +111,17 @@ public:
 		return model;
 	}
 
-	glm::vec3 GetClothPosition()
-	{
-		return clothPos;
-	}
-
-	int GetWidth()
-	{
-		return width;
-	}
-
-	int GetHeight()
-	{
-		return height;
-	}
-
 	int GetClothID()
 	{
 		return clothID;
+	}
+
+	Node* getNode(int x, int y)
+	{
+		if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
+			return nodes[y * nodesPerRow + x];
+		}
+		return nullptr;
 	}
 
 private:
@@ -133,13 +142,14 @@ private:
 				/** Create node by position **/
 				float pos_x = (float)j / nodesDensity;
 				float pos_y = -((float)i / nodesDensity);
+				float pos_z = 0;
 				float tex_x = (float)j / (nodesPerRow - 1);
 				float tex_y = (float)i / (1 - nodesPerCol);
-				Node* node = new Node(glm::vec3(pos_x, pos_y, 0));
-				node->setTextureCoord(glm::vec2(tex_x, tex_y));
+				Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
+				node->texCoord = glm::vec2(tex_x, tex_y);
 				nodes.push_back(node);
 
-				printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, node->position.x, node->position.y, node->position.z, node->texCoord.x, node->texCoord.y);
+				printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, pos_x, pos_y, pos_z, tex_x, tex_y);
 			}
 			std::cout << std::endl;
 		}
@@ -211,14 +221,6 @@ private:
 		}
 	}
 
-	Node* getNode(int x, int y)
-	{
-		if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
-			return nodes[y * nodesPerRow + x];
-		}
-		return nullptr;
-	}
-
 	glm::vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
 	{
 		return glm::cross(n2->position - n1->position, n3->position - n1->position);
@@ -229,7 +231,7 @@ private:
 		/** Reset nodes' normal **/
 		glm::vec3 normal(0.0f);
 		for (int i = 0; i < nodes.size(); i++) {
-			nodes[i]->setNormal(normal);
+			nodes[i]->normal = normal;
 		}
 		/** Compute normal of each face **/
 		for (int i = 0; i < faces.size() / 3; i++) { // 3 nodes in each face
@@ -246,7 +248,7 @@ private:
 		}
 
 		for (int i = 0; i < nodes.size(); i++) {
-			nodes[i]->setNormal(glm::normalize(nodes[i]->normal));
+			nodes[i]->normal = glm::normalize(nodes[i]->normal);
 		}
 	}
 
@@ -258,7 +260,7 @@ private:
 		}
 	}
 
-	void collisionResponse(Ground* ground)
+	void collisionResponse(Ground* ground, Ball *ball)
 	{
 		for (int i = 0; i < nodes.size(); i++)
 		{
@@ -269,11 +271,12 @@ private:
 			}
 
 			/** Ball collision **/
-			// Vec3 distVec = getWorldPos(nodes[i]) - ball->center;
-			// double distLen = distVec.length();
-			// double safeDist = ball->radius * 1.05;
+			// glm::vec3 distVec = getWorldPos(nodes[i]) - ball->center;
+			// float distLen = glm::length(distVec);
+			// float safeDist = ball->radius * 1.05;
 			// if (distLen < safeDist) {
-			// 	distVec.normalize();
+			// 	distVec = glm::normalize(distVec);
+			// 	// 如果点一开始就在球里 容易出问题 所以要有 initForce
 			// 	setWorldPos(nodes[i], distVec * safeDist + ball->center);
 			// 	nodes[i]->velocity = nodes[i]->velocity * ball->friction;
 			// }
@@ -289,15 +292,8 @@ private:
 		}
 	}
 
-	const int nodesDensity = NODE_DENSITY;
-	const float structuralCoef = STRUCTURAL_COEF;
-	const float shearCoef = SHEAR_COEF;
-	const float bendingCoef = BENDING_COEF;
-
-	glm::vec3 clothPos;
-	int width, height;
-	int nodesPerRow, nodesPerCol;
 	int clothID;
+	bool sewed;
 
 	std::vector<glm::vec2> pins;
 };

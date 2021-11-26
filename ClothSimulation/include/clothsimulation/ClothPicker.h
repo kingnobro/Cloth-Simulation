@@ -17,15 +17,15 @@ public:
 	 * check whether ray intersect with cloths
 	 * return the cloth with the greatest z
 	 */
-	Cloth* pickCloth(vector<Cloth*> cloths, glm::vec3 ray)
+	Cloth* pickCloth(const vector<Cloth*> &cloths, const glm::vec3 &ray)
 	{
 		// points on the cloth
 		Cloth* selectedCloth = nullptr;
 		for (Cloth* cloth : cloths)
 		{
-			glm::vec3 pointLeftUpper = cloth->GetClothPosition();
-			glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->GetWidth(), 0, 0);
-			glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->GetWidth(), -cloth->GetHeight(), 0);
+			glm::vec3 pointLeftUpper = cloth->clothPos;
+			glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->width, 0, 0);
+			glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->width, -cloth->height, 0);
 
 			// normal vector of the cloth
 			glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);

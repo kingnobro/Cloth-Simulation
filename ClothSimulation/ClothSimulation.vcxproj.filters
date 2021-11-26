@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="资源文件\resources">
+      <UniqueIdentifier>{85dc7ded-7e92-4262-93f2-097a9d70220e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Models">
+      <UniqueIdentifier>{9a46c7a7-887f-4b5e-856d-f1c047e527c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Models\nanosuit">
+      <UniqueIdentifier>{405f046d-4087-422d-8769-635f3ae3a9d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Shaders">
+      <UniqueIdentifier>{7cd96188-7d7e-40c1-b2eb-5ca6c833eea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\resources\Textures">
+      <UniqueIdentifier>{2d5c1dcf-6e52-41be-9ffa-f4180a6077fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\lib">
+      <UniqueIdentifier>{97bc02fa-6ec8-4bb1-a7de-00f02cf0027e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="头文件\include">
       <UniqueIdentifier>{92ada554-c269-46ea-86a1-aef645ec8199}</UniqueIdentifier>
     </Filter>
@@ -51,24 +69,6 @@
     </Filter>
     <Filter Include="头文件\include\clothsimulation">
       <UniqueIdentifier>{2f5f2dde-27c7-4a19-a203-99154b7e5311}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\resources">
-      <UniqueIdentifier>{85dc7ded-7e92-4262-93f2-097a9d70220e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\resources\Models">
-      <UniqueIdentifier>{9a46c7a7-887f-4b5e-856d-f1c047e527c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\resources\Models\nanosuit">
-      <UniqueIdentifier>{405f046d-4087-422d-8769-635f3ae3a9d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\resources\Shaders">
-      <UniqueIdentifier>{7cd96188-7d7e-40c1-b2eb-5ca6c833eea0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\resources\Textures">
-      <UniqueIdentifier>{2d5c1dcf-6e52-41be-9ffa-f4180a6077fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\lib">
-      <UniqueIdentifier>{97bc02fa-6ec8-4bb1-a7de-00f02cf0027e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -789,6 +789,9 @@
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
     <ClInclude Include="include\clothsimulation\ClothPicker.h">
+      <Filter>头文件\include\clothsimulation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\ClothSewMachine.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
   </ItemGroup>

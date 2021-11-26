@@ -19,19 +19,20 @@ public:
 		node2 = n2;
 		hookCoef = hookCoefficient;
 		dampCoef = 5.0;
-		restLength = glm::length(node2->position - node1->position);
+		restLength = glm::distance(node1->position, node2->position);
 	}
 
 	/*
-	 * 计算弹簧的弹力, 并把弹力施加到顶点上
+	 * 计算弹簧的弹力, 并把弹力施加到质点上
+	 * 弹簧两个质点的受力 大小相同, 方向相反
 	 */
 	void computeInternalForce(float timeStep)
 	{
 		float currentLength = glm::distance(node1->position, node2->position);
-		glm::vec3 fDir1 = (node2->position - node1->position) / currentLength;
-		glm::vec3 diffV1 = node2->velocity - node1->velocity;
-		glm::vec3 f1 = fDir1 * ((currentLength - restLength) * hookCoef + glm::dot(diffV1, fDir1) * dampCoef);
-		node1->addForce(f1);
-		node2->addForce(-f1);
+		glm::vec3 forceDirection = (node2->position - node1->position) / currentLength;
+		glm::vec3 velocityDifference = node2->velocity - node1->velocity;
+		glm::vec3 force = forceDirection * ((currentLength - restLength) * hookCoef + glm::dot(velocityDifference, forceDirection) * dampCoef);
+		node1->addForce(force);
+		node2->addForce(-force);
 	}
 };

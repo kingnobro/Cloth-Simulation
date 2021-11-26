@@ -17,6 +17,7 @@
 #include "clothsimulation/Model.h"
 #include "clothsimulation/MouseRay.h"
 #include "clothsimulation/ClothPicker.h"
+#include "clothsimulation/ClothSewMachine.h"
 
 #define TIME_STEP 0.01
 
@@ -32,14 +33,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
-/** Global **/
 // Wind
 int windForceScale = 15;
 
 // Cloths
 int clothNumber = 0;
 glm::vec2 clothSize(6, 6);
-//			 Position           Size       clothID
+//			 Position                Size       clothID
 Cloth cloth1(glm::vec3(-3, 7.5, -2), clothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-3, 7.5, -4), clothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
@@ -52,10 +52,10 @@ glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
 Ground ground(groundPos, groundSize, groundColor);
 
 // Ball
-// Vec3 ballPos(0, 3, -2);
-// int ballRadius = 2;
-// glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
-// Ball ball(ballPos, ballRadius, ballColor);
+glm::vec3 ballPos(0, 3, -2);
+int ballRadius = 1.5;
+glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
+Ball ball(ballPos, ballRadius, ballColor);
 
 // Window and world
 GLFWwindow* window;
@@ -74,6 +74,8 @@ bool firstMouse = true;
 // 3D raycast picker
 MouseRay mouseRay = MouseRay(&camera);
 ClothPicker clothPicker = ClothPicker(&camera);
+
+
 
 int main(int argc, const char* argv[])
 {
@@ -113,7 +115,7 @@ int main(int argc, const char* argv[])
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_position_callback);
 
-	/** Generate Object Renderers, Add Initial Force to Cloths **/
+	/** Generate Object Renderers **/
 	vector<ClothRender> clothRenders;
 	vector<ClothSpringRender> clothSpringRenders;
 	for (Cloth* cloth : cloths)
@@ -121,14 +123,13 @@ int main(int argc, const char* argv[])
 		clothRenders.push_back(ClothRender(cloth));
 		clothSpringRenders.push_back(ClothSpringRender(cloth));
 	}
-
 	GroundRender groundRender(&ground);
-	// BallRender ballRender(&ball);
+	BallRender ballRender(&ball);
 
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(1);
 
-	// load model shader and .obj
+	/** load model **/
 	// Shader ourShader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
 	// Model ourModel("resources/Models/nanosuit/nanosuit.obj");
 
@@ -136,7 +137,6 @@ int main(int argc, const char* argv[])
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
-		// --------------------
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -152,7 +152,7 @@ int main(int argc, const char* argv[])
 		for (size_t i = 0; i < cloths.size(); i += 1)
 		{
 			Cloth* cloth = cloths[i];
-			cloth->update((double)TIME_STEP, &ground);
+			cloth->update((double)TIME_STEP, &ground, &ball);
 
 			/** Display **/
 			if (Cloth::drawMode == DRAW_LINES)
@@ -178,7 +178,7 @@ int main(int argc, const char* argv[])
 		// ourShader.setMat4("view", view);
 		// // render the loaded model
 		// glm::mat4 model = glm::mat4(1.0f);
-		// model = glm::translate(model, glm::vec3(0.0f, 2.0f, -2.0f)); // translate it down so it's at the center of the scene
+		// model = glm::translate(model, glm::vec3(0.0f, 2.0f, -2.0f));   // translate it down so it's at the center of the scene
 		// model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	      // it's a bit too big for our scene, so scale it down
 		// ourShader.setMat4("model", model);
 		// ourModel.Draw(ourShader);
@@ -195,9 +195,9 @@ int main(int argc, const char* argv[])
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	camera.SetAspect(width, height);
 	scr_width = width;
 	scr_height = height;
+	camera.SetAspect(scr_width, scr_height);
 	glViewport(0, 0, width, height);
 }
 
@@ -216,48 +216,11 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 	{
 		std::cout << "Start Sewing\n";
+		// TODO: sewing enabled, 选中两个衣片进行缝合
 		Cloth* cloth1 = cloths[0];
 		Cloth* cloth2 = cloths[1];
-
-		glm::vec3 delta = glm::abs(cloth1->GetClothPosition() - cloth2->GetClothPosition()) / (float) 2;
-
-		// 这种方法的缝合不是动态的,
-		// 修改了 clothPos, 就会修改 model 矩阵, 下一个渲染循环, 衣片会瞬间移动
-		// cloth1->clothPos -= glm::vec3(0, 0, deltaZ);
-		// cloth2->clothPos += glm::vec3(0, 0, deltaZ);
-
-		// 需要修改缝合边的局部坐标
-		// n->position 是局部坐标
-		// for (int i = 0; i < cloth1->nodesPerRow; i++) {
-		// 	Node* n1 = cloth1->getNode(i, 0);
-		// 	Node* n2 = cloth2->getNode(i, 0);
-		// 
-		// 	if (cloth1->getWorldPos(n1).x > cloth2->getWorldPos(n2).x) {
-		// 		n1->position.x -= delta.x;
-		// 		n2->position.x += delta.x;
-		// 	} else {
-		// 		n1->position.x += delta.x;
-		// 		n2->position.x -= delta.x;
-		// 	}
-		// 
-		// 	if (cloth1->getWorldPos(n1).y > cloth2->getWorldPos(n2).y) {
-		// 		n1->position.y -= delta.y;
-		// 		n2->position.y += delta.y;
-		// 	}
-		// 	else {
-		// 		n1->position.y += delta.y;
-		// 		n2->position.y -= delta.y;
-		// 	}
-		// 
-		// 	if (cloth1->getWorldPos(n1).z > cloth2->getWorldPos(n2).z) {
-		// 		n1->position.z -= delta.z;
-		// 		n2->position.z += delta.z;
-		// 	}
-		// 	else {
-		// 		n1->position.z += delta.z;
-		// 		n2->position.z -= delta.z;
-		// 	}
-		// }
+		ClothSewMachine sewMachine = ClothSewMachine(cloth1, cloth2);
+		sewMachine.SewCloths();
 	}
 }
 
@@ -317,16 +280,16 @@ void processInput(GLFWwindow* window)
 	if (selectedCloth != nullptr)
 	{
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			selectedCloth->move(glm::vec3(0.0f, 0.2f, 0.0f));
+			selectedCloth->moveCloth(glm::vec3(0.0f, 0.2f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			selectedCloth->move(glm::vec3(0.0f, -0.2f, 0.0f));
+			selectedCloth->moveCloth(glm::vec3(0.0f, -0.2f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			selectedCloth->move(glm::vec3(-0.2f, 0.0f, 0.0f));
+			selectedCloth->moveCloth(glm::vec3(-0.2f, 0.0f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			selectedCloth->move(glm::vec3(0.2f, 0.0f, 0.0f));
+			selectedCloth->moveCloth(glm::vec3(0.2f, 0.0f, 0.0f));
 		}
 	}
 }
