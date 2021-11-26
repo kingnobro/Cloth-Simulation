@@ -17,6 +17,8 @@ public:
 
 	glm::vec3* vertices;
 	unsigned int vertexNumber;
+	bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
+						// 多次删除会报错, 所以用一个 bool 变量记录是否处于 reset 状态
 
 	ClothSewMachine(Camera* cam)
 	{
@@ -25,19 +27,23 @@ public:
 		camera = cam;
 		vertices = nullptr;
 		vertexNumber = 0;
+		resetable = false;
 	}
 
 	~ClothSewMachine()
 	{
-		delete[] vertices;
-
-		glDeleteVertexArrays(1, &VAO);
-		glDeleteBuffers(1, &VBO);
-		glDeleteProgram(shader.ID);
+		if (resetable)
+		{
+			delete[] vertices;
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
+			glDeleteProgram(shader.ID);
+		}
 	}
 
 	void initialization()
 	{
+		resetable = true;
 		// todo: 任意边缝合时 vertexNumber 要改动
 		vertexNumber = cloth1->nodesPerRow * 2;
 
@@ -158,13 +164,32 @@ public:
 	// todo: 实现更复杂的交互逻辑
 	void setCandidateCloth(Cloth* cloth)
 	{
-		if (cloth1 == nullptr) {
+		if (cloth1 == nullptr)
+		{
 			cloth1 = cloth;
 		}
-		else if (cloth1 != cloth && cloth == nullptr)
+		else if (cloth1 != cloth && cloth2 == nullptr)
 		{
 			cloth2 = cloth;
 			initialization();
 		}
+	}
+
+	void reset()
+	{
+		// 重置衣片的局部坐标
+		if (cloth1) cloth1->reset();
+		if (cloth2) cloth2->reset();
+		cloth1 = cloth2 = nullptr;
+
+		// VAO VBO 只能删除一次
+		if (resetable)
+		{
+			delete[] vertices;
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
+			glDeleteProgram(shader.ID);
+		}
+		resetable = false;
 	}
 };

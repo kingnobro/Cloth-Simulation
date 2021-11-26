@@ -124,6 +124,19 @@ public:
 		return nullptr;
 	}
 
+	void reset()
+	{
+		/** 重置局部坐标 **/
+		for (int i = 0; i < nodesPerRow; i++) {
+			for (int j = 0; j < nodesPerCol; j++) {
+				float pos_x = (float)j / nodesDensity;
+				float pos_y = -((float)i / nodesDensity);
+				float pos_z = 0;
+				nodes[i * nodesPerRow + j]->position = glm::vec3(pos_x, pos_y, pos_z);
+			}
+		}
+	}
+
 private:
 	void init()
 	{

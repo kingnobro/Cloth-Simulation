@@ -295,6 +295,6 @@ void processInput(GLFWwindow* window)
 
 	// reset sewing status
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-		
+		sewMachine.reset();
 	}
 }
