@@ -71,12 +71,12 @@ public:
 	const int meridianNum = 24;
 	const int parallelNum = 250;
 
-	int radius;
+	float radius;
 
 	std::vector<Vertex*> vertexes;
 	std::vector<Vertex*> faces;
 
-	Sphere(int r)
+	Sphere(float r)
 	{
 		radius = r;
 		init();
@@ -203,13 +203,13 @@ private:
 class Ball
 {
 public:
-	int radius;
+	float radius;
 	glm::vec3 center;
 	glm::vec4 color;
 	const float friction = FRICTION;
 	Sphere* sphere;
 
-	Ball(glm::vec3 center, int radius, glm::vec4 color)
+	Ball(glm::vec3 center, float radius, glm::vec4 color)
 	{
 		this->center = center;
 		this->radius = radius;

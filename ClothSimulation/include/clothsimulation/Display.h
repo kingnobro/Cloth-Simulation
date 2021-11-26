@@ -10,7 +10,7 @@
 
 glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
 glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
-Camera camera(glm::vec3(0.0f, 4.0f, 12.0f));
+Camera camera(glm::vec3(0.0f, 5.5f, 15.0f));
 
 Draw_Mode Cloth::drawMode = DRAW_FACES;
 

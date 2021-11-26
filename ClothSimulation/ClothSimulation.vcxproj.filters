@@ -1189,6 +1189,12 @@
     <None Include="resources\Shaders\ModelFS.glsl">
       <Filter>资源文件\resources\Shaders</Filter>
     </None>
+    <None Include="resources\Shaders\LineFS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\LineVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Models\nanosuit\hand_showroom_spec.png">

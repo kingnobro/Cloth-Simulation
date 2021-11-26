@@ -512,6 +512,8 @@
     <None Include="Models\nanosuit\nanosuit.mtl" />
     <None Include="resources\Shaders\ClothFS.glsl" />
     <None Include="resources\Shaders\ClothVS.glsl" />
+    <None Include="resources\Shaders\LineFS.glsl" />
+    <None Include="resources\Shaders\LineVS.glsl" />
     <None Include="resources\Shaders\ModelFS.glsl" />
     <None Include="resources\Shaders\ModelVS.glsl" />
     <None Include="resources\Shaders\RigidFS.glsl" />

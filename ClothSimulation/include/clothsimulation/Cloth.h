@@ -10,9 +10,9 @@ extern glm::vec3 gravity;
 
 // Default Cloth Values
 const int NODE_DENSITY = 4;
-const float STRUCTURAL_COEF = 200.0;
-const float SHEAR_COEF = 12.5;
-const float BENDING_COEF = 80.0;
+const float STRUCTURAL_COEF = 170.0;
+const float SHEAR_COEF = 10.5;
+const float BENDING_COEF = 40.0;
 
 enum Draw_Mode
 {
@@ -271,15 +271,15 @@ private:
 			}
 
 			/** Ball collision **/
-			// glm::vec3 distVec = getWorldPos(nodes[i]) - ball->center;
-			// float distLen = glm::length(distVec);
-			// float safeDist = ball->radius * 1.05;
-			// if (distLen < safeDist) {
-			// 	distVec = glm::normalize(distVec);
-			// 	// 如果点一开始就在球里 容易出问题 所以要有 initForce
-			// 	setWorldPos(nodes[i], distVec * safeDist + ball->center);
-			// 	nodes[i]->velocity = nodes[i]->velocity * ball->friction;
-			// }
+			glm::vec3 distVec = getWorldPos(nodes[i]) - ball->center;
+			float distLen = glm::length(distVec);
+			float safeDist = ball->radius * 1.05;
+			if (distLen < safeDist) {
+				distVec = glm::normalize(distVec);
+				// 如果点一开始就在球里 容易出问题 所以要有 initForce
+				setWorldPos(nodes[i], distVec * safeDist + ball->center);
+				nodes[i]->velocity = nodes[i]->velocity * ball->friction;
+			}
 		}
 	}
 

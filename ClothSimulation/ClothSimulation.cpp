@@ -52,8 +52,8 @@ glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
 Ground ground(groundPos, groundSize, groundColor);
 
 // Ball
-glm::vec3 ballPos(0, 3, -2);
-int ballRadius = 1.5;
+glm::vec3 ballPos(0, 5.2, -3);
+float ballRadius = 1.5;
 glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 Ball ball(ballPos, ballRadius, ballColor);
 
@@ -75,7 +75,8 @@ bool firstMouse = true;
 MouseRay mouseRay = MouseRay(&camera);
 ClothPicker clothPicker = ClothPicker(&camera);
 
-
+// Sew Machine
+ClothSewMachine sewMachine = ClothSewMachine(&camera);
 
 int main(int argc, const char* argv[])
 {
@@ -164,7 +165,9 @@ int main(int argc, const char* argv[])
 				clothRenders[i].flush();
 			}
 		}
-		// ballRender.flush();
+		/** Sewing Line **/
+		sewMachine.drawSewingLine(camera.GetViewMatrix());
+		ballRender.flush();
 		groundRender.flush();
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
@@ -211,15 +214,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		glm::vec3 ray = mouseRay.calculateMouseRay(mouse_x, mouse_y, (int)scr_width, (int)scr_height);
 		selectedCloth = clothPicker.pickCloth(cloths, ray);
+
+		sewMachine.setCandidateCloth(selectedCloth);
 	}
 	// Sewing
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 	{
-		std::cout << "Start Sewing\n";
-		// TODO: sewing enabled, 选中两个衣片进行缝合
-		Cloth* cloth1 = cloths[0];
-		Cloth* cloth2 = cloths[1];
-		ClothSewMachine sewMachine = ClothSewMachine(cloth1, cloth2);
 		sewMachine.SewCloths();
 	}
 }
@@ -291,5 +291,10 @@ void processInput(GLFWwindow* window)
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 			selectedCloth->moveCloth(glm::vec3(0.2f, 0.0f, 0.0f));
 		}
+	}
+
+	// reset sewing status
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		
 	}
 }
