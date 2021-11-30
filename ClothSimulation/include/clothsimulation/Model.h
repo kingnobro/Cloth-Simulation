@@ -8,6 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <omp.h>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -123,14 +124,14 @@ private:
 			// place a collision ball at each point
 			// use map to reduce redundant balls
 			// too many balls will degrade efficiency
-			// if (i % 30 == 0) {
-			// 	if (!occur.count(vector))
-			// 	{
-			// 		collisionBall.push_back(Ball(vector, 2));
-			// 		occur[vector] = true;
-			// 		// std::cout << "ball size: " << collisionBall.size() << " " << vector.x << " " << vector.y << " " << vector.z << std::endl;
-			// 	}
-			// }
+			if (i % 25 == 0) {
+				if (!occur.count(vector))
+				{
+					collisionBall.push_back(Ball(vector, 2));
+					occur[vector] = true;
+					// std::cout << "ball size: " << collisionBall.size() << " " << vector.x << " " << vector.y << " " << vector.z << std::endl;
+				}
+			}
 
 			// normals
 			if (mesh->HasNormals())

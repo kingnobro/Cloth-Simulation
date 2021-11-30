@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <vector>
+#include <omp.h>
 
 #include "Spring.h"
 #include "Rigid.h"
@@ -83,9 +84,9 @@ public:
 	{
 		// for (int i = 0; i < iterationFreq; i++)
 		// {
-		computeForce(timeStep, gravity);
-		integrate(timeStep);
-		collisionResponse(ourModel);
+			computeForce(timeStep, gravity);
+			integrate(timeStep);
+			collisionResponse(ourModel);
 		// }
 		computeNormal();
 	}
@@ -278,6 +279,7 @@ private:
 	{
 		const vector<Ball>& collisionBall = ourModel.collisionBall;
 
+#pragma omp parallel for num_threads(576)
 		for (int i = 0; i < nodes.size(); i++)
 		{
 			/** Ground collision **/
