@@ -164,6 +164,10 @@ public:
 	// todo: 实现更复杂的交互逻辑
 	void setCandidateCloth(Cloth* cloth)
 	{
+		if (cloth == nullptr)
+		{
+			return;
+		}
 		if (cloth1 == nullptr)
 		{
 			cloth1 = cloth;

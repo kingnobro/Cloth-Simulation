@@ -78,13 +78,13 @@ public:
 	/*
 	 * update force, movement, collision and normals in every render loop
 	 */
-	void update(double timeStep, Ground *ground, Ball *ball)
+	void update(double timeStep)
 	{
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
 			integrate(timeStep);
-			collisionResponse(ground, ball);
+			// collisionResponse(ground, ball);
 		}
 		computeNormal();
 	}

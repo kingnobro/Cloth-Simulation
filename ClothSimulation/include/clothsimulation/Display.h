@@ -7,10 +7,11 @@
 #include "stb_image.h"
 #include "Camera.h"
 #include "Shader.h"
+#include "Model.h"
 
 glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
 glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
-Camera camera(glm::vec3(0.0f, 5.5f, 15.0f));
+Camera camera(glm::vec3(0.0f, 4.0f, 15.0f));
 
 Draw_Mode Cloth::drawMode = DRAW_FACES;
 
@@ -536,5 +537,44 @@ public:
 	void flush() 
 	{ 
 		render.flush(); 
+	}
+};
+
+class ModelRender
+{
+public:
+	Model* model;
+	Shader shader;
+
+	ModelRender(Model* model)
+	{
+		this->model = model;
+		this->init();
+	}
+
+	void flush()
+	{
+		shader.use();
+		shader.setMat4("projection", camera.GetProjectionMatrix());
+		shader.setMat4("view", camera.GetViewMatrix());
+		model->Draw(shader);
+		glUseProgram(0);
+	}
+
+private:
+	void init()
+	{
+		shader = Shader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
+		shader.use();
+
+		// model matrix
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -3.0f, -2.5f));      // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));	      // it's a bit too big for our scene, so scale it down
+		shader.setMat4("model", model);
+		shader.setMat4("projection", camera.GetProjectionMatrix());
+		shader.setMat4("view", camera.GetViewMatrix());
+
+		glUseProgram(0);
 	}
 };

@@ -40,22 +40,23 @@ int windForceScale = 15;
 int clothNumber = 0;
 glm::vec2 clothSize(6, 6);
 //			 Position                Size       clothID
-Cloth cloth1(glm::vec3(-3, 7.5, -2), clothSize, ++clothNumber);
+Cloth cloth1(glm::vec3(-3, 7.5, -1.2), clothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-3, 7.5, -4), clothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
 // Ground
-glm::vec3 groundPos(-5, 1.5, 0);
-glm::vec2 groundSize(10, 10);
-glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
-Ground ground(groundPos, groundSize, groundColor);
+// glm::vec3 groundPos(-5, 1.5, 0);
+// glm::vec2 groundSize(10, 10);
+// glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
+// Ground ground(groundPos, groundSize, groundColor);
 
 // Ball
-glm::vec3 ballPos(0, 5.2, -3);
-float ballRadius = 1.5;
-glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
-Ball ball(ballPos, ballRadius, ballColor);
+// glm::vec3 ballPos(0, 5.2, -3);
+// float ballRadius = 1.5;
+// glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
+// Ball ball(ballPos, ballRadius, ballColor);
+
 
 // Window and world
 GLFWwindow* window;
@@ -124,15 +125,14 @@ int main(int argc, const char* argv[])
 		clothRenders.push_back(ClothRender(cloth));
 		clothSpringRenders.push_back(ClothSpringRender(cloth));
 	}
-	GroundRender groundRender(&ground);
-	BallRender ballRender(&ball);
+	// GroundRender groundRender(&ground);
+	// BallRender ballRender(&ball);
+	// Model
+	Model ourModel("resources/Models/man/man_body.obj");
+	ModelRender modelRender(&ourModel);
 
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(1);
-
-	/** load model **/
-	// Shader ourShader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
-	// Model ourModel("resources/Models/nanosuit/nanosuit.obj");
 
 	/** Redering loop **/
 	while (!glfwWindowShouldClose(window))
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[])
 		for (size_t i = 0; i < cloths.size(); i += 1)
 		{
 			Cloth* cloth = cloths[i];
-			cloth->update((double)TIME_STEP, &ground, &ball);
+			cloth->update((double)TIME_STEP);
 
 			/** Display **/
 			if (Cloth::drawMode == DRAW_LINES)
@@ -167,25 +167,14 @@ int main(int argc, const char* argv[])
 		}
 		/** Sewing Line **/
 		sewMachine.drawSewingLine(camera.GetViewMatrix());
-		ballRender.flush();
-		groundRender.flush();
+		// ballRender.flush();
+		// groundRender.flush();
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
-		/** --------------------------------    3D Model Loading    -------------------------------- **/
-		// draw model
-		// ourShader.use();
-		// // view/projection transformations
-		// glm::mat4 projection = camera.GetProjectionMatrix();
-		// glm::mat4 view = camera.GetViewMatrix();
-		// ourShader.setMat4("projection", projection);
-		// ourShader.setMat4("view", view);
-		// // render the loaded model
-		// glm::mat4 model = glm::mat4(1.0f);
-		// model = glm::translate(model, glm::vec3(0.0f, 2.0f, -2.0f));   // translate it down so it's at the center of the scene
-		// model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	      // it's a bit too big for our scene, so scale it down
-		// ourShader.setMat4("model", model);
-		// ourModel.Draw(ourShader);
-		/** --------------------------------    3D Model Loading    -------------------------------- **/
+		modelRender.flush();
+
+		std::cout << "pos: " << camera.Position.x << " " << camera.Position.y << " " << camera.Position.z << std::endl;
+		std::cout << "pos: " << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Update the status of window
