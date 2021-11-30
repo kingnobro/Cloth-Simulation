@@ -40,8 +40,8 @@ int windForceScale = 15;
 int clothNumber = 0;
 glm::vec2 clothSize(6, 6);
 //			 Position                Size       clothID
-Cloth cloth1(glm::vec3(-3, 7.5, -1.2), clothSize, ++clothNumber);
-Cloth cloth2(glm::vec3(-3, 7.5, -4), clothSize, ++clothNumber);
+Cloth cloth1(glm::vec3(-3, 8.7, -1.2), clothSize, ++clothNumber);
+Cloth cloth2(glm::vec3(-3, 8.7, -4), clothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
@@ -52,8 +52,8 @@ Cloth* selectedCloth = nullptr; // 需要移动的衣片
 // Ground ground(groundPos, groundSize, groundColor);
 
 // Ball
-// glm::vec3 ballPos(0, 5.2, -3);
-// float ballRadius = 1.5;
+// glm::vec3 ballPos(0, 7, -2.5);
+// float ballRadius = 1.2;
 // glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 // Ball ball(ballPos, ballRadius, ballColor);
 
@@ -153,7 +153,7 @@ int main(int argc, const char* argv[])
 		for (size_t i = 0; i < cloths.size(); i += 1)
 		{
 			Cloth* cloth = cloths[i];
-			cloth->update((double)TIME_STEP);
+			cloth->update((double)TIME_STEP, ourModel);
 
 			/** Display **/
 			if (Cloth::drawMode == DRAW_LINES)
@@ -173,8 +173,8 @@ int main(int argc, const char* argv[])
 
 		modelRender.flush();
 
-		std::cout << "pos: " << camera.Position.x << " " << camera.Position.y << " " << camera.Position.z << std::endl;
-		std::cout << "pos: " << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
+		// std::cout << "pos: " << camera.Position.x << " " << camera.Position.y << " " << camera.Position.z << std::endl;
+		// std::cout << "pos: " << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Update the status of window
@@ -279,6 +279,12 @@ void processInput(GLFWwindow* window)
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 			selectedCloth->moveCloth(glm::vec3(0.2f, 0.0f, 0.0f));
+		}
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, 0.2f));
+		}
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, -0.2f));
 		}
 	}
 

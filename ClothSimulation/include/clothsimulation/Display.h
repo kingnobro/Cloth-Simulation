@@ -11,7 +11,7 @@
 
 glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
 glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
-Camera camera(glm::vec3(0.0f, 4.0f, 15.0f));
+Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 
 Draw_Mode Cloth::drawMode = DRAW_FACES;
 
@@ -545,6 +545,7 @@ class ModelRender
 public:
 	Model* model;
 	Shader shader;
+	vector<Ball*> collisionBall;
 
 	ModelRender(Model* model)
 	{
@@ -568,10 +569,17 @@ private:
 		shader.use();
 
 		// model matrix
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -3.0f, -2.5f));      // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.08f, 0.08f, 0.08f));	      // it's a bit too big for our scene, so scale it down
-		shader.setMat4("model", model);
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -3.0f, -2.5f));      // translate it down so it's at the center of the scene
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.08f, 0.08f, 0.08f));	      // it's a bit too big for our scene, so scale it down
+		std::cout << "collision ball number: " << model->collisionBall.size() << std::endl;
+		for (Ball& ball : model->collisionBall)
+		{
+			ball.center = modelMatrix * glm::vec4(ball.center, 1.0f);
+			ball.radius = ball.radius * 0.08f;
+			// std::cout << ball.center.x << " " << ball.center.y << " " << ball.center.z << std::endl;
+		}
+		shader.setMat4("model", modelMatrix);
 		shader.setMat4("projection", camera.GetProjectionMatrix());
 		shader.setMat4("view", camera.GetViewMatrix());
 

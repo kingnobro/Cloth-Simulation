@@ -209,7 +209,7 @@ public:
 	const float friction = FRICTION;
 	Sphere* sphere;
 
-	Ball(glm::vec3 center, float radius, glm::vec4 color)
+	Ball(glm::vec3 center, float radius, glm::vec4 color = glm::vec4(0.6f, 0.5f, 0.8f, 1.0f))
 	{
 		this->center = center;
 		this->radius = radius;

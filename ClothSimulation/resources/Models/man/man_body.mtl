@@ -13,4 +13,3 @@ newmtl Fbx_Default_Material_0
 	Ks 0.500 0.500 0.500
 	Ke 0.000 0.000 0.000
 	map_Kd skin_dif.png
-	map_Ks skin_spec.png

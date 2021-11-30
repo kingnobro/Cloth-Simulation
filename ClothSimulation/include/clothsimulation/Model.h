@@ -11,6 +11,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Rigid.h"
 
 #include <string>
 #include <fstream>
@@ -22,12 +23,29 @@ using namespace std;
 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 
+struct cmpPosition {
+	bool operator() (const glm::vec3& a, const glm::vec3& b) const {
+		const float eps = 1e-5;
+		if (fabs(a.x - b.x) < eps) {
+			return a.x < b.x;
+		}
+		else if (fabs(a.y - b.y) < eps) {
+			return a.y < b.y;
+		}
+		else {
+			return a.z < b.z;
+		}
+	}
+};
+
 class Model
 {
 public:
 	// model data 
 	vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	vector<Mesh>    meshes;
+	vector<Ball>    collisionBall;
+	map<glm::vec3, bool, cmpPosition> occur;
 	string directory;
 	bool gammaCorrection;
 
@@ -91,6 +109,7 @@ private:
 		vector<Texture> textures;
 
 		// walk through each of the mesh's vertices
+		std::cout << "vertex Number: " << mesh->mNumVertices << std::endl;
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			ModelVertex vertex;
@@ -100,6 +119,19 @@ private:
 			vector.y = mesh->mVertices[i].y;
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
+
+			// place a collision ball at each point
+			// use map to reduce redundant balls
+			// too many balls will degrade efficiency
+			if (i % 30 == 0) {
+				if (!occur.count(vector))
+				{
+					collisionBall.push_back(Ball(vector, 2));
+					occur[vector] = true;
+					// std::cout << "ball size: " << collisionBall.size() << " " << vector.x << " " << vector.y << " " << vector.z << std::endl;
+				}
+			}
+
 			// normals
 			if (mesh->HasNormals())
 			{
@@ -133,6 +165,9 @@ private:
 
 			vertices.push_back(vertex);
 		}
+
+		std::cout << "create collision ball completed! ball size: " << collisionBall.size() << std::endl;
+
 		// now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 		{

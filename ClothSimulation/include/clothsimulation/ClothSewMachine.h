@@ -49,7 +49,7 @@ public:
 
 		// generate vertices
 		vertices = new glm::vec3[vertexNumber];
-		for (int i = 0; i < vertexNumber / 2; i++) {
+		for (int i = 4; i < vertexNumber / 2; i++) {
 			vertices[i * 2] = cloth1->getWorldPos(cloth1->getNode(i, 0));
 			vertices[i * 2 + 1] = cloth2->getWorldPos(cloth2->getNode(i, 0));
 		}
