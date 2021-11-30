@@ -234,6 +234,9 @@
     <ClInclude Include="include\clothsimulation\Model.h" />
     <ClInclude Include="include\clothsimulation\MouseRay.h" />
     <ClInclude Include="include\clothsimulation\Point.h" />
+    <ClInclude Include="include\clothsimulation\render\ClothRender.h" />
+    <ClInclude Include="include\clothsimulation\render\MeshRender.h" />
+    <ClInclude Include="include\clothsimulation\render\ModelRender.h" />
     <ClInclude Include="include\clothsimulation\Rigid.h" />
     <ClInclude Include="include\clothsimulation\Shader.h" />
     <ClInclude Include="include\clothsimulation\Spring.h" />

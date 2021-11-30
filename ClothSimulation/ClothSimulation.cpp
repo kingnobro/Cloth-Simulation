@@ -13,8 +13,10 @@
 #include "stb_image.h"
 #include "clothsimulation/Cloth.h"
 #include "clothsimulation/Rigid.h"
-#include "clothsimulation/Display.h"
 #include "clothsimulation/Model.h"
+#include "clothsimulation/render/ClothRender.h"
+#include "clothsimulation/render/MeshRender.h"
+#include "clothsimulation/render/ModelRender.h"
 #include "clothsimulation/MouseRay.h"
 #include "clothsimulation/ClothPicker.h"
 #include "clothsimulation/ClothSewMachine.h"
@@ -44,18 +46,6 @@ Cloth cloth1(glm::vec3(-3, 8.7, -1.2), clothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-3, 8.7, -4), clothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
-
-// Ground
-// glm::vec3 groundPos(-5, 1.5, 0);
-// glm::vec2 groundSize(10, 10);
-// glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
-// Ground ground(groundPos, groundSize, groundColor);
-
-// Ball
-// glm::vec3 ballPos(0, 7, -2.5);
-// float ballRadius = 1.2;
-// glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
-// Ball ball(ballPos, ballRadius, ballColor);
 
 
 // Window and world
@@ -125,8 +115,6 @@ int main(int argc, const char* argv[])
 		clothRenders.push_back(ClothRender(cloth));
 		clothSpringRenders.push_back(ClothSpringRender(cloth));
 	}
-	// GroundRender groundRender(&ground);
-	// BallRender ballRender(&ball);
 	// Model
 	Model ourModel("resources/Models/man/man_body.obj");
 	ModelRender modelRender(&ourModel);
@@ -165,16 +153,9 @@ int main(int argc, const char* argv[])
 				clothRenders[i].flush();
 			}
 		}
-		/** Sewing Line **/
-		sewMachine.drawSewingLine(camera.GetViewMatrix());
-		// ballRender.flush();
-		// groundRender.flush();
-		/** -------------------------------- Simulation & Rendering -------------------------------- **/
-
+		sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
 		modelRender.flush();
-
-		// std::cout << "pos: " << camera.Position.x << " " << camera.Position.y << " " << camera.Position.z << std::endl;
-		// std::cout << "pos: " << camera.Front.x << " " << camera.Front.y << " " << camera.Front.z << std::endl;
+		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Update the status of window
