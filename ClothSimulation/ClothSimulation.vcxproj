@@ -148,6 +148,9 @@
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ClothRender.h" />
+    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\MeshRender.h" />
+    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ModelRender.h" />
     <ClInclude Include="Headers\stb_image.h" />
     <ClInclude Include="include\assimp\aabb.h" />
     <ClInclude Include="include\assimp\ai_assert.h" />
@@ -236,9 +239,6 @@
     <ClInclude Include="include\clothsimulation\Model.h" />
     <ClInclude Include="include\clothsimulation\MouseRay.h" />
     <ClInclude Include="include\clothsimulation\Point.h" />
-    <ClInclude Include="include\clothsimulation\render\ClothRender.h" />
-    <ClInclude Include="include\clothsimulation\render\MeshRender.h" />
-    <ClInclude Include="include\clothsimulation\render\ModelRender.h" />
     <ClInclude Include="include\clothsimulation\Rigid.h" />
     <ClInclude Include="include\clothsimulation\Shader.h" />
     <ClInclude Include="include\clothsimulation\Spring.h" />

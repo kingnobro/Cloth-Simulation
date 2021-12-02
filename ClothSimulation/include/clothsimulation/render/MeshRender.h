@@ -77,7 +77,7 @@ struct SpringRender
 
 		/** Projection matrix : The frustum that camera observes **/
 		// Since projection matrix rarely changes, set it outside the rendering loop for only onec time
-		shader.setMat4("uniProjMatrix", camera.GetProjectionMatrix());
+		shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
 
 		/** Model Matrix : Put rigid into the world **/
 		glm::mat4 uniModelMatrix = glm::mat4(1.0f);

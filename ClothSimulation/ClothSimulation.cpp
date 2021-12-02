@@ -11,21 +11,16 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "clothsimulation/Cloth.h"
-#include "clothsimulation/Rigid.h"
 #include "clothsimulation/Model.h"
+#include "clothsimulation/Display.h"
 #include "clothsimulation/render/ClothRender.h"
 #include "clothsimulation/render/MeshRender.h"
 #include "clothsimulation/render/ModelRender.h"
-#include "clothsimulation/MouseRay.h"
-#include "clothsimulation/ClothPicker.h"
-#include "clothsimulation/ClothSewMachine.h"
 
 #define TIME_STEP 0.01
 
 int scr_width = 800;
 int scr_height = 800;
-extern const int iterationFreq = 7;
 
 /** Functions **/
 void processInput(GLFWwindow* window);
@@ -35,23 +30,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
-// Wind
-int windForceScale = 15;
-
-// Cloths
-int clothNumber = 0;
-glm::vec2 clothSize(6, 6);
-//			 Position                Size       clothID
-Cloth cloth1(glm::vec3(-3, 8.7, -1.2), clothSize, ++clothNumber);
-Cloth cloth2(glm::vec3(-3, 8.7, -4), clothSize, ++clothNumber);
-std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
-Cloth* selectedCloth = nullptr; // 需要移动的衣片
-
-
 // Window and world
 GLFWwindow* window;
 glm::vec3 bgColor = glm::vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
-extern glm::vec3 gravity(0.0, -9.8 / iterationFreq, 0.0);
 
 // timing
 float deltaTime = 0.0f;
@@ -61,13 +42,6 @@ float lastFrame = 0.0f;
 float lastX = scr_width / 2.0f;
 float lastY = scr_height / 2.0f;
 bool firstMouse = true;
-
-// 3D raycast picker
-MouseRay mouseRay = MouseRay(&camera);
-ClothPicker clothPicker = ClothPicker(&camera);
-
-// Sew Machine
-ClothSewMachine sewMachine = ClothSewMachine(&camera);
 
 int main(int argc, const char* argv[])
 {

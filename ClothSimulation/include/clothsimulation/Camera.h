@@ -38,6 +38,14 @@ public:
 	float MouseSensitivity;
 	float Zoom;
 	float Aspect;
+	// orthograpic projection
+	float left;
+	float right;
+	float bottom;
+	float top;
+	float near;
+	float far;
+	
 
 	// constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM), Aspect(ASPECT)
@@ -64,9 +72,23 @@ public:
 		return glm::lookAt(Position, Position + Front, Up);
 	}
 
-	glm::mat4 GetProjectionMatrix()
+	glm::mat4 GetPerspectiveProjectionMatrix()
 	{
 		return glm::perspective(glm::radians(Zoom), Aspect, 0.1f, 100.0f);
+	}
+
+	glm::mat4 GetOrthoProjectionMatrix()
+	{
+		return glm::ortho(left, right, bottom, top, near, far);
+	}
+
+	void SetOrthoBoundary(float left, float right, float bottom, float top, float near, float far) {
+		this->left = left;
+		this->right = right;
+		this->bottom = bottom;
+		this->top = top;
+		this->near = near;
+		this->far = far;
 	}
 
 	void SetAspect(int SCR_Width, int SCR_Height) {

@@ -19,7 +19,7 @@ public:
 	void flush()
 	{
 		shader.use();
-		shader.setMat4("projection", camera.GetProjectionMatrix());
+		shader.setMat4("projection", camera.GetPerspectiveProjectionMatrix());
 		shader.setMat4("view", camera.GetViewMatrix());
 		model->Draw(shader);
 		glUseProgram(0);
@@ -38,7 +38,7 @@ private:
 
 		model->collisionBox.toWorldPosition(modelMatrix);
 		shader.setMat4("model", modelMatrix);
-		shader.setMat4("projection", camera.GetProjectionMatrix());
+		shader.setMat4("projection", camera.GetPerspectiveProjectionMatrix());
 		shader.setMat4("view", camera.GetViewMatrix());
 
 		glUseProgram(0);

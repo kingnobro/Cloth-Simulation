@@ -110,7 +110,7 @@ struct ClothRender // Texture & Lighting
 
 		/** Set Matrix **/
 		glm::mat4 uniModelMatrix = cloth->GetModelMatrix();
-		shader.setMat4("uniProjMatrix", camera.GetProjectionMatrix());
+		shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
 		shader.setMat4("uniModelMatrix", uniModelMatrix);
 
 		/** Set Light **/

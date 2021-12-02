@@ -76,7 +76,7 @@ public:
 		// 顶点坐标是世界坐标, 所以不需要传入 model 矩阵
 		shader.use();
 		shader.setMat4("view", camera->GetViewMatrix());
-		shader.setMat4("projection", camera->GetProjectionMatrix());
+		shader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
 
 		// Cleanup
 		glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO

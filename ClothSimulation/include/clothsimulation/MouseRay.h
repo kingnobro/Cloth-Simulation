@@ -45,7 +45,7 @@ private:
 	 */
 	glm::vec4 toEyeCoords(glm::vec4 ray_clip)
 	{
-		glm::vec4 ray_eye = glm::inverse(camera->GetProjectionMatrix()) * ray_clip;
+		glm::vec4 ray_eye = glm::inverse(camera->GetPerspectiveProjectionMatrix()) * ray_clip;
 		// Now, we only needed to un-project the x,y part, so let's manually set the z,w part to mean "forwards, and not a point"
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
 		return ray_eye;
