@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Display.h"
+#include "Display.h"
 
 Draw_Mode Cloth::drawMode = DRAW_FACES;
 

@@ -70,6 +70,12 @@
     <Filter Include="头文件\include\clothsimulation">
       <UniqueIdentifier>{2f5f2dde-27c7-4a19-a203-99154b7e5311}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\include\clothsimulation\render">
+      <UniqueIdentifier>{8e8fa69f-a81f-4b60-8cde-0462aeb51520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\include\clothsimulation\sew">
+      <UniqueIdentifier>{eca84f3b-eb57-4bb0-b6ea-f1d55067f46f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClothSimulation.cpp">
@@ -782,29 +788,29 @@
     <ClInclude Include="include\clothsimulation\Cloth.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="include\clothsimulation\MouseRay.h">
-      <Filter>头文件\include\clothsimulation</Filter>
-    </ClInclude>
-    <ClInclude Include="include\clothsimulation\ClothPicker.h">
-      <Filter>头文件\include\clothsimulation</Filter>
-    </ClInclude>
-    <ClInclude Include="include\clothsimulation\ClothSewMachine.h">
-      <Filter>头文件\include\clothsimulation</Filter>
-    </ClInclude>
     <ClInclude Include="include\clothsimulation\Display.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
     <ClInclude Include="include\clothsimulation\CollisionBox.h">
       <Filter>头文件\include\clothsimulation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ClothRender.h">
-      <Filter>头文件\include\clothsimulation</Filter>
+    <ClInclude Include="include\clothsimulation\ClothPicker.h">
+      <Filter>头文件\include\clothsimulation\sew</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\MeshRender.h">
-      <Filter>头文件\include\clothsimulation</Filter>
+    <ClInclude Include="include\clothsimulation\ClothSewMachine.h">
+      <Filter>头文件\include\clothsimulation\sew</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ModelRender.h">
-      <Filter>头文件\include\clothsimulation</Filter>
+    <ClInclude Include="include\clothsimulation\MouseRay.h">
+      <Filter>头文件\include\clothsimulation\sew</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\ClothRender.h">
+      <Filter>头文件\include\clothsimulation\render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\MeshRender.h">
+      <Filter>头文件\include\clothsimulation\render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clothsimulation\ModelRender.h">
+      <Filter>头文件\include\clothsimulation\render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1205,6 +1211,12 @@
       <Filter>资源文件\resources\Shaders</Filter>
     </None>
     <None Include="resources\Shaders\LineVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\offscreenVS.glsl">
+      <Filter>资源文件\resources\Shaders</Filter>
+    </None>
+    <None Include="resources\Shaders\offscreenFS.glsl">
       <Filter>资源文件\resources\Shaders</Filter>
     </None>
   </ItemGroup>

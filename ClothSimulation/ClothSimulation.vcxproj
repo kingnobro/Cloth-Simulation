@@ -148,9 +148,6 @@
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ClothRender.h" />
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\MeshRender.h" />
-    <ClInclude Include="..\..\Cloth-Simulation\ClothSimulation\include\clothsimulation\ModelRender.h" />
     <ClInclude Include="Headers\stb_image.h" />
     <ClInclude Include="include\assimp\aabb.h" />
     <ClInclude Include="include\assimp\ai_assert.h" />
@@ -232,11 +229,14 @@
     <ClInclude Include="include\clothsimulation\Camera.h" />
     <ClInclude Include="include\clothsimulation\Cloth.h" />
     <ClInclude Include="include\clothsimulation\ClothPicker.h" />
+    <ClInclude Include="include\clothsimulation\ClothRender.h" />
     <ClInclude Include="include\clothsimulation\ClothSewMachine.h" />
     <ClInclude Include="include\clothsimulation\CollisionBox.h" />
     <ClInclude Include="include\clothsimulation\Display.h" />
     <ClInclude Include="include\clothsimulation\Mesh.h" />
+    <ClInclude Include="include\clothsimulation\MeshRender.h" />
     <ClInclude Include="include\clothsimulation\Model.h" />
+    <ClInclude Include="include\clothsimulation\ModelRender.h" />
     <ClInclude Include="include\clothsimulation\MouseRay.h" />
     <ClInclude Include="include\clothsimulation\Point.h" />
     <ClInclude Include="include\clothsimulation\Rigid.h" />
@@ -521,6 +521,8 @@
     <None Include="resources\Shaders\LineVS.glsl" />
     <None Include="resources\Shaders\ModelFS.glsl" />
     <None Include="resources\Shaders\ModelVS.glsl" />
+    <None Include="resources\Shaders\offscreenFS.glsl" />
+    <None Include="resources\Shaders\offscreenVS.glsl" />
     <None Include="resources\Shaders\RigidFS.glsl" />
     <None Include="resources\Shaders\RigidVS.glsl" />
     <None Include="resources\Shaders\SpringFS.glsl" />

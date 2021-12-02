@@ -5,6 +5,9 @@
 
 #include "Camera.h"
 
+/*
+ * 包围 3D 模型的碰撞盒, 盒体前后有两个摄像机, 用于生成深度图和法线图, 深度图用于碰撞检测
+ */
 class CollisionBox
 {
 public:

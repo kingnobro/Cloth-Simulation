@@ -277,23 +277,7 @@ private:
 
 	void collisionResponse(const Model &ourModel)
 	{
-
-		// for (int i = 0; i < nodes.size(); i++)
-		// {
-		// 		/** Ball collision **/
-		// 		// std::cout << "collided\n";
-		// 		glm::vec3 distVec = getWorldPos(nodes[i]) - ball.center;
-		// 		float distLen = glm::length(distVec);
-		// 		// float safeDist = ball.radius * 1.05;
-		// 		float safeDist = ball.radius * 2;
-		// 		if (distLen < safeDist) {
-		// 			distVec = glm::normalize(distVec);
-		// 			// 如果点一开始就在球里 容易出问题 所以要有 initForce
-		// 			setWorldPos(nodes[i], distVec * safeDist + ball.center);
-		// 			nodes[i]->velocity = nodes[i]->velocity * ball.friction;
-		// 		}
-		// 
-		// }
+		
 	}
 
 	void integrate(float timeStep)

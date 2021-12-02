@@ -13,14 +13,14 @@
 #include "stb_image.h"
 #include "clothsimulation/Model.h"
 #include "clothsimulation/Display.h"
-#include "clothsimulation/render/ClothRender.h"
-#include "clothsimulation/render/MeshRender.h"
-#include "clothsimulation/render/ModelRender.h"
+#include "clothsimulation/ClothRender.h"
+#include "clothsimulation/MeshRender.h"
+#include "clothsimulation/ModelRender.h"
 
 #define TIME_STEP 0.01
 
-int scr_width = 800;
-int scr_height = 800;
+int scr_width = 512;
+int scr_height = 512;
 
 /** Functions **/
 void processInput(GLFWwindow* window);
@@ -82,19 +82,26 @@ int main(int argc, const char* argv[])
 	glfwSetCursorPosCallback(window, mouse_position_callback);
 
 	/** Generate Object Renderers **/
-	vector<ClothRender> clothRenders;
-	vector<ClothSpringRender> clothSpringRenders;
-	for (Cloth* cloth : cloths)
-	{
-		clothRenders.push_back(ClothRender(cloth));
-		clothSpringRenders.push_back(ClothSpringRender(cloth));
-	}
+	// vector<ClothRender> clothRenders;
+	// vector<ClothSpringRender> clothSpringRenders;
+	// for (Cloth* cloth : cloths)
+	// {
+	// 	clothRenders.push_back(ClothRender(cloth));
+	// 	clothSpringRenders.push_back(ClothSpringRender(cloth));
+	// }
 	// Model
 	Model ourModel("resources/Models/man/man_body.obj");
 	ModelRender modelRender(&ourModel);
 
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(1);
+
+	// offscreen render, to generate depth maps and normal maps
+	modelRender.offScreenRender(
+		&(ourModel.collisionBox.frontCamera), 
+		&(ourModel.collisionBox.backCamera),
+		window
+	);
 
 	/** Redering loop **/
 	while (!glfwWindowShouldClose(window))
@@ -112,22 +119,22 @@ int main(int argc, const char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
-		for (size_t i = 0; i < cloths.size(); i += 1)
-		{
-			Cloth* cloth = cloths[i];
-			cloth->update((double)TIME_STEP, ourModel);
-
-			/** Display **/
-			if (Cloth::drawMode == DRAW_LINES)
-			{
-				clothSpringRenders[i].flush();
-			}
-			else
-			{
-				clothRenders[i].flush();
-			}
-		}
-		sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
+		// for (size_t i = 0; i < cloths.size(); i += 1)
+		// {
+		// 	Cloth* cloth = cloths[i];
+		// 	cloth->update((double)TIME_STEP, ourModel);
+		// 
+		// 	/** Display **/
+		// 	if (Cloth::drawMode == DRAW_LINES)
+		// 	{
+		// 		clothSpringRenders[i].flush();
+		// 	}
+		// 	else
+		// 	{
+		// 		clothRenders[i].flush();
+		// 	}
+		// }
+		// sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
 		modelRender.flush();
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
@@ -157,9 +164,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
 		glm::vec3 ray = mouseRay.calculateMouseRay(mouse_x, mouse_y, (int)scr_width, (int)scr_height);
-		selectedCloth = clothPicker.pickCloth(cloths, ray);
+		// selectedCloth = clothPicker.pickCloth(cloths, ray);
 
-		sewMachine.setCandidateCloth(selectedCloth);
+		// sewMachine.setCandidateCloth(selectedCloth);
 	}
 	// Sewing
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)

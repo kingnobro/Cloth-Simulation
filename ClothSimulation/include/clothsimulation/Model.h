@@ -8,11 +8,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <omp.h>
 
 #include "Mesh.h"
 #include "Shader.h"
-#include "Rigid.h"
 #include "CollisionBox.h"
 
 #include <string>
