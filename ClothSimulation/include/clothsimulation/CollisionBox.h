@@ -91,6 +91,15 @@ public:
 		setBox();
 	}
 
+	/*
+	 * whether a point in the collision box
+	 */
+	bool collideWithPoint(glm::vec3 point)
+	{
+		glm::vec3 delta = glm::abs(point - centroid);
+		return (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2);
+	}
+
 private:
 	float minX, minY, minZ;
 	float maxX, maxY, maxZ;
