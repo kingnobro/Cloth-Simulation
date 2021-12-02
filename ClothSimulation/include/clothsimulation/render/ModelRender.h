@@ -35,14 +35,6 @@ private:
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -3.0f, -2.5f));      // translate it down so it's at the center of the scene
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.08f, 0.08f, 0.08f));	       // it's a bit too big for our scene, so scale it down
-		
-		std::cout << "collision ball number: " << model->collisionBall.size() << std::endl;
-		// update world space of ball center and radius
-		for (Ball& ball : model->collisionBall)
-		{
-			ball.center = modelMatrix * glm::vec4(ball.center, 1.0f);
-			ball.radius = ball.radius * 0.08f;
-		}
 
 		shader.setMat4("model", modelMatrix);
 		shader.setMat4("projection", camera.GetProjectionMatrix());

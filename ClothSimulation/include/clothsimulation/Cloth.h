@@ -82,12 +82,12 @@ public:
 	 */
 	void update(double timeStep, const Model &ourModel)
 	{
-		// for (int i = 0; i < iterationFreq; i++)
-		// {
+		for (int i = 0; i < iterationFreq; i++)
+		{
 			computeForce(timeStep, gravity);
 			integrate(timeStep);
 			collisionResponse(ourModel);
-		// }
+		}
 		computeNormal();
 	}
 
@@ -277,34 +277,23 @@ private:
 
 	void collisionResponse(const Model &ourModel)
 	{
-		const vector<Ball>& collisionBall = ourModel.collisionBall;
 
-#pragma omp parallel for num_threads(576)
-		for (int i = 0; i < nodes.size(); i++)
-		{
-			/** Ground collision **/
-			// if (getWorldPos(nodes[i]).y < ground->position.y) {
-			// 	nodes[i]->position.y = ground->position.y - clothPos.y + 0.01;
-			// 	nodes[i]->velocity = nodes[i]->velocity * ground->friction;
-			// }
-
-			for (const Ball& ball : collisionBall)
-			{
-				/** Ball collision **/
-				// std::cout << "collided\n";
-				glm::vec3 distVec = getWorldPos(nodes[i]) - ball.center;
-				float distLen = glm::length(distVec);
-				// float safeDist = ball.radius * 1.05;
-				float safeDist = ball.radius * 2;
-				if (distLen < safeDist) {
-					distVec = glm::normalize(distVec);
-					// 如果点一开始就在球里 容易出问题 所以要有 initForce
-					setWorldPos(nodes[i], distVec * safeDist + ball.center);
-					nodes[i]->velocity = nodes[i]->velocity * ball.friction;
-				}
-			}
-
-		}
+		// for (int i = 0; i < nodes.size(); i++)
+		// {
+		// 		/** Ball collision **/
+		// 		// std::cout << "collided\n";
+		// 		glm::vec3 distVec = getWorldPos(nodes[i]) - ball.center;
+		// 		float distLen = glm::length(distVec);
+		// 		// float safeDist = ball.radius * 1.05;
+		// 		float safeDist = ball.radius * 2;
+		// 		if (distLen < safeDist) {
+		// 			distVec = glm::normalize(distVec);
+		// 			// 如果点一开始就在球里 容易出问题 所以要有 initForce
+		// 			setWorldPos(nodes[i], distVec * safeDist + ball.center);
+		// 			nodes[i]->velocity = nodes[i]->velocity * ball.friction;
+		// 		}
+		// 
+		// }
 	}
 
 	void integrate(float timeStep)
