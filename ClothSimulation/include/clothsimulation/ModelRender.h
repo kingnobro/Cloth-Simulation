@@ -41,7 +41,7 @@ public:
 		frontNormalMap = new float[resolution * 3];
 		backDepthMap = new float[resolution];
 		backNormalMap = new float[resolution * 3];
-		std::cout << "window size:(" << scr_width << ", " << scr_height << ")";
+		std::cout << "framebuffer window size:(" << scr_width << ", " << scr_height << ")\n";
 
 		// framebuffer configuration
 		// -------------------------

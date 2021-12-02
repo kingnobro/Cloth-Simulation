@@ -135,6 +135,13 @@ int main(int argc, const char* argv[])
 		// 	}
 		// }
 		// sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
+
+		glm::vec3 point = glm::vec3(1.0f, 6.0f, -2.3f);
+		glm::vec3 frontPos = ourModel.collisionBox.getFrontPosition(point);
+		glm::vec3 backPos = ourModel.collisionBox.getBackPosition(point);
+		std::cout << frontPos.x << " " << frontPos.y << " " << frontPos.z << std::endl;
+		std::cout << backPos.x << " " << backPos.y << " " << backPos.z << std::endl;
+
 		modelRender.flush();
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 

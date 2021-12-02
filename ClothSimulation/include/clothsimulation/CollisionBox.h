@@ -15,16 +15,20 @@ public:
 	float height;
 	float length;
 	float phi;			// max(height, length)
+	int mapsize;
 	glm::vec3 centroid;
+	glm::vec3 origin;	// 包围盒空间的坐标原点, 在后部摄像机的正下方
 	Camera frontCamera;	// Camera around AABB box for depth map generation
 	Camera backCamera;
 
-	CollisionBox()
+	CollisionBox(int mapsize = 512)
 	{
 		minX = minY = minZ = FLT_MAX;
 		maxX = maxY = maxZ = FLT_MIN;
 		width = height = length = phi = 0;
 		centroid = glm::vec3(0.0f);
+		// todo: fix hard code
+		this->mapsize = mapsize;
 	}
 
 	// update the boundary of AABB box
@@ -52,6 +56,7 @@ public:
 		length = maxX - minX;
 		phi = max(length, height);
 		centroid = glm::vec3((maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
+		origin = centroid - glm::vec3(0.0f, height / 2, width / 2);
 
 		// update front and back camera
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -71,6 +76,7 @@ public:
 		std::cout << "[AABB box] width:" << width << " height:" << height << " length:" << length
 			<< " phi:" << phi << std::endl;
 		std::cout << "[AABB box] centroid: " << "(" << centroid.x << ", " << centroid.y << ", " << centroid.z << ")\n";
+		std::cout << "[AABB box] origin: " << "(" << origin.x << ", " << origin.y << ", " << origin.z << ")\n";
 		std::cout << "[front camera] front:" << frontCamera.Front.z << std::endl;
 		std::cout << "[back camera]  front:" << backCamera.Front.z << std::endl;
 	}
@@ -94,10 +100,28 @@ public:
 	/*
 	 * whether a point in the collision box
 	 */
-	bool collideWithPoint(glm::vec3 point)
+	bool collideWithPoint(const glm::vec3& point)
 	{
 		glm::vec3 delta = glm::abs(point - centroid);
 		return (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2);
+	}
+
+	glm::vec3 getFrontPosition(const glm::vec3& point)
+	{
+		glm::vec3 boxPosition = point - origin;
+		float x = (boxPosition.x + phi / 2) * mapsize / phi;
+		float y = boxPosition.y * mapsize / phi;
+		float z = (width - boxPosition.z) / width;
+		return glm::vec3(x, y, z);
+	}
+
+	glm::vec3 getBackPosition(const glm::vec3& point)
+	{
+		glm::vec3 boxPosition = point - origin;
+		float x = (phi / 2 - boxPosition.x) * mapsize / phi;
+		float y = boxPosition.y * mapsize / phi;
+		float z = boxPosition.z / width;
+		return glm::vec3(x, y, z);
 	}
 
 private:
