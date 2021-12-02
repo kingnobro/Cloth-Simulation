@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Rigid.h"
+#include "CollisionBox.h"
 
 #include <string>
 #include <fstream>
@@ -30,14 +31,17 @@ public:
 	// model data 
 	vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	vector<Mesh>    meshes;
-	vector<Ball>    collisionBall;
 	string directory;
 	bool gammaCorrection;
+
+	// create AABB box, for image-based collision detection
+	CollisionBox collisionBox;
 
 	// constructor, expects a filepath to a 3D model.
 	Model(string const& path, bool gamma = false) : gammaCorrection(gamma)
 	{
 		loadModel(path);
+		collisionBox.setBox();
 	}
 
 	// draws the model, and thus all its meshes
@@ -104,6 +108,7 @@ private:
 			vector.y = mesh->mVertices[i].y;
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
+			collisionBox.updateBoundary(vector);
 
 			// normals
 			if (mesh->HasNormals())
@@ -138,8 +143,6 @@ private:
 
 			vertices.push_back(vertex);
 		}
-
-		std::cout << "create collision ball completed! ball size: " << collisionBall.size() << std::endl;
 
 		// now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)

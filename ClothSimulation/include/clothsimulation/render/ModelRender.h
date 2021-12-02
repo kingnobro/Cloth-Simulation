@@ -36,6 +36,7 @@ private:
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -3.0f, -2.5f));      // translate it down so it's at the center of the scene
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.08f, 0.08f, 0.08f));	       // it's a bit too big for our scene, so scale it down
 
+		model->collisionBox.toWorldPosition(modelMatrix);
 		shader.setMat4("model", modelMatrix);
 		shader.setMat4("projection", camera.GetProjectionMatrix());
 		shader.setMat4("view", camera.GetViewMatrix());
