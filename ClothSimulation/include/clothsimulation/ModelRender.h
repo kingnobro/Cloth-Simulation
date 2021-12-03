@@ -85,7 +85,7 @@ public:
 		glUseProgram(0);
 	}
 
-	void flush(Camera *camera)
+	void flush(Camera* camera)
 	{
 		runtimeShader.use();
 		runtimeShader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
@@ -94,20 +94,30 @@ public:
 		glUseProgram(0);
 	}
 
+	/*
+	 * point collision detection with model
+	 * if collided, return model's normol vector at colliding point
+	 */
 	bool collideWithModel(const glm::vec3& point)
 	{
-		if (!model->collisionBox.collideWithPoint(point)) return false;
+		if (!model->collisionBox.collideWithPoint(point)) {
+			return false;
+		}
 
 		glm::vec3 frontPos = model->collisionBox.getFrontPosition(point);
 		glm::vec3 backPos = model->collisionBox.getBackPosition(point);
-		
+
 		float z_front = getDepth(frontPos, frontDepthMap);
 		float z_back = getDepth(backPos, backDepthMap);
 
-		if (frontPos.z > z_front && backPos.z > z_back) {
-			std::cout << "collide at " << point.x << " " << point.y << " " << point.z << std::endl;
+		if (frontPos.z < z_front || backPos.z < z_back) {
+			return false;
 		}
-		return frontPos.z > z_front && backPos.z > z_back;
+		else {
+			// todo: add normal logical
+			return true;
+		}
+		// normal = getNormal(point, )
 	}
 
 private:
@@ -163,10 +173,18 @@ private:
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, normalMap);
 	}
 
-	float getDepth(const glm::vec3& point, float *depthMap) const
+	float getDepth(const glm::vec3& point, float* depthMap) const
 	{
 		int x = point.x;
 		int y = point.y;
 		return depthMap[y * scr_width + x];
+	}
+
+	glm::vec3 getNormal(const glm::vec3& point, float* normalMap) const
+	{
+		int x = point.x;
+		int y = point.y;
+		int index = 3 * (y * scr_width + x);
+		return glm::vec3(normalMap[index], normalMap[index + 1], normalMap[index + 2]);
 	}
 };

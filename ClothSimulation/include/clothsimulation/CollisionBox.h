@@ -14,9 +14,9 @@ public:
 	float width;
 	float height;
 	float length;
-	float phi;			// max(height, length)
-	int mapsize;
-	glm::vec3 centroid;
+	float phi;			// projection area of the orthographic camera, phi = max(height, length)
+	int mapsize;		
+	glm::vec3 centroid; // 包围盒的中心
 	glm::vec3 origin;	// 包围盒空间的坐标原点, 在后部摄像机的正下方
 	Camera frontCamera;	// Camera around AABB box for depth map generation
 	Camera backCamera;
@@ -31,7 +31,9 @@ public:
 		this->mapsize = mapsize;
 	}
 
-	// update the boundary of AABB box
+	/*
+	 * update the boundary of AABB box
+	 */
 	void updateBoundary(const glm::vec3& position)
 	{
 		float x = position.x;
@@ -48,6 +50,9 @@ public:
 		if (z > maxZ) maxZ = z;
 	}
 
+	/*
+	 * set arguments of the box 
+	 */
 	void setBox()
 	{
 		// set width, height length of the AABB box
@@ -77,11 +82,13 @@ public:
 			<< " phi:" << phi << std::endl;
 		std::cout << "[AABB box] centroid: " << "(" << centroid.x << ", " << centroid.y << ", " << centroid.z << ")\n";
 		std::cout << "[AABB box] origin: " << "(" << origin.x << ", " << origin.y << ", " << origin.z << ")\n";
-		std::cout << "[front camera] front:" << frontCamera.Front.z << std::endl;
-		std::cout << "[back camera]  front:" << backCamera.Front.z << std::endl;
+		std::cout << "[front camera] front vector:" << frontCamera.Front.z << std::endl;
+		std::cout << "[back camera]  front vector:" << backCamera.Front.z << std::endl;
 	}
 
-	// change local position to world position
+	/*
+	 * change local position of the box to world space 
+	 */
 	void toWorldPosition(const glm::mat4& modelMatrix)
 	{
 		glm::vec3 maxPosition = modelMatrix * glm::vec4(maxX, maxY, maxZ, 1.0f);
@@ -98,33 +105,36 @@ public:
 	}
 
 	/*
-	 * whether a point in the collision box
+	 * whether a point is in the collision box
 	 */
 	bool collideWithPoint(const glm::vec3& point)
 	{
 		glm::vec3 delta = glm::abs(point - centroid);
-		// if (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2) {
-		// 	std::cout << "point in collision box\n";
-		// }
-		// else {
-		// 	std::cout << "point not in collision box\n";
-		// }
-		// std::cout << delta.x << " " << delta.y << " " << delta.z << std::endl;
 		return (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2);
 	}
 
+	/*
+	 * position transform, under the perspective of front camera
+	 */
 	glm::vec3 getFrontPosition(const glm::vec3& point)
 	{
+		// world space -> box space
 		glm::vec3 boxPosition = point - origin;
+		// box space -> front camera space
 		float x = (boxPosition.x + phi / 2) * mapsize / phi;
 		float y = boxPosition.y * mapsize / phi;
 		float z = (width - boxPosition.z) / width;
 		return glm::vec3(x, y, z);
 	}
 
+	/*
+	 * position transform, under the perspective of back camera  
+	 */
 	glm::vec3 getBackPosition(const glm::vec3& point)
 	{
+		// world space -> box space
 		glm::vec3 boxPosition = point - origin;
+		// box space -> back camera space
 		float x = (phi / 2 - boxPosition.x) * mapsize / phi;
 		float y = boxPosition.y * mapsize / phi;
 		float z = boxPosition.z / width;

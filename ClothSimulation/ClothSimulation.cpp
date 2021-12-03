@@ -242,10 +242,10 @@ void processInput(GLFWwindow* window)
 			selectedCloth->moveCloth(glm::vec3(0.2f, 0.0f, 0.0f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
-			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, 0.2f));
+			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, 0.02f));
 		}
 		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, -0.2f));
+			selectedCloth->moveCloth(glm::vec3(0.0f, 0.0f, -0.02f));
 		}
 	}
 

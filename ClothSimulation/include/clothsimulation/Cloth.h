@@ -50,10 +50,6 @@ public:
 		clothID = ID;
 		sewed = false;
 
-		// 避免一开始和球穿模
-		// glm::vec3 initForce(10.0, 40.0, 20.0);
-		// addForce(initForce);
-
 		init();
 	}
 
@@ -85,8 +81,11 @@ public:
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
-			integrate(timeStep);
-			collisionResponse(modelRender);
+			for (size_t j = 0; j < nodes.size(); j++) {
+				Node* node = nodes[j];
+				node->integrate(timeStep);
+				collisionResponse(modelRender, node);
+			}
 		}
 		computeNormal();
 	}
@@ -275,14 +274,10 @@ private:
 		}
 	}
 
-	void collisionResponse(ModelRender &modelRender)
+	void collisionResponse(ModelRender &modelRender, Node* node)
 	{
-		for (size_t i = 0; i < nodes.size(); i += 1)
-		{
-			Node* node = nodes[i];
-			if (modelRender.collideWithModel(getWorldPos(node))) {
-				node->velocity *= -1;
-			}
+		if (modelRender.collideWithModel(getWorldPos(node))) {
+			node->velocity *= -1;
 		}
 	}
 
