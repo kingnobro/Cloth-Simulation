@@ -103,6 +103,13 @@ public:
 	bool collideWithPoint(const glm::vec3& point)
 	{
 		glm::vec3 delta = glm::abs(point - centroid);
+		// if (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2) {
+		// 	std::cout << "point in collision box\n";
+		// }
+		// else {
+		// 	std::cout << "point not in collision box\n";
+		// }
+		// std::cout << delta.x << " " << delta.y << " " << delta.z << std::endl;
 		return (delta.x < length / 2 && delta.y < height / 2 && delta.z < width / 2);
 	}
 

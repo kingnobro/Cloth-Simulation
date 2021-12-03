@@ -82,13 +82,13 @@ int main(int argc, const char* argv[])
 	glfwSetCursorPosCallback(window, mouse_position_callback);
 
 	/** Generate Object Renderers **/
-	// vector<ClothRender> clothRenders;
-	// vector<ClothSpringRender> clothSpringRenders;
-	// for (Cloth* cloth : cloths)
-	// {
-	// 	clothRenders.push_back(ClothRender(cloth));
-	// 	clothSpringRenders.push_back(ClothSpringRender(cloth));
-	// }
+	vector<ClothRender> clothRenders;
+	vector<ClothSpringRender> clothSpringRenders;
+	for (Cloth* cloth : cloths)
+	{
+		clothRenders.push_back(ClothRender(cloth));
+		clothSpringRenders.push_back(ClothSpringRender(cloth));
+	}
 	// Model
 	Model ourModel("resources/Models/man/man_body.obj");
 	ModelRender modelRender(&ourModel);
@@ -119,30 +119,23 @@ int main(int argc, const char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
-		// for (size_t i = 0; i < cloths.size(); i += 1)
-		// {
-		// 	Cloth* cloth = cloths[i];
-		// 	cloth->update((double)TIME_STEP, ourModel);
-		// 
-		// 	/** Display **/
-		// 	if (Cloth::drawMode == DRAW_LINES)
-		// 	{
-		// 		clothSpringRenders[i].flush();
-		// 	}
-		// 	else
-		// 	{
-		// 		clothRenders[i].flush();
-		// 	}
-		// }
-		// sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
-
-		glm::vec3 point = glm::vec3(1.0f, 6.0f, -2.3f);
-		glm::vec3 frontPos = ourModel.collisionBox.getFrontPosition(point);
-		glm::vec3 backPos = ourModel.collisionBox.getBackPosition(point);
-		std::cout << frontPos.x << " " << frontPos.y << " " << frontPos.z << std::endl;
-		std::cout << backPos.x << " " << backPos.y << " " << backPos.z << std::endl;
-
-		modelRender.flush();
+		for (size_t i = 0; i < cloths.size(); i += 1)
+		{
+			Cloth* cloth = cloths[i];
+			cloth->update((double)TIME_STEP, modelRender);
+		
+			/** Display **/
+			if (Cloth::drawMode == DRAW_LINES)
+			{
+				clothSpringRenders[i].flush();
+			}
+			else
+			{
+				clothRenders[i].flush();
+			}
+		}
+		sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
+		modelRender.flush(&camera);
 		/** -------------------------------- Simulation & Rendering -------------------------------- **/
 
 		glfwSwapBuffers(window);
@@ -171,9 +164,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
 		glm::vec3 ray = mouseRay.calculateMouseRay(mouse_x, mouse_y, (int)scr_width, (int)scr_height);
-		// selectedCloth = clothPicker.pickCloth(cloths, ray);
-
-		// sewMachine.setCandidateCloth(selectedCloth);
+		selectedCloth = clothPicker.pickCloth(cloths, ray);
+		sewMachine.setCandidateCloth(selectedCloth);
 	}
 	// Sewing
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)

@@ -34,7 +34,6 @@ public:
 	{
 		// screen size
 		// in the paper, scr_width = scr_height = mapsize = 512
-		int scr_width, scr_height;
 		glfwGetWindowSize(window, &scr_width, &scr_height);
 		const size_t resolution = scr_width * scr_height;
 		frontDepthMap = new float[resolution];
@@ -86,16 +85,34 @@ public:
 		glUseProgram(0);
 	}
 
-	void flush()
+	void flush(Camera *camera)
 	{
 		runtimeShader.use();
-		runtimeShader.setMat4("projection", camera.GetPerspectiveProjectionMatrix());
-		runtimeShader.setMat4("view", camera.GetViewMatrix());
+		runtimeShader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
+		runtimeShader.setMat4("view", camera->GetViewMatrix());
 		model->Draw(runtimeShader);
 		glUseProgram(0);
 	}
 
+	bool collideWithModel(const glm::vec3& point)
+	{
+		if (!model->collisionBox.collideWithPoint(point)) return false;
+
+		glm::vec3 frontPos = model->collisionBox.getFrontPosition(point);
+		glm::vec3 backPos = model->collisionBox.getBackPosition(point);
+		
+		float z_front = getDepth(frontPos, frontDepthMap);
+		float z_back = getDepth(backPos, backDepthMap);
+
+		if (frontPos.z > z_front && backPos.z > z_back) {
+			std::cout << "collide at " << point.x << " " << point.y << " " << point.z << std::endl;
+		}
+		return frontPos.z > z_front && backPos.z > z_back;
+	}
+
 private:
+	int scr_width;
+	int scr_height;
 	Model* model;
 	Shader runtimeShader;
 	Shader offlineShader;
@@ -144,5 +161,12 @@ private:
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_FLOAT, depthMap);
 		glBindTexture(GL_TEXTURE_2D, colorbuffer);
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, normalMap);
+	}
+
+	float getDepth(const glm::vec3& point, float *depthMap) const
+	{
+		int x = point.x;
+		int y = point.y;
+		return depthMap[y * scr_width + x];
 	}
 };

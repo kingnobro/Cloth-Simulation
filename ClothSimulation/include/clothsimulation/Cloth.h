@@ -5,7 +5,7 @@
 
 #include "Spring.h"
 #include "Rigid.h"
-#include "Model.h"
+#include "ModelRender.h"
 
 extern const int iterationFreq;
 extern glm::vec3 gravity;
@@ -51,8 +51,8 @@ public:
 		sewed = false;
 
 		// 避免一开始和球穿模
-		glm::vec3 initForce(10.0, 40.0, 20.0);
-		addForce(initForce);
+		// glm::vec3 initForce(10.0, 40.0, 20.0);
+		// addForce(initForce);
 
 		init();
 	}
@@ -80,13 +80,13 @@ public:
 	/*
 	 * update force, movement, collision and normals in every render loop
 	 */
-	void update(double timeStep, const Model &ourModel)
+	void update(double timeStep, ModelRender &modelRender)
 	{
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
 			integrate(timeStep);
-			collisionResponse(ourModel);
+			collisionResponse(modelRender);
 		}
 		computeNormal();
 	}
@@ -164,9 +164,9 @@ private:
 				node->texCoord = glm::vec2(tex_x, tex_y);
 				nodes.push_back(node);
 
-				printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, pos_x, pos_y, pos_z, tex_x, tex_y);
+				// printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, pos_x, pos_y, pos_z, tex_x, tex_y);
 			}
-			std::cout << std::endl;
+			// std::cout << std::endl;
 		}
 
 		/** Add springs **/
@@ -275,9 +275,15 @@ private:
 		}
 	}
 
-	void collisionResponse(const Model &ourModel)
+	void collisionResponse(ModelRender &modelRender)
 	{
-		
+		for (size_t i = 0; i < nodes.size(); i += 1)
+		{
+			Node* node = nodes[i];
+			if (modelRender.collideWithModel(getWorldPos(node))) {
+				node->velocity *= -1;
+			}
+		}
 	}
 
 	void integrate(float timeStep)
