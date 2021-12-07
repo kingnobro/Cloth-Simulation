@@ -32,6 +32,7 @@ public:
 	glm::vec2	texCoord;       // Texture coord
 	glm::vec3	normal;         // For smoothly shading
 	glm::vec3	position;
+	glm::vec3   lastPosition;	// 质点前一时刻的位置, 用于碰撞响应
 	glm::vec3   velocity;
 	glm::vec3   force;
 	glm::vec3	acceleration;
@@ -41,6 +42,7 @@ public:
 		mass = MASS;
 		isFixed = ISFIXED;
 		position = pos;
+		lastPosition = glm::vec3(0);
 		velocity = glm::vec3(0);
 		force = glm::vec3(0);
 		acceleration = glm::vec3(0);
@@ -64,6 +66,7 @@ public:
 			// Newton's second law of motion
 			acceleration = force / (float) mass;
 			velocity += acceleration * timeStep;
+			lastPosition = position;
 			position += velocity * timeStep;
 		}
 		force = glm::vec3(0);

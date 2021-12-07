@@ -127,6 +127,14 @@ public:
 		return glm::vec3(x, y, z);
 	}
 
+	glm::vec3 inverseFrontPosition(const glm::vec3& point)
+	{
+		float x = point.x * phi / mapsize - phi / 2;
+		float y = point.y * phi / mapsize;
+		float z = width - point.z * width;
+		return glm::vec3(x, y, z) + origin;
+	}
+
 	/*
 	 * position transform, under the perspective of back camera  
 	 */

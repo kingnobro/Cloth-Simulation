@@ -110,14 +110,66 @@ public:
 		float z_front = getDepth(frontPos, frontDepthMap);
 		float z_back = getDepth(backPos, backDepthMap);
 
-		if (frontPos.z < z_front || backPos.z < z_back) {
-			return false;
+		return (frontPos.z >= z_front && backPos.z >= z_back);
+	}
+
+	void collisionResponse(Node* node, glm::vec3 clothPos)
+	{
+		glm::vec3 currPosition = node->position + clothPos;
+		glm::vec3 lastPosition = node->lastPosition + clothPos;
+		// std::cout <<"current: " << currPosition.x << " " << currPosition.y << " " << currPosition.z << std::endl;
+		// std::cout << "last: " << lastPosition.x << " " << lastPosition.y << " " << lastPosition.z << std::endl;
+		
+		// 转换为前部图像坐标
+		glm::vec3 currFrontPos = model->collisionBox.getFrontPosition(currPosition);
+		glm::vec3 lastFrontPos = model->collisionBox.getFrontPosition(lastPosition);
+		
+		// 在前部深度图像上确定一条直线(在后部深度图像上也能生成, 但计算出来的点是相同的)
+		float x1 = currFrontPos.x;
+		float y1 = currFrontPos.y;
+		float z1 = currFrontPos.z;
+		float x2 = lastFrontPos.x;
+		float y2 = lastFrontPos.y;
+		float z2 = lastFrontPos.z;
+		// todo: divide by zero
+		float k1 = (y2 - y1) / (x2 - x1);
+		float b1 = y1 - (y2 - y1) * x1 / (x2 - x1);
+		float k2 = (z2 - z1) / (x2 - x1);
+		float b2 = z2 - (z2 - z1) * x1 / (x2 - x1);
+		
+		vector<glm::vec3> candidate;
+		
+		// 计算直线上的点
+		for (float x = min(x1, x2); x <= max(x1, x2); x++)
+		{
+			float y = k1 * x + b1;
+			float z = k2 * x + b2;
+			if (y > 512) continue;
+			// 该点为碰撞点
+			if (z - getDepth(glm::vec2(x, y), frontDepthMap) < 1e-3) {
+				candidate.push_back(glm::vec3(x, y, z));
+			}
 		}
-		else {
-			// todo: add normal logical
-			return true;
+		
+		float t;
+		float disToLastPosition = FLT_MAX;
+		glm::vec3 normal = glm::vec3(0.0f);
+		glm::vec3 collisionPoint = lastFrontPos;
+		for (const glm::vec3& point : candidate)
+		{
+			// t = distance(point, currFrontPos) / distance(currFrontPos, lastFrontPos);
+			if (glm::distance(point, lastFrontPos) < disToLastPosition)
+			{
+				collisionPoint = point;
+				disToLastPosition = glm::distance(collisionPoint, lastFrontPos);
+				normal = getNormal(collisionPoint, frontNormalMap);
+			}
 		}
-		// normal = getNormal(point, )
+		
+		node->position = model->collisionBox.inverseFrontPosition(collisionPoint) - clothPos;
+		glm::vec3 vn = normal * glm::dot(node->velocity, normal);
+		if (normal == glm::vec3(0.0f)) node->velocity *= -1.0f;
+		else node->velocity = (node->velocity - vn) * (1.0f - 0.1f) - vn * 0.8f;
 	}
 
 private:
@@ -173,18 +225,23 @@ private:
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, normalMap);
 	}
 
-	float getDepth(const glm::vec3& point, float* depthMap) const
+	float getDepth(const glm::vec2& point, float* depthMap) const
 	{
 		int x = point.x;
 		int y = point.y;
 		return depthMap[y * scr_width + x];
 	}
 
-	glm::vec3 getNormal(const glm::vec3& point, float* normalMap) const
+	glm::vec3 getNormal(const glm::vec2& point, float* normalMap) const
 	{
 		int x = point.x;
 		int y = point.y;
 		int index = 3 * (y * scr_width + x);
 		return glm::vec3(normalMap[index], normalMap[index + 1], normalMap[index + 2]);
+	}
+
+	float distance(const glm::vec2& p1, const glm::vec2& p2)
+	{
+		return glm::distance(p1, p2);
 	}
 };

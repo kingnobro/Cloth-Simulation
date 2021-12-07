@@ -11,5 +11,6 @@ uniform mat4 projection;
 void main()
 {
     normal = aNormal;
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    float tolerance = 0.5;
+    gl_Position = projection * view * model * vec4(aPos + tolerance * aNormal, 1.0);
 }

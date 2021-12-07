@@ -12,9 +12,9 @@ extern glm::vec3 gravity;
 
 // Default Cloth Values
 const int NODE_DENSITY = 4;
-const float STRUCTURAL_COEF = 170.0;
+const float STRUCTURAL_COEF = 160.0;
 const float SHEAR_COEF = 10.5;
-const float BENDING_COEF = 40.0;
+const float BENDING_COEF = 20.0;
 
 enum Draw_Mode
 {
@@ -81,10 +81,14 @@ public:
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
+			// todo: 要不要拆成多个 for 循环
 			for (size_t j = 0; j < nodes.size(); j++) {
 				Node* node = nodes[j];
 				node->integrate(timeStep);
-				collisionResponse(modelRender, node);
+				if (modelRender.collideWithModel(getWorldPos(node))) {
+					// std::cout << "node " << j << " collided\n";
+					modelRender.collisionResponse(node, clothPos);
+				}
 			}
 		}
 		computeNormal();
@@ -271,13 +275,6 @@ private:
 		for (int i = 0; i < nodes.size(); i++)
 		{
 			nodes[i]->addForce(force);
-		}
-	}
-
-	void collisionResponse(ModelRender &modelRender, Node* node)
-	{
-		if (modelRender.collideWithModel(getWorldPos(node))) {
-			node->velocity *= -1;
 		}
 	}
 
