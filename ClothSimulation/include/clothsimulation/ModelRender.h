@@ -113,16 +113,36 @@ public:
 		return (frontPos.z >= z_front && backPos.z >= z_back);
 	}
 
-	void collisionResponse(Node* node, glm::vec3 clothPos)
+	void collisionResponse(Node *node, const glm::vec3& clothPos)
 	{
+		// glm::vec3 frontPos = model->collisionBox.getFrontPosition(point);
+		// glm::vec3 backPos = model->collisionBox.getBackPosition(point);
+		// 
+		// float z_front = getDepth(frontPos, frontDepthMap);
+		// float z_back = getDepth(backPos, backDepthMap);
+		// 
+		// glm::vec3 frontNormal = getNormal(frontPos, frontNormalMap);
+		// glm::vec3 backNormal = getNormal(backPos, backNormalMap);
+		// 
+		// float C_fric = 0.8;
+		// float C_refl = 0.2;
+		// float cos = glm::dot(frontNormal, velocity) / (glm::length(frontNormal) * glm::length(velocity));
+		// float sin = glm::sqrt(1 - cos * cos);
+		// glm::vec3 vn = velocity * cos;
+		// glm::vec3 vt = velocity * sin;
+		// return glm::vec3(C_fric * vt - C_refl * vn);
+
 		glm::vec3 currPosition = node->position + clothPos;
 		glm::vec3 lastPosition = node->lastPosition + clothPos;
-		// std::cout <<"current: " << currPosition.x << " " << currPosition.y << " " << currPosition.z << std::endl;
-		// std::cout << "last: " << lastPosition.x << " " << lastPosition.y << " " << lastPosition.z << std::endl;
 		
 		// 转换为前部图像坐标
 		glm::vec3 currFrontPos = model->collisionBox.getFrontPosition(currPosition);
+		glm::vec3 currBackPos = model->collisionBox.getBackPosition(currPosition);
 		glm::vec3 lastFrontPos = model->collisionBox.getFrontPosition(lastPosition);
+		glm::vec3 lastBackPos = model->collisionBox.getBackPosition(lastPosition);
+
+		float z_front = getDepth(currFrontPos, frontDepthMap);
+		float z_back = getDepth(currBackPos, backDepthMap);
 		
 		// 在前部深度图像上确定一条直线(在后部深度图像上也能生成, 但计算出来的点是相同的)
 		float x1 = currFrontPos.x;
@@ -144,20 +164,25 @@ public:
 		{
 			float y = k1 * x + b1;
 			float z = k2 * x + b2;
-			if (y > 512) continue;
+			// 超出 mapsize 范围, 即不在碰撞盒范围内
+			if (int(x) >= 512 || int(x) < 0 || int(y) >= 512 || int(y) < 0) {
+				continue;
+			}
 			// 该点为碰撞点
 			if (z - getDepth(glm::vec2(x, y), frontDepthMap) < 1e-3) {
 				candidate.push_back(glm::vec3(x, y, z));
 			}
 		}
 		
-		float t;
 		float disToLastPosition = FLT_MAX;
-		glm::vec3 normal = glm::vec3(0.0f);
+		if (lastFrontPos.x > 511) lastFrontPos.x = 511.0f;
+		if (lastFrontPos.x < 0) lastFrontPos.x = 0.0f;
+		if (lastFrontPos.y > 511) lastFrontPos.y = 511.0f;
+		if (lastFrontPos.y < 0) lastFrontPos.y = 0.0f;
+		glm::vec3 normal = getNormal(lastFrontPos, frontNormalMap);
 		glm::vec3 collisionPoint = lastFrontPos;
 		for (const glm::vec3& point : candidate)
 		{
-			// t = distance(point, currFrontPos) / distance(currFrontPos, lastFrontPos);
 			if (glm::distance(point, lastFrontPos) < disToLastPosition)
 			{
 				collisionPoint = point;
@@ -165,11 +190,21 @@ public:
 				normal = getNormal(collisionPoint, frontNormalMap);
 			}
 		}
-		
-		node->position = model->collisionBox.inverseFrontPosition(collisionPoint) - clothPos;
-		glm::vec3 vn = normal * glm::dot(node->velocity, normal);
-		if (normal == glm::vec3(0.0f)) node->velocity *= -1.0f;
-		else node->velocity = (node->velocity - vn) * (1.0f - 0.1f) - vn * 0.8f;
+
+		if (fabs(currFrontPos.z - z_front) < fabs(currBackPos.z - z_back)) {
+			glm::vec3 normal = getNormal(lastFrontPos, frontNormalMap);
+			std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
+			node->position = lastPosition + getNormal(lastFrontPos, frontNormalMap) * 0.02f - clothPos;
+		}
+		else {
+			glm::vec3 normal = getNormal(lastBackPos, backNormalMap);
+			std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
+			node->position = lastPosition - getNormal(lastBackPos, backNormalMap) * 0.02f - clothPos;
+		}
+		node->velocity *= -0.1f;
+		// node->velocity = glm::vec3(0.0f);
+		// glm::vec3 vn = normal * glm::dot(node->velocity, normal);
+		// node->velocity = (node->velocity - vn) * (1.0f - 0.3f) - vn * 0.1f;
 	}
 
 private:

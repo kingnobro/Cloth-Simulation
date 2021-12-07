@@ -12,9 +12,9 @@ extern glm::vec3 gravity;
 
 // Default Cloth Values
 const int NODE_DENSITY = 4;
-const float STRUCTURAL_COEF = 160.0;
-const float SHEAR_COEF = 10.5;
-const float BENDING_COEF = 20.0;
+const float STRUCTURAL_COEF = 500.0;
+const float SHEAR_COEF = 30.0;
+const float BENDING_COEF = 3.0;
 
 enum Draw_Mode
 {
@@ -81,12 +81,10 @@ public:
 		for (int i = 0; i < iterationFreq; i++)
 		{
 			computeForce(timeStep, gravity);
-			// todo: 要不要拆成多个 for 循环
-			for (size_t j = 0; j < nodes.size(); j++) {
-				Node* node = nodes[j];
-				node->integrate(timeStep);
+			integrate(timeStep);
+			for (Node* node : nodes)
+			{
 				if (modelRender.collideWithModel(getWorldPos(node))) {
-					// std::cout << "node " << j << " collided\n";
 					modelRender.collisionResponse(node, clothPos);
 				}
 			}
@@ -138,6 +136,7 @@ public:
 				float pos_y = -((float)i / nodesDensity);
 				float pos_z = 0;
 				nodes[i * nodesPerRow + j]->position = glm::vec3(pos_x, pos_y, pos_z);
+				nodes[i * nodesPerRow + j]->lastPosition = glm::vec3(pos_x, pos_y, pos_z);
 			}
 		}
 	}
@@ -148,9 +147,10 @@ private:
 		nodesPerRow = width * nodesDensity;
 		nodesPerCol = height * nodesDensity;
 
-		for (int i = 0; i < nodesPerRow; i += 1)
+		for (int i = 0; i < 7; i += 1)
 		{
 			pins.push_back(glm::vec2(i, 0));
+			pins.push_back(glm::vec2(nodesPerRow - i, 0));
 		}
 
 		/** Add Nodes **/
@@ -211,15 +211,11 @@ private:
 
 	void computeForce(float timeStep, glm::vec3 gravity)
 	{
-		/** Nodes **/
-		for (int i = 0; i < nodes.size(); i++)
-		{
-			nodes[i]->addForce(gravity * nodes[i]->mass);
+		for (Node* node : nodes) {
+			node->addForce(gravity * node->mass);
 		}
-		/** Springs **/
-		for (int i = 0; i < springs.size(); i++)
-		{
-			springs[i]->computeInternalForce(timeStep);
+		for (Spring* spring : springs) {
+			spring->computeInternalForce(timeStep);
 		}
 	}
 
@@ -272,18 +268,15 @@ private:
 
 	void addForce(glm::vec3 force)
 	{
-		for (int i = 0; i < nodes.size(); i++)
-		{
-			nodes[i]->addForce(force);
+		for (Node* node : nodes) {
+			node->addForce(force);
 		}
 	}
 
 	void integrate(float timeStep)
 	{
-		/** Node **/
-		for (int i = 0; i < nodes.size(); i++)
-		{
-			nodes[i]->integrate(timeStep);
+		for (Node* node : nodes) {
+			node->integrate(timeStep);
 		}
 	}
 

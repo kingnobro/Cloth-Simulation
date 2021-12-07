@@ -42,7 +42,7 @@ public:
 		mass = MASS;
 		isFixed = ISFIXED;
 		position = pos;
-		lastPosition = glm::vec3(0);
+		lastPosition = pos;
 		velocity = glm::vec3(0);
 		force = glm::vec3(0);
 		acceleration = glm::vec3(0);
@@ -64,7 +64,7 @@ public:
 		if (!isFixed)
 		{
 			// Newton's second law of motion
-			acceleration = force / (float) mass;
+			acceleration = force / mass;
 			velocity += acceleration * timeStep;
 			lastPosition = position;
 			position += velocity * timeStep;

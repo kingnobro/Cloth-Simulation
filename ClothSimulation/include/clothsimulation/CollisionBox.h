@@ -149,6 +149,14 @@ public:
 		return glm::vec3(x, y, z);
 	}
 
+	glm::vec3 inverseBackPosition(const glm::vec3& point)
+	{
+		float x = phi / 2 - point.x * phi / mapsize;
+		float y = point.y * phi / mapsize;
+		float z = point.z * width;
+		return glm::vec3(x, y, z);
+	}
+
 private:
 	float minX, minY, minZ;
 	float maxX, maxY, maxZ;
