@@ -117,7 +117,10 @@ public:
         float z_front = getDepth(frontPos, frontDepthMap);
         float z_back = getDepth(backPos, backDepthMap);
 
-        return (frontPos.z >= z_front && backPos.z >= z_back);
+        // std::cout << "frontPos.z:" << frontPos.z << " z_front:" << z_front << " backPos.z:" << backPos.z << " z_back:" << z_back << "\n";
+
+        float tolerance = 0.05f;
+        return (frontPos.z >= z_front - tolerance && backPos.z >= z_back - tolerance);
     }
 
     /*
@@ -130,11 +133,11 @@ public:
         glm::vec3 currPosition = node->position + modelVector;
         glm::vec3 currFrontPosition = model->collisionBox.getFrontPosition(currPosition);
         glm::vec3 currBackPosition = model->collisionBox.getBackPosition(currPosition);
-        float z_front = getDepth(currFrontPosition, frontDepthMap);
-        float z_back = getDepth(currBackPosition, backDepthMap);
 
         // 获取碰撞点处的法线
         // 由于 [x, y] 对应模型 前部 和 后部 两个法线, 所以需要判断 [x, y] 离前部还是后部更近
+        float z_front = getDepth(currFrontPosition, frontDepthMap);
+        float z_back = getDepth(currBackPosition, backDepthMap);
         glm::vec3 normal = fabs(currFrontPosition.z - z_front) < fabs(currBackPosition.z - z_back) ?
             getNormal(currFrontPosition, frontNormalMap) :
             getNormal(currBackPosition, backNormalMap);

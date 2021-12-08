@@ -11,6 +11,9 @@
 class CollisionBox
 {
 public:
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+
     float width;
     float height;
     float length;
@@ -140,8 +143,4 @@ public:
         float z = boxPosition.z / width;
         return glm::vec3(x, y, z);
     }
-
-private:
-    float minX, minY, minZ;
-    float maxX, maxY, maxZ;
 };

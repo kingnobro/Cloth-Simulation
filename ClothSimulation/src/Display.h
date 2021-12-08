@@ -30,7 +30,10 @@ glm::vec2 smallClothSize(1, 1);
 //			 Position                  Size       clothID
 Cloth cloth1(glm::vec3(-3, 9, -1), bigClothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-3, 9, -4), bigClothSize, ++clothNumber);
-std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
+std::vector<Cloth*> cloths = { 
+	&cloth1, 
+	&cloth2 
+};
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
 // 3D raycast picker

@@ -79,12 +79,13 @@ public:
     void update(double timeStep, ModelRender &modelRender)
     {
         for (int i = 0; i < iterationFreq; i++)
-        {
+        { 
             computeForce(timeStep, gravity);
             integrate(timeStep);
             for (Node* node : nodes)
             {
                 if (modelRender.collideWithModel(getWorldPos(node))) {
+                    // std::cout << "collided\n";
                     modelRender.collisionResponse(node, clothPos);
                 }
             }
@@ -105,7 +106,7 @@ public:
     void moveCloth(glm::vec3 offset)
     {
         clothPos += offset;
-        reset();
+        // reset();
     }
 
     glm::mat4 GetModelMatrix() const

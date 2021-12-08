@@ -16,6 +16,6 @@ uniform mat4 projection;
 void main()
 {
     normal = aNormal;
-    float tolerance = 2.0f;  // 将顶点往法线方向扩展, 提早检测到碰撞, 避免点撞入模型
+    float tolerance = 0.5f;  // 将顶点往法线方向扩展, 提早检测到碰撞, 避免点撞入模型
     gl_Position = projection * view * model * vec4(aPos + tolerance * aNormal, 1.0f);
 }
