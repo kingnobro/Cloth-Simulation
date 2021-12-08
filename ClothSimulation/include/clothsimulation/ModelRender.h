@@ -115,22 +115,36 @@ public:
 
 	void collisionResponse(Node *node, const glm::vec3& clothPos)
 	{
+		// std::cout << "collided\n";
 		glm::vec3 currPosition = node->position + clothPos;
 		glm::vec3 lastPosition = node->lastPosition + clothPos;
 		
+		glm::vec3 vn;
+		glm::vec3 vt;
+		glm::vec3 normal;
+		glm::vec3 velocity = node->velocity;
 		if (model->collisionBox.onFrontSide(currPosition))
 		{
 			// 与模型前部碰撞
 			glm::vec3 frontPos = model->collisionBox.getFrontPosition(currPosition);
-			glm::vec3 normal = getNormal(frontPos, frontNormalMap);
+			normal = getNormal(frontPos, frontNormalMap);
 		}
 		else
 		{
 			// 与模型后部碰撞
 			glm::vec3 backPos = model->collisionBox.getBackPosition(currPosition);
-			glm::vec3 normal = getNormal(backPos, backNormalMap);
-			
+			normal = getNormal(backPos, backNormalMap);
 		}
+		float cos = glm::dot(normal, node->velocity) / (glm::length(normal) * glm::length(node->velocity));
+		float sin = glm::sqrt(1 - cos * cos);
+		vn = velocity * cos;
+		vt = velocity * sin;
+		float friction = 0.8;
+		float reflection = 0.2;
+		// node->velocity = friction * vt - reflection * vn;
+		node->position = node->position + normal * 0.03f;
+		node->velocity *= -1.0f;
+		// std::cout << "update velocity: " << node->velocity.x << " " << node->velocity.y << " " << node->velocity.z << "\n";
 
 		// glm::vec3 currPosition = node->position + clothPos;
 		// glm::vec3 lastPosition = node->lastPosition + clothPos;

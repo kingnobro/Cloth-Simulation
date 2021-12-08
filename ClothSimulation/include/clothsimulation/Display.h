@@ -28,8 +28,8 @@ int clothNumber = 0;
 glm::vec2 bigClothSize(6, 6);
 glm::vec2 smallClothSize(1, 1);
 //			 Position                  Size       clothID
-Cloth cloth1(glm::vec3(-3, 8.7, -1.2), bigClothSize, ++clothNumber);
-Cloth cloth2(glm::vec3(-3, 8.7, -4), smallClothSize, ++clothNumber);
+Cloth cloth1(glm::vec3(-3, 8.7, -1), bigClothSize, ++clothNumber);
+Cloth cloth2(glm::vec3(-3, 8.7, -4), bigClothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { &cloth1, &cloth2 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
