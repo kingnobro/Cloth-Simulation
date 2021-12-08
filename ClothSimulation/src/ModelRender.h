@@ -159,8 +159,8 @@ private:
 
     void init()
     {
-        runtimeShader = Shader("resources/Shaders/ModelVS.glsl", "resources/Shaders/ModelFS.glsl");
-        offlineShader = Shader("resources/Shaders/offscreenVS.glsl", "resources/Shaders/offscreenFS.glsl");
+        runtimeShader = Shader("src/shaders/ModelVS.glsl", "src/shaders/ModelFS.glsl");
+        offlineShader = Shader("src/shaders/offscreenVS.glsl", "src/shaders/offscreenFS.glsl");
 
         // model matrix
         glm::mat4 modelMatrix = glm::mat4(1.0f);

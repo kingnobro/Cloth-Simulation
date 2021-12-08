@@ -42,7 +42,7 @@ struct SpringRender
         }
 
         /** Build shader **/
-        shader = Shader("resources/Shaders/SpringVS.glsl", "resources/Shaders/SpringFS.glsl");
+        shader = Shader("src/shaders/SpringVS.glsl", "src/shaders/SpringFS.glsl");
         std::cout << "Spring Program ID: " << shader.ID << std::endl;
 
         // Generate ID of VAO and VBOs

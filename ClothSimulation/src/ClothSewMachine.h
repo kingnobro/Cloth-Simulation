@@ -54,7 +54,7 @@ public:
             vertices[i * 2 + 1] = cloth2->getWorldPos(cloth2->getNode(i, 0));
         }
 
-        shader = Shader("resources/Shaders/LineVS.glsl", "resources/Shaders/LineFS.glsl");
+        shader = Shader("src/shaders/LineVS.glsl", "src/shaders/LineFS.glsl");
         std::cout << "Sew Program ID: " << shader.ID << std::endl;
 
         // generate ID of VAO and VBO

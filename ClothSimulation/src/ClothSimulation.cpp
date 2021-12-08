@@ -11,11 +11,11 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "clothsimulation/Model.h"
-#include "clothsimulation/Display.h"
-#include "clothsimulation/ClothRender.h"
-#include "clothsimulation/MeshRender.h"
-#include "clothsimulation/ModelRender.h"
+#include "Model.h"
+#include "Display.h"
+#include "ClothRender.h"
+#include "MeshRender.h"
+#include "ModelRender.h"
 
 #define TIME_STEP 0.01
 
@@ -90,7 +90,7 @@ int main(int argc, const char* argv[])
         clothSpringRenders.push_back(ClothSpringRender(cloth));
     }
     // Model
-    Model ourModel("resources/Models/man/man_body.obj");
+    Model ourModel("assets/models/man/man_body.obj");
     ModelRender modelRender(&ourModel);
 
     glEnable(GL_DEPTH_TEST);
