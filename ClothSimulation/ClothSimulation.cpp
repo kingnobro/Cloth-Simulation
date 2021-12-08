@@ -94,7 +94,7 @@ int main(int argc, const char* argv[])
 	ModelRender modelRender(&ourModel);
 
 	glEnable(GL_DEPTH_TEST);
-	glPointSize(1);
+	glPointSize(3);
 
 	// offscreen render, to generate depth maps and normal maps
 	modelRender.offScreenRender(

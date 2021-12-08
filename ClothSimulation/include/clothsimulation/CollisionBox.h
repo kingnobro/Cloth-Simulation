@@ -127,14 +127,6 @@ public:
 		return glm::vec3(x, y, z);
 	}
 
-	glm::vec3 inverseFrontPosition(const glm::vec3& point)
-	{
-		float x = point.x * phi / mapsize - phi / 2;
-		float y = point.y * phi / mapsize;
-		float z = width - point.z * width;
-		return glm::vec3(x, y, z) + origin;
-	}
-
 	/*
 	 * position transform, under the perspective of back camera  
 	 */
@@ -149,12 +141,13 @@ public:
 		return glm::vec3(x, y, z);
 	}
 
-	glm::vec3 inverseBackPosition(const glm::vec3& point)
+	/*
+	 * 点 [x, y] 在做碰撞响应时需要法向量, 而 [x, y] 对应 前部 和 后部 两个法向量
+	 * 判断一个点是否在包围盒的前半部分, 从而决定使用哪个法向量
+	 */
+	bool onFrontSide(const glm::vec3& point)
 	{
-		float x = phi / 2 - point.x * phi / mapsize;
-		float y = point.y * phi / mapsize;
-		float z = point.z * width;
-		return glm::vec3(x, y, z);
+		return point.z > centroid.z;
 	}
 
 private:
