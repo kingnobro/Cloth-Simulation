@@ -143,7 +143,7 @@ public:
             getNormal(currBackPosition, backNormalMap);
 
         // 将质点沿着当前法线向外平移一段距离
-        float epsilon = 0.03f;
+        float epsilon = 0.05f;
         node->position = node->position + normal * epsilon;
         // 将速度取反
         node->velocity *= -0.001f;

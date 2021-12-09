@@ -16,7 +16,7 @@ public:
 	GLuint VBO;
 	Shader shader;
 
-	vector<glm::vec3> vertices;    // 衣片上的顶点
+	std::vector<glm::vec3> vertices;    // 衣片上的顶点
 	bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
 						// 多次删除会报错, 所以用一个 bool 变量记录是否处于 reset 状态
 
@@ -87,8 +87,8 @@ public:
 		if (cloth1 == nullptr || cloth2 == nullptr || cloth1->sewed || cloth2->sewed) {
 			return;
 		}
-		const vector<Node*>& sewNode1 = cloth1->sewNode;
-		const vector<Node*>& sewNode2 = cloth2->sewNode;
+		const std::vector<Node*>& sewNode1 = cloth1->sewNode;
+		const std::vector<Node*>& sewNode2 = cloth2->sewNode;
 		assert(sewNode1.size() == sewNode2.size());
 
 		// 修改 Node 的局部坐标
@@ -97,7 +97,7 @@ public:
 			Node* n2 = sewNode2[i];
 			glm::vec3 worldPos1 = cloth1->getWorldPos(n1);
 			glm::vec3 worldPos2 = cloth2->getWorldPos(n2);
-			glm::vec3 delta = glm::abs(cloth1->clothPos - cloth2->clothPos) / 2.0f;
+			glm::vec3 delta = glm::abs(worldPos1 - worldPos2) / 2.0f;
 
 			// 将两个质点朝着它们的中点移动
 			// 为了简化表达式, 将 bool 转换为 int, 用于决定是 + 还是 -
@@ -181,8 +181,8 @@ private:
 	 */ 
 	void setSewNode() {
 		vertices.clear();
-		const vector<Node*>& sewNode1 = cloth1->sewNode;
-		const vector<Node*>& sewNode2 = cloth2->sewNode;
+		const std::vector<Node*>& sewNode1 = cloth1->sewNode;
+		const std::vector<Node*>& sewNode2 = cloth2->sewNode;
 		assert(sewNode1.size() == sewNode2.size());
 
 		for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {

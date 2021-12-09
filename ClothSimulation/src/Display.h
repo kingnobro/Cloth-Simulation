@@ -13,7 +13,8 @@
 
 // Gravity
 extern const int iterationFreq = 10;
-extern glm::vec3 gravity(0.0, -9.8 / iterationFreq, 0.0);
+// fixme: 0 -> -9.8
+extern glm::vec3 gravity(0.0, 0.0 / iterationFreq, 0.0);
 
 // Light
 glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
@@ -26,7 +27,7 @@ Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 int clothNumber = 0;
 glm::vec2 bigClothSize(4, 6);
 glm::vec2 smallClothSize(1, 1);
-//			 Position                  Size       clothID
+//			 Position                  Size      clothID
 Cloth cloth1(glm::vec3(-2, 9, -1), bigClothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-2, 9, -4), bigClothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { 

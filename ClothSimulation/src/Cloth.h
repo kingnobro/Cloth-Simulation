@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <vector>
+#include <ctime>
 
 #include "Spring.h"
 #include "ModelRender.h"
@@ -34,6 +35,7 @@ public:
 	int height;
 	int nodesPerRow;
 	int nodesPerCol;
+	int collisionCount;
 	glm::vec3 clothPos;
 	bool sewed;
 
@@ -41,6 +43,7 @@ public:
 	std::vector<Node*> faces;
 	std::vector<Node*> sewNode;	// 即将被缝合的顶点
 	std::vector<Spring*> springs;
+	std::vector<glm::vec2> pins;
 
 	Cloth(glm::vec3 pos, glm::vec2 size, int ID)
 	{
@@ -49,6 +52,7 @@ public:
 		height = size.y;
 		clothID = ID;
 		sewed = false;
+		collisionCount = 0;
 
 		init();
 	}
@@ -82,11 +86,32 @@ public:
 		{
 			computeForce(timeStep, gravity);
 			integrate(timeStep);
-			for (Node* node : nodes)
-			{
-				if (modelRender.collideWithModel(getWorldPos(node))) {
-					// std::cout << "collided\n";
-					modelRender.collisionResponse(node, clothPos);
+			// 缝制之后才需要检测碰撞
+			if (sewed) {
+				for (Node* node : nodes)
+				{
+					if (!node->isFixed && modelRender.collideWithModel(getWorldPos(node))) {
+						modelRender.collisionResponse(node, clothPos);
+					}
+				}
+				// 缝合点的随机扰动
+				// for (Node* node : sewNode)
+				// {
+				// 	if (collisionCount <= 1000) {
+				// 		float delta = (std::rand() % 10 - 5) / 200.0f;
+				// 		node->isFixed = false;
+				// 		node->addForce(glm::vec3(delta, 0.0f, 0.0f));
+				// 		node->addForce(glm::vec3(0.0f, 0.0f, delta));
+				// 		node->integrate(timeStep);
+				// 		if (modelRender.collideWithModel(getWorldPos(node)))
+				// 			modelRender.collisionResponse(node, clothPos);
+				// 		node->isFixed = true;
+				// 	}
+				// }
+				collisionCount += 1;
+				// 碰撞检测一段时间后就停止更新位置, 从而避免因速度更新而持续抖动的状态
+				if (collisionCount == 500) {
+					for(Node *node : nodes) node->isFixed = true;
 				}
 			}
 		}
@@ -141,15 +166,45 @@ public:
 				float pos_z = 0;
 				node = nodes[y * nodesPerRow + x];
 				node->lastPosition = node->position = glm::vec3(pos_x, pos_y, pos_z);
+				node->isFixed = false;
 			}
 		}
 		// 恢复到未缝合的状态
 		sewed = false;
+		collisionCount = 0;
+		pin(pins);
+	}
+
+
+	void pin(std::vector<glm::vec2>& pins)  // Unpin cloth's (x, y) node
+	{
+		for (glm::vec2& p : pins) {
+			int x = p.x;
+			int y = p.y;
+			if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
+				getNode(x, y)->isFixed = true;
+			}
+		}
+	}
+
+	void unPin(std::vector<glm::vec2>& pins) // Unpin cloth's (x, y) node
+	{
+		for (glm::vec2& p : pins) {
+			int x = p.x;
+			int y = p.y;
+			if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
+				getNode(x, y)->isFixed = false;
+			}
+		}
 	}
 
 private:
+	int clothID; 
+
 	void init()
 	{
+		std::srand(std::time(nullptr));
+
 		nodesPerRow = width * nodesDensity;
 		nodesPerCol = height * nodesDensity;
 
@@ -165,6 +220,8 @@ private:
 				Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
 				node->texCoord = glm::vec2(tex_x, tex_y);
 				nodes.push_back(node);
+				// 把所有点都 pin 住, 因为一开始衣片是不动的
+				// pins.push_back(glm::vec2(x, y));
 			}
 		}
 
@@ -199,56 +256,34 @@ private:
 			}
 		}
 
-		pins.push_back(glm::vec2(0, 0));
-		pins.push_back(glm::vec2(1, 0));
-		pins.push_back(glm::vec2(2, 0));
-		pins.push_back(glm::vec2(nodesPerRow - 1, 0));
-		pins.push_back(glm::vec2(nodesPerRow - 2, 0));
-		pins.push_back(glm::vec2(nodesPerRow - 3, 0));
-		for (int i = 8; i < nodesPerCol; i++) {
+		for (int i = 2; i < 5; i++) {
+			pins.push_back(glm::vec2(i, 0));
+			pins.push_back(glm::vec2(nodesPerRow - 1 - i, 0));
+		}
+		for (int i = 10; i < nodesPerCol; i++) {
 			pins.push_back(glm::vec2(0, i));
 			pins.push_back(glm::vec2(nodesPerRow - 1, i));
 		}
-		// pins.push_back(glm::vec2(0, nodesPerCol - 1));
-		// pins.push_back(glm::vec2(nodesPerRow - 1, nodesPerCol - 1));
-		for (const glm::vec2& p : pins) {
-			pin(p);
-		}
+		pin(pins);
 
 		// 添加待缝合的点
-		sewNode.push_back(getNode(0, 0));
-		sewNode.push_back(getNode(1, 0));
-		sewNode.push_back(getNode(2, 0));
-		sewNode.push_back(getNode(nodesPerRow - 1, 0));
-		sewNode.push_back(getNode(nodesPerRow - 2, 0));
-		sewNode.push_back(getNode(nodesPerRow - 3, 0));
-		for (int i = 8; i < nodesPerCol; i++) {
+		for (int i = 2; i < 5; i++) {
+			sewNode.push_back(getNode(i, 0));
+			sewNode.push_back(getNode(nodesPerRow - 1 - i, 0));
+		}
+		for (int i = 10; i < nodesPerCol; i++) {
 			sewNode.push_back(getNode(0, i));
 			sewNode.push_back(getNode(nodesPerRow - 1, i));
 		}
 	}
 
-	void computeForce(float timeStep, glm::vec3 gravity)
+	void computeForce(float timeStep, const glm::vec3& gravity)
 	{
 		for (Node* node : nodes) {
 			node->addForce(gravity * node->mass);
 		}
 		for (Spring* spring : springs) {
 			spring->computeInternalForce(timeStep);
-		}
-	}
-
-	void pin(glm::vec2 index)  // Unpin cloth's (x, y) node
-	{
-		if (index.x >=0 && index.x < nodesPerRow && index.y >= 0 && index.y < nodesPerCol) {
-			getNode(index.x, index.y)->isFixed = true;
-		}
-	}
-
-	void unPin(glm::vec2 index) // Unpin cloth's (x, y) node
-	{
-		if (index.x >= 0 && index.x < nodesPerRow && index.y >= 0 && index.y < nodesPerCol) {
-			getNode(index.x, index.y)->isFixed = false;
 		}
 	}
 
@@ -294,7 +329,4 @@ private:
 			node->integrate(timeStep);
 		}
 	}
-
-	int clothID;
-	std::vector<glm::vec2> pins;
 };
