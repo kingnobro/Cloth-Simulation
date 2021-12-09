@@ -161,7 +161,6 @@
     <ClInclude Include="src\ModelRender.h" />
     <ClInclude Include="src\MouseRay.h" />
     <ClInclude Include="src\Point.h" />
-    <ClInclude Include="src\Rigid.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Spring.h" />
   </ItemGroup>
@@ -174,8 +173,6 @@
     <None Include="src\shaders\ModelVS.glsl" />
     <None Include="src\shaders\offscreenFS.glsl" />
     <None Include="src\shaders\offscreenVS.glsl" />
-    <None Include="src\shaders\RigidFS.glsl" />
-    <None Include="src\shaders\RigidVS.glsl" />
     <None Include="src\shaders\SpringFS.glsl" />
     <None Include="src\shaders\SpringVS.glsl" />
   </ItemGroup>

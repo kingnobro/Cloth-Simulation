@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "Cloth.h"
-#include "Rigid.h"
 #include "stb_image.h"
 #include "Camera.h"
 #include "Shader.h"
@@ -25,7 +24,7 @@ Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 
 // Cloths
 int clothNumber = 0;
-glm::vec2 bigClothSize(6, 6);
+glm::vec2 bigClothSize(4, 6);
 glm::vec2 smallClothSize(1, 1);
 //			 Position                  Size       clothID
 Cloth cloth1(glm::vec3(-3, 9, -1), bigClothSize, ++clothNumber);

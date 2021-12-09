@@ -35,7 +35,7 @@ public:
             glm::vec3 hitPoint = camera->Position + glm::vec3(ray.x * t, ray.y * t, ray.z * t);
             if (hitPoint.x >= pointLeftUpper.x && hitPoint.x <= pointRightUpper.x && hitPoint.y <= pointLeftUpper.y && hitPoint.y >= pointRightBottom.y)
             {
-                // TODO: find the cloth closet to the camera
+                // TODO: find the cloth closest to the camera
                 if (selectedCloth == nullptr)
                 {
                     selectedCloth = cloth;
