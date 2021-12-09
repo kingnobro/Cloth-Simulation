@@ -27,8 +27,8 @@ int clothNumber = 0;
 glm::vec2 bigClothSize(4, 6);
 glm::vec2 smallClothSize(1, 1);
 //			 Position                  Size       clothID
-Cloth cloth1(glm::vec3(-3, 9, -1), bigClothSize, ++clothNumber);
-Cloth cloth2(glm::vec3(-3, 9, -4), bigClothSize, ++clothNumber);
+Cloth cloth1(glm::vec3(-2, 9, -1), bigClothSize, ++clothNumber);
+Cloth cloth2(glm::vec3(-2, 9, -4), bigClothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { 
 	&cloth1, 
 	&cloth2 

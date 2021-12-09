@@ -200,7 +200,15 @@ private:
 		}
 
 		pins.push_back(glm::vec2(0, 0));
+		pins.push_back(glm::vec2(1, 0));
+		pins.push_back(glm::vec2(2, 0));
 		pins.push_back(glm::vec2(nodesPerRow - 1, 0));
+		pins.push_back(glm::vec2(nodesPerRow - 2, 0));
+		pins.push_back(glm::vec2(nodesPerRow - 3, 0));
+		for (int i = 8; i < nodesPerCol; i++) {
+			pins.push_back(glm::vec2(0, i));
+			pins.push_back(glm::vec2(nodesPerRow - 1, i));
+		}
 		// pins.push_back(glm::vec2(0, nodesPerCol - 1));
 		// pins.push_back(glm::vec2(nodesPerRow - 1, nodesPerCol - 1));
 		for (const glm::vec2& p : pins) {
@@ -209,7 +217,15 @@ private:
 
 		// 添加待缝合的点
 		sewNode.push_back(getNode(0, 0));
+		sewNode.push_back(getNode(1, 0));
+		sewNode.push_back(getNode(2, 0));
 		sewNode.push_back(getNode(nodesPerRow - 1, 0));
+		sewNode.push_back(getNode(nodesPerRow - 2, 0));
+		sewNode.push_back(getNode(nodesPerRow - 3, 0));
+		for (int i = 8; i < nodesPerCol; i++) {
+			sewNode.push_back(getNode(0, i));
+			sewNode.push_back(getNode(nodesPerRow - 1, i));
+		}
 	}
 
 	void computeForce(float timeStep, glm::vec3 gravity)
