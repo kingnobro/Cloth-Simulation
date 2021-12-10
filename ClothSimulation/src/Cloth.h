@@ -12,8 +12,8 @@ extern glm::vec3 gravity;
 // Default Cloth Values
 const int NODE_DENSITY = 4;
 const float STRUCTURAL_COEF = 400.0;
-const float SHEAR_COEF = 30.0;
-const float BENDING_COEF = 3.0;
+const float SHEAR_COEF = 80.0;
+const float BENDING_COEF = 50.0;
 
 enum Draw_Mode
 {
@@ -80,34 +80,24 @@ public:
 	/*
 	 * update force, movement, collision and normals in every render loop
 	 */
-	void update(double timeStep, ModelRender& modelRender)
+	void update(float timeStep, ModelRender& modelRender)
 	{
 		for (int i = 0; i < iterationFreq; i++)
 		{
-			computeForce(timeStep, gravity);
-			integrate(timeStep);
+			for (Spring* spring : springs) {
+				spring->computeInternalForce(timeStep);
+			}
+			for (Node* node : nodes) {
+				node->integrate(timeStep);
+			}
 			// 缝制之后才需要检测碰撞
 			if (sewed) {
 				for (Node* node : nodes)
 				{
-					if (!node->isFixed && modelRender.collideWithModel(getWorldPos(node))) {
-						modelRender.collisionResponse(node, clothPos);
+					if (!node->isFixed && modelRender.collideWithModel(node)) {
+						modelRender.collisionResponse(node);
 					}
 				}
-				// 缝合点的随机扰动
-				// for (Node* node : sewNode)
-				// {
-				// 	if (collisionCount <= 1000) {
-				// 		float delta = (std::rand() % 10 - 5) / 200.0f;
-				// 		node->isFixed = false;
-				// 		node->addForce(glm::vec3(delta, 0.0f, 0.0f));
-				// 		node->addForce(glm::vec3(0.0f, 0.0f, delta));
-				// 		node->integrate(timeStep);
-				// 		if (modelRender.collideWithModel(getWorldPos(node)))
-				// 			modelRender.collisionResponse(node, clothPos);
-				// 		node->isFixed = true;
-				// 	}
-				// }
 				collisionCount += 1;
 				// 碰撞检测一段时间后就停止更新位置, 从而避免因速度更新而持续抖动的状态
 				if (collisionCount == 500) {
@@ -118,26 +108,13 @@ public:
 		computeFaceNormal();
 	}
 
-	glm::vec3 getWorldPos(Node* n)
-	{
-		return clothPos + n->position;
-	}
-
-	void setWorldPos(Node* n, glm::vec3 pos)
-	{
-		n->position = pos - clothPos;
-	}
-
 	void moveCloth(glm::vec3 offset)
 	{
 		clothPos += offset;
-	}
-
-	glm::mat4 GetModelMatrix() const
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(clothPos.x, clothPos.y, clothPos.z));
-		return model;
+		for (Node* n : nodes) {
+			n->worldPosition += offset;
+			n->lastWorldPosition = n->worldPosition;
+		}
 	}
 
 	int GetClothID() const
@@ -161,11 +138,8 @@ public:
 		Node* node = nullptr;
 		for (int y = 0; y < nodesPerCol; y++) {
 			for (int x = 0; x < nodesPerRow; x++) {
-				float pos_x = (float)x / nodesDensity;
-				float pos_y = -((float)y / nodesDensity);
-				float pos_z = 0;
 				node = nodes[y * nodesPerRow + x];
-				node->lastPosition = node->position = glm::vec3(pos_x, pos_y, pos_z);
+				node->lastWorldPosition = node->worldPosition = clothPos + node->localPosition;
 				node->isFixed = false;
 			}
 		}
@@ -218,6 +192,7 @@ private:
 				float tex_x = (float)x / (nodesPerRow - 1);
 				float tex_y = (float)y / (1 - nodesPerCol);
 				Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
+				node->lastWorldPosition = node->worldPosition = node->localPosition + clothPos;
 				node->texCoord = glm::vec2(tex_x, tex_y);
 				nodes.push_back(node);
 				// 把所有点都 pin 住, 因为一开始衣片是不动的
@@ -256,11 +231,12 @@ private:
 			}
 		}
 
+		// 固定住的点
 		for (int i = 2; i < 5; i++) {
 			pins.push_back(glm::vec2(i, 0));
 			pins.push_back(glm::vec2(nodesPerRow - 1 - i, 0));
 		}
-		for (int i = 10; i < nodesPerCol; i++) {
+		for (int i = 9; i < nodesPerCol; i++) {
 			pins.push_back(glm::vec2(0, i));
 			pins.push_back(glm::vec2(nodesPerRow - 1, i));
 		}
@@ -271,19 +247,9 @@ private:
 			sewNode.push_back(getNode(i, 0));
 			sewNode.push_back(getNode(nodesPerRow - 1 - i, 0));
 		}
-		for (int i = 10; i < nodesPerCol; i++) {
+		for (int i = 9; i < nodesPerCol; i++) {
 			sewNode.push_back(getNode(0, i));
 			sewNode.push_back(getNode(nodesPerRow - 1, i));
-		}
-	}
-
-	void computeForce(float timeStep, const glm::vec3& gravity)
-	{
-		for (Node* node : nodes) {
-			node->addForce(gravity * node->mass);
-		}
-		for (Spring* spring : springs) {
-			spring->computeInternalForce(timeStep);
 		}
 	}
 
@@ -304,7 +270,7 @@ private:
 			n3 = faces[3 * i + 2];
 
 			// Face normal
-			normal = glm::cross(n2->position - n1->position, n3->position - n1->position);
+			normal = glm::cross(n2->worldPosition - n1->worldPosition, n3->worldPosition - n1->worldPosition);
 			// Add all face normal
 			n1->normal += normal;
 			n2->normal += normal;
@@ -313,20 +279,6 @@ private:
 
 		for (Node* node : nodes) {
 			node->normal = glm::normalize(node->normal);
-		}
-	}
-
-	void addForce(glm::vec3 force)
-	{
-		for (Node* node : nodes) {
-			node->addForce(force);
-		}
-	}
-
-	void integrate(float timeStep)
-	{
-		for (Node* node : nodes) {
-			node->integrate(timeStep);
 		}
 	}
 };

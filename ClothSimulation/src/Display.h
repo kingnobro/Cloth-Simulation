@@ -26,13 +26,21 @@ Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 // Cloths
 int clothNumber = 0;
 glm::vec2 bigClothSize(4, 6);
-glm::vec2 smallClothSize(1, 1);
+glm::vec2 smallClothSize(2, 8);
 //			 Position                  Size      clothID
 Cloth cloth1(glm::vec3(-2, 9, -1), bigClothSize, ++clothNumber);
 Cloth cloth2(glm::vec3(-2, 9, -4), bigClothSize, ++clothNumber);
+// Cloth cloth3(glm::vec3(-2, 5, -1), smallClothSize, ++clothNumber);
+// Cloth cloth4(glm::vec3(-2, 5, -4), smallClothSize, ++clothNumber);
+// Cloth cloth5(glm::vec3(0, 5, -1), smallClothSize, ++clothNumber);
+// Cloth cloth6(glm::vec3(0, 5, -4), smallClothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { 
 	&cloth1, 
-	&cloth2 
+	&cloth2,
+	// &cloth3,
+	// &cloth4,
+	// &cloth5,
+	// &cloth6,
 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 

@@ -103,8 +103,9 @@ public:
     /*
      * point collision detection with model
      */
-    bool collideWithModel(const glm::vec3& point)
+    bool collideWithModel(Node *node)
     {
+        glm::vec3 point = node->worldPosition;
         // 先判断是否在碰撞盒内
         if (!model->collisionBox.collideWithPoint(point)) {
             return false;
@@ -128,9 +129,9 @@ public:
      * node: 检测到碰撞的质点
      * modelVector: 将 node 的局部坐标转换为世界坐标的向量
      */
-    void collisionResponse(Node* node, const glm::vec3& modelVector)
+    void collisionResponse(Node* node)
     {
-        glm::vec3 currPosition = node->position + modelVector;
+        glm::vec3 currPosition = node->worldPosition;
         glm::vec3 currFrontPosition = model->collisionBox.getFrontPosition(currPosition);
         glm::vec3 currBackPosition = model->collisionBox.getBackPosition(currPosition);
 
@@ -144,7 +145,7 @@ public:
 
         // 将质点沿着当前法线向外平移一段距离
         float epsilon = 0.05f;
-        node->position = node->position + normal * epsilon;
+        node->worldPosition = node->worldPosition + normal * epsilon;
         // 将速度取反
         node->velocity *= -0.001f;
     }

@@ -35,8 +35,8 @@ struct SpringRender
         for (int i = 0; i < springCount; i++) {
             Node* node1 = springs[i]->node1;
             Node* node2 = springs[i]->node2;
-            vboPos[i * 2] = node1->position;
-            vboPos[i * 2 + 1] = node2->position;
+            vboPos[i * 2] = node1->worldPosition;
+            vboPos[i * 2 + 1] = node2->worldPosition;
             vboNor[i * 2] = node1->normal;
             vboNor[i * 2 + 1] = node2->normal;
         }
@@ -115,8 +115,8 @@ struct SpringRender
         for (int i = 0; i < springCount; i++) {
             Node* node1 = springs[i]->node1;
             Node* node2 = springs[i]->node2;
-            vboPos[i * 2] = glm::vec3(node1->position.x, node1->position.y, node1->position.z);
-            vboPos[i * 2 + 1] = glm::vec3(node2->position.x, node2->position.y, node2->position.z);
+            vboPos[i * 2] = glm::vec3(node1->worldPosition.x, node1->worldPosition.y, node1->worldPosition.z);
+            vboPos[i * 2 + 1] = glm::vec3(node2->worldPosition.x, node2->worldPosition.y, node2->worldPosition.z);
             vboNor[i * 2] = glm::vec3(node1->normal.x, node1->normal.y, node1->normal.z);
             vboNor[i * 2 + 1] = glm::vec3(node2->normal.x, node2->normal.y, node2->normal.z);
         }

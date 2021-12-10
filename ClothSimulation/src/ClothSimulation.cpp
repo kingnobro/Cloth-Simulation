@@ -122,19 +122,18 @@ int main(int argc, const char* argv[])
         for (size_t i = 0; i < cloths.size(); i += 1)
         {
             Cloth* cloth = cloths[i];
-            cloth->update((double)TIME_STEP, modelRender);
+            cloth->update((float)TIME_STEP, modelRender);
         
             /** Display **/
-            if (Cloth::drawMode == DRAW_LINES)
-            {
+            if (Cloth::drawMode == DRAW_LINES) {
                 clothSpringRenders[i].flush(&camera);
             }
-            else
-            {
+            else {
                 clothRenders[i].flush(&camera);
             }
         }
         sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
+        sewMachine.update((float)TIME_STEP);
         modelRender.flush(&camera);
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 

@@ -17,8 +17,9 @@ public:
 	Shader shader;
 
 	std::vector<glm::vec3> vertices;    // 衣片上的顶点
+	std::vector<Spring*> springs;		// 缝合点间的弹簧
 	bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
-						// 多次删除会报错, 所以用一个 bool 变量记录是否处于 reset 状态
+						// 用一个 bool 变量记录是否处于可以 reset 状态, 避免多次删除会报错
 
 	ClothSewMachine(Camera* cam)
 	{
@@ -37,41 +38,12 @@ public:
 		}
 	}
 
-	void initialization()
+	void update(float timeStep)
 	{
-		resetable = true;
-
-		// 设置待缝合的顶点, 用于绘制缝合线
-		setSewNode();
-
-		// 绘制缝合线的 Shader
-		shader = Shader("src/shaders/LineVS.glsl", "src/shaders/LineFS.glsl");
-		std::cout << "Sew Program ID: " << shader.ID << std::endl;
-
-		// generate ID of VAO and VBO
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-
-		// Bind VAO
-		glBindVertexArray(VAO);
-
-		// position buffer
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
-
-		// enalbe attribute pointers
-		glEnableVertexAttribArray(0);
-
-		// set Uniforms
-		// 布料的顶点坐标是世界坐标, 所以不需要传入 model 矩阵
-		shader.use();
-		shader.setMat4("view", camera->GetViewMatrix());
-		shader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
-
-		// Cleanup
-		glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
-		glBindVertexArray(0);		      // Unbined VAO
+		// 更新弹簧
+		// for (Spring* s : springs) {
+		// 	s->computeInternalForce(timeStep);
+		// }
 	}
 
 	/*
@@ -95,18 +67,25 @@ public:
 		for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {
 			Node* n1 = sewNode1[i];
 			Node* n2 = sewNode2[i];
-			glm::vec3 worldPos1 = cloth1->getWorldPos(n1);
-			glm::vec3 worldPos2 = cloth2->getWorldPos(n2);
+			glm::vec3 worldPos1 = n1->worldPosition;
+			glm::vec3 worldPos2 = n2->worldPosition;
 			glm::vec3 delta = glm::abs(worldPos1 - worldPos2) / 2.0f;
 
 			// 将两个质点朝着它们的中点移动
 			// 为了简化表达式, 将 bool 转换为 int, 用于决定是 + 还是 -
-			n1->position.x += (1 - 2 * (worldPos1.x > worldPos2.x)) * delta.x;
-			n2->position.x += (-1 + 2 * (worldPos1.x > worldPos2.x)) * delta.x;
-			n1->position.y += (1 - 2 * (worldPos1.y > worldPos2.y)) * delta.y;
-			n2->position.y += (-1 + 2 * (worldPos1.y > worldPos2.y)) * delta.y;
-			n1->position.z += (1 - 2 * (worldPos1.z > worldPos2.z)) * delta.z;
-			n2->position.z += (-1 + 2 * (worldPos1.z > worldPos2.z)) * delta.z;
+			n1->worldPosition.x += (1 - 2 * (worldPos1.x > worldPos2.x)) * delta.x;
+			n2->worldPosition.x += (-1 + 2 * (worldPos1.x > worldPos2.x)) * delta.x;
+			n1->worldPosition.y += (1 - 2 * (worldPos1.y > worldPos2.y)) * delta.y;
+			n2->worldPosition.y += (-1 + 2 * (worldPos1.y > worldPos2.y)) * delta.y;
+			n1->worldPosition.z += (1 - 2 * (worldPos1.z > worldPos2.z)) * delta.z;
+			n2->worldPosition.z += (-1 + 2 * (worldPos1.z > worldPos2.z)) * delta.z;
+
+			// 在缝合点之间加上弹簧, 使模拟过程更加自然
+			// n1->isSewed = true;
+			// n2->isSewed = true;
+			// Spring* s = new Spring(n1, n2, 5.0f);
+			// std::cout << "length:" << s->restLength << std::endl;
+			// springs.push_back(s);
 		}
 
 		cloth1->sewed = cloth2->sewed = true;
@@ -154,6 +133,10 @@ public:
 			cloth2 = cloth;
 			initialization();
 		}
+		else if (cloth1 != cloth && cloth2 != cloth) {
+			cloth1 = cloth;
+			cloth2 = nullptr;
+		}
 	}
 
 	void reset()
@@ -186,8 +169,45 @@ private:
 		assert(sewNode1.size() == sewNode2.size());
 
 		for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {
-			vertices.push_back(cloth1->getWorldPos(sewNode1[i]));
-			vertices.push_back(cloth2->getWorldPos(sewNode2[i]));
+			vertices.push_back(sewNode1[i]->worldPosition);
+			vertices.push_back(sewNode2[i]->worldPosition);
 		}
+	}
+
+	void initialization()
+	{
+		resetable = true;
+
+		// 设置待缝合的顶点, 用于绘制缝合线
+		setSewNode();
+
+		// 绘制缝合线的 Shader
+		shader = Shader("src/shaders/LineVS.glsl", "src/shaders/LineFS.glsl");
+		std::cout << "Sew Program ID: " << shader.ID << std::endl;
+
+		// generate ID of VAO and VBO
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		// Bind VAO
+		glBindVertexArray(VAO);
+
+		// position buffer
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
+
+		// enalbe attribute pointers
+		glEnableVertexAttribArray(0);
+
+		// set Uniforms
+		// 布料的顶点坐标是世界坐标, 所以不需要传入 model 矩阵
+		shader.use();
+		shader.setMat4("view", camera->GetViewMatrix());
+		shader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
+
+		// Cleanup
+		glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
+		glBindVertexArray(0);		      // Unbined VAO
 	}
 };
