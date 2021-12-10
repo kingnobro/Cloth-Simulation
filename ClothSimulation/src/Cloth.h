@@ -14,6 +14,7 @@ const int NODE_DENSITY = 4;
 const float STRUCTURAL_COEF = 400.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
+const int MAX_COLLISION_TIME = 2000;
 
 enum Draw_Mode
 {
@@ -84,11 +85,11 @@ public:
 	{
 		for (int i = 0; i < iterationFreq; i++)
 		{
-			for (Spring* spring : springs) {
-				spring->computeInternalForce(timeStep);
+			for (Spring* s : springs) {
+				s->computeInternalForce(timeStep);
 			}
-			for (Node* node : nodes) {
-				node->integrate(timeStep);
+			for (Node* n : nodes) {
+				n->integrate(timeStep);
 			}
 			// 缝制之后才需要检测碰撞
 			if (sewed) {
@@ -100,7 +101,7 @@ public:
 				}
 				collisionCount += 1;
 				// 碰撞检测一段时间后就停止更新位置, 从而避免因速度更新而持续抖动的状态
-				if (collisionCount == 500) {
+				if (collisionCount == MAX_COLLISION_TIME) {
 					for(Node *node : nodes) node->isFixed = true;
 				}
 			}
@@ -135,41 +136,13 @@ public:
 	 */
 	void reset()
 	{
-		Node* node = nullptr;
-		for (int y = 0; y < nodesPerCol; y++) {
-			for (int x = 0; x < nodesPerRow; x++) {
-				node = nodes[y * nodesPerRow + x];
-				node->lastWorldPosition = node->worldPosition = clothPos + node->localPosition;
-				node->isFixed = false;
-			}
+		for (Node* n : nodes) {
+			n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
+			n->reset();
 		}
 		// 恢复到未缝合的状态
 		sewed = false;
 		collisionCount = 0;
-		pin(pins);
-	}
-
-
-	void pin(std::vector<glm::vec2>& pins)  // Unpin cloth's (x, y) node
-	{
-		for (glm::vec2& p : pins) {
-			int x = p.x;
-			int y = p.y;
-			if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
-				getNode(x, y)->isFixed = true;
-			}
-		}
-	}
-
-	void unPin(std::vector<glm::vec2>& pins) // Unpin cloth's (x, y) node
-	{
-		for (glm::vec2& p : pins) {
-			int x = p.x;
-			int y = p.y;
-			if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
-				getNode(x, y)->isFixed = false;
-			}
-		}
 	}
 
 private:
@@ -195,8 +168,6 @@ private:
 				node->lastWorldPosition = node->worldPosition = node->localPosition + clothPos;
 				node->texCoord = glm::vec2(tex_x, tex_y);
 				nodes.push_back(node);
-				// 把所有点都 pin 住, 因为一开始衣片是不动的
-				// pins.push_back(glm::vec2(x, y));
 			}
 		}
 
@@ -231,19 +202,8 @@ private:
 			}
 		}
 
-		// 固定住的点
-		for (int i = 2; i < 5; i++) {
-			pins.push_back(glm::vec2(i, 0));
-			pins.push_back(glm::vec2(nodesPerRow - 1 - i, 0));
-		}
-		for (int i = 9; i < nodesPerCol; i++) {
-			pins.push_back(glm::vec2(0, i));
-			pins.push_back(glm::vec2(nodesPerRow - 1, i));
-		}
-		pin(pins);
-
 		// 添加待缝合的点
-		for (int i = 2; i < 5; i++) {
+		for (int i = 0; i < 1; i++) {
 			sewNode.push_back(getNode(i, 0));
 			sewNode.push_back(getNode(nodesPerRow - 1 - i, 0));
 		}

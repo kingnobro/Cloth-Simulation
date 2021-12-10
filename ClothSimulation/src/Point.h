@@ -74,4 +74,11 @@ public:
         }
         force = glm::vec3(0);
     }
+
+    void reset()
+    {
+        isFixed = false;
+        isSewed = false;
+        velocity = acceleration = force = glm::vec3(0);
+    }
 };

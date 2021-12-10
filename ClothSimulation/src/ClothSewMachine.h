@@ -18,6 +18,7 @@ public:
 
 	std::vector<glm::vec3> vertices;    // 衣片上的顶点
 	std::vector<Spring*> springs;		// 缝合点间的弹簧
+	const float sewCoef = 1000.0f;
 	bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
 						// 用一个 bool 变量记录是否处于可以 reset 状态, 避免多次删除会报错
 
@@ -35,15 +36,21 @@ public:
 			glDeleteVertexArrays(1, &VAO);
 			glDeleteBuffers(1, &VBO);
 			glDeleteProgram(shader.ID);
+			for (Spring* s : springs) {
+				delete s;
+			}
+			springs.clear();
 		}
 	}
 
 	void update(float timeStep)
 	{
-		// 更新弹簧
-		// for (Spring* s : springs) {
-		// 	s->computeInternalForce(timeStep);
-		// }
+		// 更新缝合点之间的弹簧
+		for (Spring* s : springs) {
+			s->computeInternalForce(timeStep);
+			s->node1->integrate(timeStep);
+			s->node2->integrate(timeStep);
+		}
 	}
 
 	/*
@@ -59,35 +66,21 @@ public:
 		if (cloth1 == nullptr || cloth2 == nullptr || cloth1->sewed || cloth2->sewed) {
 			return;
 		}
+		// 把两片衣片中要缝合的点取出
 		const std::vector<Node*>& sewNode1 = cloth1->sewNode;
 		const std::vector<Node*>& sewNode2 = cloth2->sewNode;
 		assert(sewNode1.size() == sewNode2.size());
 
-		// 修改 Node 的局部坐标
 		for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {
 			Node* n1 = sewNode1[i];
 			Node* n2 = sewNode2[i];
-			glm::vec3 worldPos1 = n1->worldPosition;
-			glm::vec3 worldPos2 = n2->worldPosition;
-			glm::vec3 delta = glm::abs(worldPos1 - worldPos2) / 2.0f;
 
-			// 将两个质点朝着它们的中点移动
-			// 为了简化表达式, 将 bool 转换为 int, 用于决定是 + 还是 -
-			n1->worldPosition.x += (1 - 2 * (worldPos1.x > worldPos2.x)) * delta.x;
-			n2->worldPosition.x += (-1 + 2 * (worldPos1.x > worldPos2.x)) * delta.x;
-			n1->worldPosition.y += (1 - 2 * (worldPos1.y > worldPos2.y)) * delta.y;
-			n2->worldPosition.y += (-1 + 2 * (worldPos1.y > worldPos2.y)) * delta.y;
-			n1->worldPosition.z += (1 - 2 * (worldPos1.z > worldPos2.z)) * delta.z;
-			n2->worldPosition.z += (-1 + 2 * (worldPos1.z > worldPos2.z)) * delta.z;
-
-			// 在缝合点之间加上弹簧, 使模拟过程更加自然
-			// n1->isSewed = true;
-			// n2->isSewed = true;
-			// Spring* s = new Spring(n1, n2, 5.0f);
-			// std::cout << "length:" << s->restLength << std::endl;
-			// springs.push_back(s);
+			// 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近, 从而避免尖锐突出
+			n1->isSewed = n2->isSewed = true;
+			Spring* s = new Spring(n1, n2, sewCoef);
+			s->restLength = 0.0f;	// 让缝合点尽可能靠近
+			springs.push_back(s);
 		}
-
 		cloth1->sewed = cloth2->sewed = true;
 	}
 
@@ -152,6 +145,10 @@ public:
 			glDeleteVertexArrays(1, &VAO);
 			glDeleteBuffers(1, &VBO);
 			glDeleteProgram(shader.ID);
+			for (Spring* s : springs) {
+				delete s;
+			}
+			springs.clear();
 		}
 		resetable = false;
 	}
