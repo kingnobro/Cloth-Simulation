@@ -13,6 +13,7 @@
 #include "stb_image.h"
 #include "Model.h"
 #include "Display.h"
+
 #include "ClothRender.h"
 #include "MeshRender.h"
 #include "ModelRender.h"
@@ -126,10 +127,10 @@ int main(int argc, const char* argv[])
         
             /** Display **/
             if (Cloth::drawMode == DRAW_LINES) {
-                clothSpringRenders[i].flush(&camera);
+                clothSpringRenders[i].update(&camera);
             }
             else {
-                clothRenders[i].flush(&camera);
+                clothRenders[i].update(&camera);
             }
         }
         sewMachine.update((float)TIME_STEP);

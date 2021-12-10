@@ -109,7 +109,7 @@ struct SpringRender
         }
     }
 
-    void flush(Camera *camera) // Rigid does not move, thus do not update vertexes' data
+    void update(Camera *camera) // Rigid does not move, thus do not update vertexes' data
     {
         // Update all the positions of nodes
         for (int i = 0; i < springCount; i++) {
@@ -160,5 +160,5 @@ struct ClothSpringRender
         render.init(cloth->springs, defaultColor, cloth->clothPos);
     }
 
-    void flush(Camera *camera) { render.flush(camera); }
+    void update(Camera *camera) { render.update(camera); }
 };

@@ -21,6 +21,9 @@ struct ClothRender // Texture & Lighting
 
     Shader shader;
 
+    /*
+     * 设置 shader VAO VBO 
+     */
     ClothRender(Cloth* cloth)
     {
         nodeCount = (int)(cloth->faces.size());
@@ -139,7 +142,10 @@ struct ClothRender // Texture & Lighting
         }
     }
 
-    void flush(Camera *camera)
+    /*
+     * 更新数据 
+     */
+    void update(Camera *camera)
     {
         // Update all the positions of nodes
         for (int i = 0; i < nodeCount; i++)

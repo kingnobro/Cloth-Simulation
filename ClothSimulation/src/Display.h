@@ -35,12 +35,12 @@ Cloth cloth2(glm::vec3(-2, 9, -4), bigClothSize, ++clothNumber);
 // Cloth cloth5(glm::vec3(0, 5, -1), smallClothSize, ++clothNumber);
 // Cloth cloth6(glm::vec3(0, 5, -4), smallClothSize, ++clothNumber);
 std::vector<Cloth*> cloths = { 
-	&cloth1, 
-	&cloth2,
-	// &cloth3,
-	// &cloth4,
-	// &cloth5,
-	// &cloth6,
+    &cloth1, 
+    &cloth2,
+    // &cloth3,
+    // &cloth4,
+    // &cloth5,
+    // &cloth6,
 };
 Cloth* selectedCloth = nullptr; // 需要移动的衣片
 
