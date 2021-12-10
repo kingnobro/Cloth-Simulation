@@ -94,12 +94,13 @@ public:
 		}
 		// 衣片的位置会更新, 所以线的位置也要更新
 		setSewNode();
+		// std::cout << vertices.size() << std::endl;
 
 		shader.use();
 		glBindVertexArray(VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(glm::vec3), vertices.data());
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
 
 		shader.setMat4("view", view);
 
@@ -155,7 +156,8 @@ public:
 
 
 private:
-	/* 每个衣片有一个待缝合的顶点数组
+	/* 
+	 * 每个衣片有一个待缝合的顶点数组
 	 * 两个衣片的待缝合数组中的顶点需要一一对应
 	 * 衣片的顶点(世界坐标)存放在 vertices 中, 并且 vertices[i] 和 vertices[i+1] 即将缝合 (i%2=0)
 	 */ 
@@ -163,9 +165,9 @@ private:
 		vertices.clear();
 		const std::vector<Node*>& sewNode1 = cloth1->sewNode;
 		const std::vector<Node*>& sewNode2 = cloth2->sewNode;
-		assert(sewNode1.size() == sewNode2.size());
-
-		for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {
+		// assert(sewNode1.size() == sewNode2.size());
+		
+		for (size_t i = 0, sz = min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
 			vertices.push_back(sewNode1[i]->worldPosition);
 			vertices.push_back(sewNode2[i]->worldPosition);
 		}

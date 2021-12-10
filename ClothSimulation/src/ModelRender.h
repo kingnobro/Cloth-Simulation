@@ -131,23 +131,22 @@ public:
      */
     void collisionResponse(Node* node)
     {
-        glm::vec3 currPosition = node->worldPosition;
-        glm::vec3 currFrontPosition = model->collisionBox.getFrontPosition(currPosition);
-        glm::vec3 currBackPosition = model->collisionBox.getBackPosition(currPosition);
+        glm::vec3 frontPosition = model->collisionBox.getFrontPosition(node->worldPosition);
+        glm::vec3 backPosition = model->collisionBox.getBackPosition(node->worldPosition);
 
         // 获取碰撞点处的法线
         // 由于 [x, y] 对应模型 前部 和 后部 两个法线, 所以需要判断 [x, y] 离前部还是后部更近
-        float z_front = getDepth(currFrontPosition, frontDepthMap);
-        float z_back = getDepth(currBackPosition, backDepthMap);
-        glm::vec3 normal = fabs(currFrontPosition.z - z_front) < fabs(currBackPosition.z - z_back) ?
-            getNormal(currFrontPosition, frontNormalMap) :
-            getNormal(currBackPosition, backNormalMap);
+        float z_front = getDepth(frontPosition, frontDepthMap);
+        float z_back = getDepth(backPosition, backDepthMap);
+        glm::vec3 normal = fabs(frontPosition.z - z_front) < fabs(backPosition.z - z_back) ?
+            getNormal(frontPosition, frontNormalMap) :
+            getNormal(backPosition, backNormalMap);
 
         // 将质点沿着当前法线向外平移一段距离
-        float epsilon = 0.05f;
-        node->worldPosition = node->worldPosition + normal * epsilon;
+        float epsilon = 0.03f;
+        node->worldPosition += normal * epsilon;
         // 将速度取反
-        node->velocity *= -0.001f;
+        node->velocity *= -0.01f;
     }
 
 private:
@@ -208,8 +207,8 @@ private:
      */
     float getDepth(const glm::vec2& point, float* depthMap) const
     {
-        int x = point.x;
-        int y = point.y;
+        const int x = point.x;
+        const int y = point.y;
         return depthMap[y * scr_width + x];
     }
 
@@ -219,8 +218,8 @@ private:
      */
     glm::vec3 getNormal(const glm::vec2& point, float* normalMap) const
     {
-        int x = point.x;
-        int y = point.y;
+        const int x = point.x;
+        const int y = point.y;
         int index = 3 * (y * scr_width + x);
         return glm::vec3(normalMap[index], normalMap[index + 1], normalMap[index + 2]);
     }

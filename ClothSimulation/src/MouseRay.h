@@ -17,7 +17,7 @@ public:
      */
     glm::vec3 calculateMouseRay(double mouse_x, double mouse_y, int screen_width, int screen_height)
     {
-        glm::vec3 ray_ndc = getNormalisedDeviceCoordinates(mouse_x, mouse_y, screen_width, screen_height);
+        glm::vec3 ray_ndc = getNormalisedDeviceCoordinates((float)mouse_x, (float)mouse_y, screen_width, screen_height);
         // we want our ray's z to point forwards - this is usually the negative z direction in OpenGL style
         glm::vec4 ray_clip = glm::vec4(ray_ndc.x, ray_ndc.y, -1.0, 1.0);
         glm::vec4 ray_eye = toEyeCoords(ray_clip);
@@ -33,8 +33,8 @@ private:
      */
     glm::vec3 getNormalisedDeviceCoordinates(float mouse_x, float mouse_y, int screen_width, int screen_height)
     {
-        float ndc_x = (2.0f * mouse_x) / (double)screen_width - 1.0f;
-        float ndc_y = 1.0f - (2.0f * mouse_y) / (double)screen_height;
+        float ndc_x = (2.0f * mouse_x) / (float)screen_width - 1.0f;
+        float ndc_y = 1.0f - (2.0f * mouse_y) / (float)screen_height;
         float ndc_z = 1.0;
         return glm::vec3(ndc_x, ndc_y, ndc_z);
     }

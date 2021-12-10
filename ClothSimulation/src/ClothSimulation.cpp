@@ -32,7 +32,7 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 // Window and world
 GLFWwindow* window;
-glm::vec3 bgColor = glm::vec3(50.0 / 255, 50.0 / 255, 60.0 / 255);
+glm::vec3 bgColor = glm::vec3(105.0 / 255, 105.0 / 255, 105.0 / 255);
 
 // timing
 float deltaTime = 0.0f;
@@ -132,9 +132,9 @@ int main(int argc, const char* argv[])
                 clothRenders[i].flush(&camera);
             }
         }
-        sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
         sewMachine.update((float)TIME_STEP);
         modelRender.flush(&camera);
+        sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 
         glfwSwapBuffers(window);

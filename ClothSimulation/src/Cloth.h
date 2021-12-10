@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <vector>
-#include <ctime>
 
 #include "Spring.h"
 #include "ModelRender.h"
@@ -44,13 +43,12 @@ public:
 	std::vector<Node*> faces;
 	std::vector<Node*> sewNode;	// 即将被缝合的顶点
 	std::vector<Spring*> springs;
-	std::vector<glm::vec2> pins;
 
 	Cloth(glm::vec3 pos, glm::vec2 size, int ID)
 	{
 		clothPos = pos;
-		width = size.x;
-		height = size.y;
+		width = (int)size.x;
+		height = (int)size.y;
 		clothID = ID;
 		sewed = false;
 		collisionCount = 0;
@@ -142,6 +140,7 @@ public:
 		}
 		// 恢复到未缝合的状态
 		sewed = false;
+		sewNode.clear();
 		collisionCount = 0;
 	}
 
@@ -150,8 +149,6 @@ private:
 
 	void init()
 	{
-		std::srand(std::time(nullptr));
-
 		nodesPerRow = width * nodesDensity;
 		nodesPerCol = height * nodesDensity;
 
@@ -203,14 +200,14 @@ private:
 		}
 
 		// 添加待缝合的点
-		for (int i = 0; i < 1; i++) {
-			sewNode.push_back(getNode(i, 0));
-			sewNode.push_back(getNode(nodesPerRow - 1 - i, 0));
-		}
-		for (int i = 9; i < nodesPerCol; i++) {
-			sewNode.push_back(getNode(0, i));
-			sewNode.push_back(getNode(nodesPerRow - 1, i));
-		}
+		// for (int i = 0; i < 3; i++) {
+		// 	sewNode.push_back(getNode(i, 0));
+		// 	sewNode.push_back(getNode(nodesPerRow - 1 - i, 0));
+		// }
+		// for (int i = 0; i < nodesPerCol; i++) {
+		// 	sewNode.push_back(getNode(0, i));
+		// 	sewNode.push_back(getNode(nodesPerRow - 1, i));
+		// }
 	}
 
 	void computeFaceNormal()
