@@ -40,7 +40,7 @@ struct ClothRender // Texture & Lighting
         vboNor = new glm::vec3[nodeCount];
         for (int i = 0; i < nodeCount; i++)
         {
-            Node* n = cloth->faces[i];
+            Node* n = cloth->nodes[cloth->faces[i]];
             vboPos[i] = n->worldPosition;
             vboTex[i] = n->texCoord; // Texture coord will only be set here
             vboNor[i] = n->normal;
@@ -150,7 +150,7 @@ struct ClothRender // Texture & Lighting
         // Update all the positions of nodes
         for (int i = 0; i < nodeCount; i++)
         { // Tex coordinate dose not change
-            Node* n = cloth->faces[i];
+            Node* n = cloth->nodes[cloth->faces[i]];
             vboPos[i] = n->worldPosition;
             vboNor[i] = n->normal;
         }

@@ -73,7 +73,7 @@ public:
     void SewCloths()
     {
         // 缝合后的衣片不能再次缝合
-        if (cloth1 == nullptr || cloth2 == nullptr || cloth1->sewed || cloth2->sewed) {
+        if (cloth1 == nullptr || cloth2 == nullptr || cloth1->isSewed || cloth2->isSewed) {
             return;
         }
         // 把两片衣片中要缝合的点取出
@@ -91,7 +91,7 @@ public:
             s->restLength = 0.0f;	// 让缝合点尽可能靠近
             springs.push_back(s);
         }
-        cloth1->sewed = cloth2->sewed = true;
+        cloth1->isSewed = cloth2->isSewed = true;
     }
 
     /*
@@ -99,7 +99,7 @@ public:
      */
     void drawSewingLine(const glm::mat4& view)
     {
-        if (cloth1 == nullptr || cloth2 == nullptr || cloth1->sewed || cloth2->sewed) {
+        if (cloth1 == nullptr || cloth2 == nullptr || cloth1->isSewed || cloth2->isSewed) {
             return;
         }
         // 衣片的位置会更新, 所以线的位置也要更新

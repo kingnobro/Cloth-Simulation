@@ -30,7 +30,7 @@ public:
     bool        isSewed;        // 判断该点是否已缝合
     glm::vec2	texCoord;       // Texture coord
     glm::vec3	normal;         // For smoothly shading
-    glm::vec3   localPosition;  // 局部坐标, 用于恢复服装的原始位置
+    glm::vec3   localPosition;  // 局部坐标, 仅用于恢复服装的原始位置
     glm::vec3   worldPosition;  // 世界坐标, 用于计算弹簧受力
     glm::vec3   lastWorldPosition;	// 质点前一时刻的世界坐标, 用于碰撞响应
     glm::vec3   velocity;

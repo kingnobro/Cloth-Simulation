@@ -27,6 +27,7 @@ public:
 
         for (Cloth* cloth : cloths)
         {
+            // upgrade: 如何选中不规则形状?
             glm::vec3 pointLeftUpper = cloth->clothPos;
             glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->width, 0, 0);
             glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->width, -cloth->height, 0);
@@ -53,42 +54,43 @@ public:
         if (selectedCloth != nullptr) {
             std::cout << "Cloth " << selectedCloth->GetClothID() << " Selected\n";
 
+            // todo: select sewing line
             // 用户点击一点，将距离该点最近的那条边上的点加入到待缝合列表
             // ------------------------------------------
             // 上、下、左、右 四条边的中点
-            int width = selectedCloth->width;
-            int height = selectedCloth->height;
-            glm::vec3 clothPos = selectedCloth->clothPos;
-            glm::vec3 topMiddle = clothPos + glm::vec3(width / 2.0f, 0, 0);
-            glm::vec3 bottomMiddle = clothPos + glm::vec3(width / 2.0f, -height, 0);
-            glm::vec3 leftMiddle = clothPos + glm::vec3(0, -height / 2, 0);
-            glm::vec3 rightMiddle = clothPos + glm::vec3(width, -height / 2, 0);
-
-            // 将该边缘上的点加入到 sewNode 中
-            const float d1 = glm::distance(hitPoint, topMiddle);
-            const float d2 = glm::distance(hitPoint, bottomMiddle);
-            const float d3 = glm::distance(hitPoint, leftMiddle);
-            const float d4 = glm::distance(hitPoint, rightMiddle);
-            if (d1 < d2 && d1 < d3 && d1 < d4) {
-                for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
-                    selectedCloth->sewNode.push_back(selectedCloth->getNode(i, 0));
-                }
-            }
-            if (d2 < d1 && d2 < d3 && d2 < d4) {
-                for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
-                    selectedCloth->sewNode.push_back(selectedCloth->getNode(i, selectedCloth->nodesPerCol - 1));
-                }
-            }
-            if (d3 < d1 && d3 < d2 && d3 < d4) {
-                for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
-                    selectedCloth->sewNode.push_back(selectedCloth->getNode(0, i));
-                }
-            }
-            if (d4 < d1 && d4 < d2 && d4 < d3) {
-                for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
-                    selectedCloth->sewNode.push_back(selectedCloth->getNode(selectedCloth->nodesPerRow - 1, i));
-                }
-            }
+            // int width = selectedCloth->width;
+            // int height = selectedCloth->height;
+            // glm::vec3 clothPos = selectedCloth->clothPos;
+            // glm::vec3 topMiddle = clothPos + glm::vec3(width / 2.0f, 0, 0);
+            // glm::vec3 bottomMiddle = clothPos + glm::vec3(width / 2.0f, -height, 0);
+            // glm::vec3 leftMiddle = clothPos + glm::vec3(0, -height / 2, 0);
+            // glm::vec3 rightMiddle = clothPos + glm::vec3(width, -height / 2, 0);
+            // 
+            // // 将该边缘上的点加入到 sewNode 中
+            // const float d1 = glm::distance(hitPoint, topMiddle);
+            // const float d2 = glm::distance(hitPoint, bottomMiddle);
+            // const float d3 = glm::distance(hitPoint, leftMiddle);
+            // const float d4 = glm::distance(hitPoint, rightMiddle);
+            // if (d1 < d2 && d1 < d3 && d1 < d4) {
+            //     for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
+            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(i, 0));
+            //     }
+            // }
+            // if (d2 < d1 && d2 < d3 && d2 < d4) {
+            //     for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
+            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(i, selectedCloth->nodesPerCol - 1));
+            //     }
+            // }
+            // if (d3 < d1 && d3 < d2 && d3 < d4) {
+            //     for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
+            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(0, i));
+            //     }
+            // }
+            // if (d4 < d1 && d4 < d2 && d4 < d3) {
+            //     for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
+            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(selectedCloth->nodesPerRow - 1, i));
+            //     }
+            // }
 
         }
         return selectedCloth;

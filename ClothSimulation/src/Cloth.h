@@ -5,8 +5,6 @@
 #include "Spring.h"
 #include "ModelRender.h"
 
-extern const int iterationFreq;
-extern glm::vec3 gravity;
 
 // Default Cloth Values
 const int NODE_DENSITY = 4;
@@ -14,6 +12,10 @@ const float STRUCTURAL_COEF = 400.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
 const int MAX_COLLISION_TIME = 2000;
+const int iterationFreq = 10;   // todo: remove me. 
+
+// 用于唯一标识一块布料
+int clothNumber = 0;
 
 enum Draw_Mode
 {
@@ -25,45 +27,40 @@ enum Draw_Mode
 class Cloth
 {
 public:
-    static Draw_Mode drawMode;
+    static Draw_Mode drawMode;      // 显示方式, 可以为 点、线、面
 
-    const int nodesDensity = NODE_DENSITY;
     const float structuralCoef = STRUCTURAL_COEF;
     const float shearCoef = SHEAR_COEF;
     const float bendingCoef = BENDING_COEF;
+
+    glm::vec3 clothPos;             // 能够包围住衣片的矩形的左上角的世界坐标
+    int collisionCount;             // 碰撞检测的迭代次数
+    int clothID;                    // 布料的唯一标识符
     int width;
     int height;
-    int nodesPerRow;
-    int nodesPerCol;
-    int collisionCount;
-    glm::vec3 clothPos;
-    bool sewed;
+    bool isSewed;                   // 是否处于缝合状态
 
-    std::vector<Node*> nodes;
-    std::vector<Node*> faces;
-    std::vector<Node*> sewNode;	// 即将被缝合的顶点
-    std::vector<Spring*> springs;
+    std::vector<Node*> nodes;       // 质点
+    std::vector<Node*> sewNode;	    // 即将被缝合的顶点
+    std::vector<size_t> faces;      // 构成面的顶点索引
+    std::vector<Spring*> springs;   // 点之间的弹簧
 
-    Cloth(glm::vec3 pos, glm::vec2 size, int ID)
+    Cloth(string const &path, glm::vec3 position)
     {
-        clothPos = pos;
-        width = (int)size.x;
-        height = (int)size.y;
-        clothID = ID;
-        sewed = false;
+        clothPos = position;
+        clothID = ++clothNumber;
+        isSewed = false;
         collisionCount = 0;
 
-        init();
+        readClothData(path);
     }
 
     ~Cloth()
     {
-        for (int i = 0; i < nodes.size(); i++)
-        {
+        for (int i = 0; i < nodes.size(); i++) {
             delete nodes[i];
         }
-        for (int i = 0; i < springs.size(); i++)
-        {
+        for (int i = 0; i < springs.size(); i++) {
             delete springs[i];
         }
         nodes.clear();
@@ -96,8 +93,8 @@ public:
             for (Node* n : nodes) {
                 n->integrate(timeStep);
             }
-            // 碰撞检测与碰撞响应. 开始缝制之后才需要检测碰撞
-            if (sewed) {
+            // 碰撞检测与碰撞响应. 开始缝制  之后才需要检测碰撞
+            if (isSewed) {
                 for (Node* node : nodes) {
                     if (modelRender.collideWithModel(node)) {
                         modelRender.collisionResponse(node);
@@ -126,14 +123,6 @@ public:
         return clothID;
     }
 
-    Node* getNode(int x, int y)
-    {
-        if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
-            return nodes[y * nodesPerRow + x];
-        }
-        return nullptr;
-    }
-
     void reset()
     {
         // 重置局部坐标
@@ -142,65 +131,113 @@ public:
             n->reset();
         }
         // 恢复到未缝合的状态
-        sewed = false;
+        isSewed = false;
         sewNode.clear();
         collisionCount = 0;
     }
 
 private:
-    int clothID; 
-
-    void init()
+    void readClothData(string const& path)
     {
-        nodesPerRow = width * nodesDensity;
-        nodesPerCol = height * nodesDensity;
+        const string vertexFile = path + ".vertex";
+        const string indexFile = path + ".index";
+        const string structuralFile = path + ".structural";
+        const string shearFile = path + ".shear";
+        const string bendingFile = path + ".bending";
 
-        /** Add Nodes **/
-        printf("Init cloth with %d nodes\n", nodesPerRow * nodesPerCol);
-        for (int y = 0; y < nodesPerCol; y++) {
-            for (int x = 0; x < nodesPerRow; x++) {
-                float pos_x = (float)x / nodesDensity;
-                float pos_y = -((float)y / nodesDensity);   // 衣物原点在左上角, 所以衣服上的点 y 值是负的
-                float pos_z = 0;
-                float tex_x = (float)x / (nodesPerRow - 1);
-                float tex_y = (float)y / (1 - nodesPerCol);
-                Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
-                node->lastWorldPosition = node->worldPosition = node->localPosition + clothPos;
-                node->texCoord = glm::vec2(tex_x, tex_y);
-                nodes.push_back(node);
-            }
+        int count;
+        int index1, index2, index3;
+        float pos_x, pos_y, pos_z, tex_x, tex_y;
+        float minX = FLT_MAX, maxX = FLT_MIN, minY = FLT_MAX, maxY = FLT_MIN;
+
+        // 读取顶点数据
+        FILE* fin = fopen(vertexFile.c_str(), "r");
+        if (fin == nullptr) {
+            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .vertex file!" << std::endl;
         }
+        fscanf(fin, "%d", &count);
+        printf("Init cloth with %d nodes\n", count);
+        for (int i = 0; i < count; i += 1) {
+            fscanf(fin, "%f, %f, %f, %f, %f\n", &pos_x, &pos_y, &pos_z, &tex_x, &tex_y);
+            Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
+            node->texCoord = glm::vec2(tex_x, tex_y);
+            node->lastWorldPosition = node->worldPosition = node->localPosition + clothPos;
+            nodes.push_back(node);
+
+            // 更新边界
+            minX = pos_x < minX ? pos_x : minX;
+            minY = pos_y < minY ? pos_y : minY;
+            maxX = pos_x > maxX ? pos_x : maxX;
+            maxY = pos_y > maxY ? pos_y : maxY;
+        }
+        fclose(fin);
+        width = maxX - minX;
+        height = maxY - minY;
+        std::cout << "cloth width:" << width << " height: " << height << std::endl;
+
+        // 读取索引数据
+        fin = fopen(indexFile.c_str(), "r");
+        if (fin == nullptr) {
+            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .index file!" << std::endl;
+        }
+        fscanf(fin, "%d\n", &count);
+        for (int i = 0; i < count; i += 1) {
+            fscanf(fin, "%d, %d, %d\n", &index1, &index2, &index3);
+            faces.push_back(index1);
+            faces.push_back(index2);
+            faces.push_back(index3);
+        }
+        fclose(fin);
+
+        // 读取 structural 弹簧数据
+        fin = fopen(structuralFile.c_str(), "r");
+        if (fin == nullptr) {
+            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .structural file!" << std::endl;
+        }
+        fscanf(fin, "%d\n", &count);
+        for (int i = 0; i < count; i += 1) {
+            fscanf(fin, "%d, %d\n", &index1, &index2);
+            springs.push_back(new Spring(nodes[index1], nodes[index2], structuralCoef));
+        }
+        fclose(fin);
+
+        // 读取 shear 弹簧数据
+        fin = fopen(shearFile.c_str(), "r");
+        if (fin == nullptr) {
+            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .shear file!" << std::endl;
+        }
+        fscanf(fin, "%d\n", &count);
+        for (int i = 0; i < count; i += 1) {
+            fscanf(fin, "%d, %d\n", &index1, &index2);
+            springs.push_back(new Spring(nodes[index1], nodes[index2], shearCoef));
+        }
+        fclose(fin);
+
+        // 读取 bending 弹簧数据
+        fin = fopen(bendingFile.c_str(), "r");
+        if (fin == nullptr) {
+            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .bending file!" << std::endl;
+        }
+        fscanf(fin, "%d\n", &count);
+        for (int i = 0; i < count; i += 1) {
+            fscanf(fin, "%d, %d\n", &index1, &index2);
+            springs.push_back(new Spring(nodes[index1], nodes[index2], bendingCoef));
+        }
+        fclose(fin);
+
 
         /** Add springs **/
-        for (int x = 0; x < nodesPerRow; x++) {
-            for (int y = 0; y < nodesPerCol; y++) {
-                /** Structural **/
-                if (x < nodesPerRow - 1) springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y), structuralCoef));
-                if (y < nodesPerCol - 1) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 1), structuralCoef));
-                /** Shear **/
-                if (x < nodesPerRow - 1 && y < nodesPerCol - 1) {
-                    springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y + 1), shearCoef));
-                    springs.push_back(new Spring(getNode(x + 1, y), getNode(x, y + 1), shearCoef));
-                }
-                /** Bending **/
-                if (x < nodesPerRow - 2) springs.push_back(new Spring(getNode(x, y), getNode(x + 2, y), bendingCoef));
-                if (y < nodesPerCol - 2) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 2), bendingCoef));
-            }
-        }
-
-        /** Triangle faces **/
-        for (int x = 0; x < nodesPerRow - 1; x++) {
-            for (int y = 0; y < nodesPerCol - 1; y++) {
-                // Left upper triangle
-                faces.push_back(getNode(x + 1, y));
-                faces.push_back(getNode(x, y));
-                faces.push_back(getNode(x, y + 1));
-                // Right bottom triangle
-                faces.push_back(getNode(x + 1, y + 1));
-                faces.push_back(getNode(x + 1, y));
-                faces.push_back(getNode(x, y + 1));
-            }
-        }
+        // /** Structural **/
+        // if (x < nodesPerRow - 1) springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y), structuralCoef));
+        // if (y < nodesPerCol - 1) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 1), structuralCoef));
+        // /** Shear **/
+        // if (x < nodesPerRow - 1 && y < nodesPerCol - 1) {
+        //     springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y + 1), shearCoef));
+        //     springs.push_back(new Spring(getNode(x + 1, y), getNode(x, y + 1), shearCoef));
+        // }
+        // /** Bending **/
+        // if (x < nodesPerRow - 2) springs.push_back(new Spring(getNode(x, y), getNode(x + 2, y), bendingCoef));
+        // if (y < nodesPerCol - 2) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 2), bendingCoef));
     }
 
     /*
@@ -218,9 +255,9 @@ private:
         Node* n2;
         Node* n3;
         for (size_t i = 0; i < faces.size() / 3; i++) { // 3 nodes in each face
-            n1 = faces[3 * i];
-            n2 = faces[3 * i + 1];
-            n3 = faces[3 * i + 2];
+            n1 = nodes[faces[3 * i]];
+            n2 = nodes[faces[3 * i + 1]];
+            n3 = nodes[faces[3 * i + 2]];
 
             // Face normal
             normal = glm::cross(n2->worldPosition - n1->worldPosition, n3->worldPosition - n1->worldPosition);
