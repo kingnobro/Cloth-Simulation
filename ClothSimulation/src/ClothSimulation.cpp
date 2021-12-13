@@ -20,8 +20,8 @@
 
 #define TIME_STEP 0.01
 
-int scr_width = 512;
-int scr_height = 512;
+int scr_width = 600;
+int scr_height = 600;
 
 /** Functions **/
 void processInput(GLFWwindow* window);
@@ -33,7 +33,7 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 // Window and world
 GLFWwindow* window;
-glm::vec3 bgColor = glm::vec3(105.0 / 255, 105.0 / 255, 105.0 / 255);
+glm::vec3 backgroundColor = glm::vec3(105.0 / 255, 105.0 / 255, 105.0 / 255);
 
 // timing
 float deltaTime = 0.0f;
@@ -97,7 +97,7 @@ int main(int argc, const char* argv[])
     glEnable(GL_DEPTH_TEST);
     glPointSize(3);
 
-    // offscreen render, to generate depth maps and normal maps for collision detection
+    // offscreen render, to generate depth maps and normal maps for collision detection and response
     modelRender.offScreenRender(
         &(ourModel.collisionBox.frontCamera), 
         &(ourModel.collisionBox.backCamera),
@@ -116,7 +116,7 @@ int main(int argc, const char* argv[])
         processInput(window);
 
         /** Set background color **/
-        glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0);
+        glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /** -------------------------------- Simulation & Rendering -------------------------------- **/

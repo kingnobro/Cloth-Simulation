@@ -18,20 +18,19 @@ public:
     float height;
     float length;
     float phi;			// projection area of the orthographic camera, phi = max(height, length)
-    int mapsize;		
+    int scr_width;      // 用于获取 front position
+    int scr_height;     // 用于获取 back position
     glm::vec3 centroid; // 包围盒的中心
     glm::vec3 origin;	// 包围盒空间的坐标原点, 在后部摄像机的正下方
     Camera frontCamera;	// Camera around AABB box for depth map generation
     Camera backCamera;
 
-    CollisionBox(int mapsize = 512)
+    CollisionBox()
     {
         minX = minY = minZ = FLT_MAX;
         maxX = maxY = maxZ = FLT_MIN;
         width = height = length = phi = 0;
         centroid = glm::vec3(0.0f);
-        // todo: fix hard code
-        this->mapsize = mapsize;
     }
 
     /*
@@ -124,8 +123,8 @@ public:
         // world space -> box space
         glm::vec3 boxPosition = point - origin;
         // box space -> front camera space
-        float x = (boxPosition.x + phi / 2) * mapsize / phi;
-        float y = boxPosition.y * mapsize / phi;
+        float x = (boxPosition.x + phi / 2) * scr_width / phi;
+        float y = boxPosition.y * scr_height / phi;
         float z = (width - boxPosition.z) / width;
         return glm::vec3(x, y, z);
     }
@@ -138,8 +137,8 @@ public:
         // world space -> box space
         glm::vec3 boxPosition = point - origin;
         // box space -> back camera space
-        float x = (phi / 2 - boxPosition.x) * mapsize / phi;
-        float y = boxPosition.y * mapsize / phi;
+        float x = (phi / 2 - boxPosition.x) * scr_width / phi;
+        float y = boxPosition.y * scr_height / phi;
         float z = boxPosition.z / width;
         return glm::vec3(x, y, z);
     }

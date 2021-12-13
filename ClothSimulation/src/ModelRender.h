@@ -32,18 +32,21 @@ public:
 
     /*
      * 离屏渲染, 生成深度图和法线图, 用于碰撞检测和响应
+     * 
      */
     void offScreenRender(Camera* frontCamera, Camera* backCamera, GLFWwindow* window)
     {
         // screen size
-        // in the paper, scr_width = scr_height = mapsize = 512
         glfwGetWindowSize(window, &scr_width, &scr_height);
         const size_t resolution = scr_width * scr_height;
+        model->collisionBox.scr_width = scr_width;
+        model->collisionBox.scr_height = scr_height;
+
         frontDepthMap = new float[resolution];
         frontNormalMap = new float[resolution * 3];
         backDepthMap = new float[resolution];
         backNormalMap = new float[resolution * 3];
-        std::cout << "framebuffer window size:(" << scr_width << ", " << scr_height << ")\n";
+        std::cout << "framebuffer window size:(" << scr_width << ", " << scr_width << ")\n";
 
         // framebuffer configuration
         // -------------------------

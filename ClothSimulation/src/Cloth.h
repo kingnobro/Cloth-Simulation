@@ -83,6 +83,11 @@ public:
     {
         for (int i = 0; i < iterationFreq; i++)
         {
+            // 此时衣片已经缝合在衣服上了, 不需要再更新弹簧受力和质点位置了
+            if (collisionCount > MAX_COLLISION_TIME) {
+                continue;
+            }
+
             // 更新弹簧受力
             for (Spring* s : springs) {
                 s->computeInternalForce(timeStep);
@@ -91,19 +96,14 @@ public:
             for (Node* n : nodes) {
                 n->integrate(timeStep);
             }
-            // 检测质点与模型的碰撞. 缝制之后才需要检测碰撞
+            // 碰撞检测与碰撞响应. 开始缝制之后才需要检测碰撞
             if (sewed) {
-                for (Node* node : nodes)
-                {
-                    if (!node->isFixed && modelRender.collideWithModel(node)) {
+                for (Node* node : nodes) {
+                    if (modelRender.collideWithModel(node)) {
                         modelRender.collisionResponse(node);
                     }
                 }
                 collisionCount += 1;
-                // 碰撞检测一段时间后就停止更新位置, 从而避免因速度更新而持续抖动的状态
-                if (collisionCount == MAX_COLLISION_TIME) {
-                    for(Node *node : nodes) node->isFixed = true;
-                }
             }
         }
         computeFaceNormal();

@@ -45,11 +45,21 @@ public:
 
     void update(float timeStep)
     {
+        Node* n1 = nullptr;
+        Node* n2 = nullptr;
+        const float threshold = 0.15f;
         // 更新缝合点之间的弹簧
         for (Spring* s : springs) {
+            n1 = s->node1;
+            n2 = s->node2;
+            // upgrade: (简单地) 将两个点 merge
+            if (glm::distance(n1->worldPosition, n2->worldPosition) < threshold) {
+                n1->worldPosition = n2->worldPosition;
+                continue;
+            }
             s->computeInternalForce(timeStep);
-            s->node1->integrate(timeStep);
-            s->node2->integrate(timeStep);
+            n1->integrate(timeStep);
+            n2->integrate(timeStep);
         }
     }
 
@@ -57,12 +67,12 @@ public:
      * 缝合衣片
      * 不能直接修改 Cloth 的 clothPos, 因为修改 closhPos 会导致 modelMatrix 改变
      * 这样的效果是, 下一个渲染循环中, 衣片瞬间移动
-     * 所以需要直接修改 Node 的局部坐标, 这样在下一个渲染循环中就会重新计算弹簧受力和质点位移, 产生物理效果
-     *
-     * Cloth 只能缝合一次, 意味着 Node 的局部坐标只会修改一次; 缝合多次可能会出现局部坐标错乱的问题
+     * 在即将缝合的两个点之间添加上弹簧, 并且将弹簧的初始长度设置为 0, 下一个渲染循环中, 两个点就会互相牵引靠近
+     * 为了避免缝合后布料之间的空隙, 当两个点的距离小于某个 threshold 时, 将它们 merge 为一个点
      */
     void SewCloths()
     {
+        // 缝合后的衣片不能再次缝合
         if (cloth1 == nullptr || cloth2 == nullptr || cloth1->sewed || cloth2->sewed) {
             return;
         }
@@ -75,7 +85,7 @@ public:
             Node* n1 = sewNode1[i];
             Node* n2 = sewNode2[i];
 
-            // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近, 从而避免尖锐突出
+            // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
             n1->isSewed = n2->isSewed = true;
             Spring* s = new Spring(n1, n2, sewCoef);
             s->restLength = 0.0f;	// 让缝合点尽可能靠近
