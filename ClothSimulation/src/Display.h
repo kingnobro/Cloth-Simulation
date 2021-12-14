@@ -19,7 +19,7 @@ glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
 Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 
 // Cloths
-Cloth cloth1("assets/cloth/shirt", glm::vec3(-2, 9, -1));
+Cloth cloth1("assets/cloth/woman-shirt.dxf", glm::vec3(-2, 9, -1));
 // Cloth cloth2("assets/cloth/shirt", glm::vec3(-2, 9, -4));
 std::vector<Cloth*> cloths = { 
     &cloth1, 

@@ -28,6 +28,9 @@
     <Filter Include="源文件\shaders">
       <UniqueIdentifier>{2d16e129-e989-4979-af9a-81588c29856f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\dxf">
+      <UniqueIdentifier>{2100fef1-c057-4fff-8815-83e349cb8972}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ClothSimulation.cpp">
@@ -35,6 +38,15 @@
     </ClCompile>
     <ClCompile Include="src\glad.c">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_creationclass.cpp">
+      <Filter>头文件\dxf</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\dxf\dl_dxf.cpp">
+      <Filter>头文件\dxf</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\dxf\dl_writer_ascii.cpp">
+      <Filter>头文件\dxf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="src\Shader.h">
       <Filter>头文件\object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\test_creationclass.h">
+      <Filter>头文件\dxf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

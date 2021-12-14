@@ -5,6 +5,10 @@
 #include "Spring.h"
 #include "ModelRender.h"
 
+#include <dxf/dl_dxf.h>
+#include <dxf/dl_creationadapter.h>
+#include "test_creationclass.h"
+
 
 // Default Cloth Values
 const int NODE_DENSITY = 4;
@@ -40,19 +44,19 @@ public:
     int height;
     bool isSewed;                   // 是否处于缝合状态
 
-    std::vector<Node*> nodes;       // 质点
+    std::vector<Node*> nodes;       // 质点(无序的)
     std::vector<Node*> sewNode;	    // 即将被缝合的顶点
-    std::vector<size_t> faces;      // 构成面的顶点索引
+    std::vector<Node*> faces;       // 构成面的顶点, OpenGL画图时用的是faces中的数据(因为GL_TRIANGLE要求三角形顶点有序）
     std::vector<Spring*> springs;   // 点之间的弹簧
 
-    Cloth(string const &path, glm::vec3 position)
+    Cloth(string const &clothFile, glm::vec3 position)
     {
         clothPos = position;
         clothID = ++clothNumber;
         isSewed = false;
         collisionCount = 0;
 
-        readClothData(path);
+        readClothData(clothFile);
     }
 
     ~Cloth()
@@ -67,7 +71,7 @@ public:
         springs.clear();
         faces.clear();
     }
-
+    
     static void modifyDrawMode(Draw_Mode mode)
     {
         drawMode = mode;
@@ -136,95 +140,35 @@ public:
         collisionCount = 0;
     }
 
+    glm::mat4 GetModelMatrix() const {
+        float scaleFactor = 0.01f;
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, clothPos);
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
+        return modelMatrix;
+    }
+
 private:
-    void readClothData(string const& path)
+    void readClothData(string const& clothFile)
     {
-        const string vertexFile = path + ".vertex";
-        const string indexFile = path + ".index";
-        const string structuralFile = path + ".structural";
-        const string shearFile = path + ".shear";
-        const string bendingFile = path + ".bending";
+        std::cout << "Reading file " << clothFile << "...\n";
 
-        int count;
-        int index1, index2, index3;
-        float pos_x, pos_y, pos_z, tex_x, tex_y;
-        float minX = FLT_MAX, maxX = FLT_MIN, minY = FLT_MAX, maxY = FLT_MIN;
+        Test_CreationClass* creationClass = new Test_CreationClass(&nodes);
+        DL_Dxf* dxf = new DL_Dxf();
+        if (!dxf->in(clothFile, creationClass)) { // if file open failed
+            std::cerr << clothFile << " could not be opened.\n";
+            return;
+        }
+        for (Node* n : nodes) {
+            n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
+            faces.push_back(n);
+        }
+        springs.push_back(new Spring(nodes[0], nodes[1], structuralCoef));
+        std::cout << "Initialize cloth with " << nodes.size() << " nodes and " << faces.size() << " faces\n";
 
-        // 读取顶点数据
-        FILE* fin = fopen(vertexFile.c_str(), "r");
-        if (fin == nullptr) {
-            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .vertex file!" << std::endl;
-        }
-        fscanf(fin, "%d", &count);
-        printf("Init cloth with %d nodes\n", count);
-        for (int i = 0; i < count; i += 1) {
-            fscanf(fin, "%f, %f, %f, %f, %f\n", &pos_x, &pos_y, &pos_z, &tex_x, &tex_y);
-            Node* node = new Node(glm::vec3(pos_x, pos_y, pos_z));
-            node->texCoord = glm::vec2(tex_x, tex_y);
-            node->lastWorldPosition = node->worldPosition = node->localPosition + clothPos;
-            nodes.push_back(node);
 
-            // 更新边界
-            minX = pos_x < minX ? pos_x : minX;
-            minY = pos_y < minY ? pos_y : minY;
-            maxX = pos_x > maxX ? pos_x : maxX;
-            maxY = pos_y > maxY ? pos_y : maxY;
-        }
-        fclose(fin);
-        width = maxX - minX;
-        height = maxY - minY;
-        std::cout << "cloth width:" << width << " height: " << height << std::endl;
-
-        // 读取索引数据
-        fin = fopen(indexFile.c_str(), "r");
-        if (fin == nullptr) {
-            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .index file!" << std::endl;
-        }
-        fscanf(fin, "%d\n", &count);
-        for (int i = 0; i < count; i += 1) {
-            fscanf(fin, "%d, %d, %d\n", &index1, &index2, &index3);
-            faces.push_back(index1);
-            faces.push_back(index2);
-            faces.push_back(index3);
-        }
-        fclose(fin);
-
-        // 读取 structural 弹簧数据
-        fin = fopen(structuralFile.c_str(), "r");
-        if (fin == nullptr) {
-            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .structural file!" << std::endl;
-        }
-        fscanf(fin, "%d\n", &count);
-        for (int i = 0; i < count; i += 1) {
-            fscanf(fin, "%d, %d\n", &index1, &index2);
-            springs.push_back(new Spring(nodes[index1], nodes[index2], structuralCoef));
-        }
-        fclose(fin);
-
-        // 读取 shear 弹簧数据
-        fin = fopen(shearFile.c_str(), "r");
-        if (fin == nullptr) {
-            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .shear file!" << std::endl;
-        }
-        fscanf(fin, "%d\n", &count);
-        for (int i = 0; i < count; i += 1) {
-            fscanf(fin, "%d, %d\n", &index1, &index2);
-            springs.push_back(new Spring(nodes[index1], nodes[index2], shearCoef));
-        }
-        fclose(fin);
-
-        // 读取 bending 弹簧数据
-        fin = fopen(bendingFile.c_str(), "r");
-        if (fin == nullptr) {
-            std::cout << "ERROR::READ CLOTH DATA:: Cannot open .bending file!" << std::endl;
-        }
-        fscanf(fin, "%d\n", &count);
-        for (int i = 0; i < count; i += 1) {
-            fscanf(fin, "%d, %d\n", &index1, &index2);
-            springs.push_back(new Spring(nodes[index1], nodes[index2], bendingCoef));
-        }
-        fclose(fin);
-
+        delete dxf;
+        delete creationClass;
 
         /** Add springs **/
         // /** Structural **/
@@ -255,9 +199,9 @@ private:
         Node* n2;
         Node* n3;
         for (size_t i = 0; i < faces.size() / 3; i++) { // 3 nodes in each face
-            n1 = nodes[faces[3 * i]];
-            n2 = nodes[faces[3 * i + 1]];
-            n3 = nodes[faces[3 * i + 2]];
+            n1 = faces[3 * i];
+            n2 = faces[3 * i + 1];
+            n3 = faces[3 * i + 2];
 
             // Face normal
             normal = glm::cross(n2->worldPosition - n1->worldPosition, n3->worldPosition - n1->worldPosition);

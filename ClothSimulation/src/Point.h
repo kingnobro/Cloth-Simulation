@@ -39,14 +39,13 @@ public:
 
     Node(glm::vec3 pos = POSITION)
     {
-        mass = MASS;
-        isSewed = false;
         localPosition = pos;
-        worldPosition = glm::vec3(0);
-        lastWorldPosition = glm::vec3(0);
-        velocity = glm::vec3(0);
-        force = glm::vec3(0);
-        acceleration = glm::vec3(0);
+        init();
+    }
+    Node(float x, float y, float z)
+    {
+        localPosition = glm::vec3(x, y, z);
+        init();
     }
     ~Node() {}
 
@@ -73,5 +72,17 @@ public:
     {
         isSewed = false;
         velocity = acceleration = force = glm::vec3(0);
+    }
+
+private:
+    void init()
+    {
+        mass = MASS;
+        isSewed = false;
+        worldPosition = glm::vec3(0);
+        lastWorldPosition = glm::vec3(0);
+        velocity = glm::vec3(0);
+        force = glm::vec3(0);
+        acceleration = glm::vec3(0);
     }
 };

@@ -145,8 +145,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="includes\dxf\dl_dxf.cpp" />
+    <ClCompile Include="includes\dxf\dl_writer_ascii.cpp" />
     <ClCompile Include="src\ClothSimulation.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\test_creationclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
@@ -164,6 +167,7 @@
     <ClInclude Include="src\Point.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Spring.h" />
+    <ClInclude Include="src\test_creationclass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\ClothFS.glsl" />

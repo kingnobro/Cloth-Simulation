@@ -40,7 +40,7 @@ struct ClothRender // Texture & Lighting
         vboNor = new glm::vec3[nodeCount];
         for (int i = 0; i < nodeCount; i++)
         {
-            Node* n = cloth->nodes[cloth->faces[i]];
+            Node* n = cloth->faces[i];
             vboPos[i] = n->worldPosition;
             vboTex[i] = n->texCoord; // Texture coord will only be set here
             vboNor[i] = n->normal;
@@ -110,9 +110,8 @@ struct ClothRender // Texture & Lighting
         shader.setInt("uniTex", 0);
 
         /** Set Matrix **/
-        glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
-        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
 
         /** Set Light **/
         shader.setVec3("uniLightPos", lightPos);
@@ -150,7 +149,7 @@ struct ClothRender // Texture & Lighting
         // Update all the positions of nodes
         for (int i = 0; i < nodeCount; i++)
         { // Tex coordinate dose not change
-            Node* n = cloth->nodes[cloth->faces[i]];
+            Node* n = cloth->faces[i];
             vboPos[i] = n->worldPosition;
             vboNor[i] = n->normal;
         }
@@ -171,9 +170,8 @@ struct ClothRender // Texture & Lighting
         glBindTexture(GL_TEXTURE_2D, texID);
 
         /** Update Matrix **/
-        glm::mat4 uniModelMatrix = glm::mat4(1.0f);
         shader.setMat4("uniViewMatrix", camera->GetViewMatrix());
-        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
