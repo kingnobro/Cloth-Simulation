@@ -8,6 +8,7 @@
  * Default constructor.
  */
 Test_CreationClass::Test_CreationClass() {
+    blockCount = 0;
 }
 
 
@@ -26,8 +27,9 @@ void Test_CreationClass::addPoint(const DL_PointData& data) {
     //printf("POINT    (%6.3f, %6.3f, %6.3f)\n",
     //       data.x, data.y, data.z);
     //printAttributes();
-    //Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
-    //clothCreator->nodes.push_back(n);
+    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+    assert(blockCount > 0);
+    blockNodes[blockCount - 1].push_back(n);
 }
 
 /**
@@ -67,7 +69,11 @@ void Test_CreationClass::addCircle(const DL_CircleData& data) {
  * Sample implementation of the method which handles polyline entities.
  */
 void Test_CreationClass::addPolyline(const DL_PolylineData& data) {
-    printf("POLYLINE \n");
+    // 每个 POLYLINE 表示一段折线, flag 为 1 表示这是闭合的折线
+    // 对于衣片而言, polyline 肯定是闭合的
+    blockCount += 1;
+    blockNodes.push_back(std::vector<Node*>());
+    //printf("POLYLINE \n");
     //printf("flags: %d\n", (int)data.flags);
     //printAttributes();
 }
@@ -77,12 +83,13 @@ void Test_CreationClass::addPolyline(const DL_PolylineData& data) {
  * Sample implementation of the method which handles vertices.
  */
 void Test_CreationClass::addVertex(const DL_VertexData& data) {
-    //printf("VERTEX   (%6.3f, %6.3f, %6.3f) %6.3f\n",
-    //       data.x, data.y, data.z,
-    //       data.bulge);
+    /*printf("VERTEX   (%6.3f, %6.3f, %6.3f) %6.3f\n",
+           data.x, data.y, data.z,
+           data.bulge);*/
     //printAttributes();
-    // Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
-    // clothCreator->nodes.push_back(n);
+    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+    assert(blockCount > 0);
+    blockNodes[blockCount - 1].push_back(n);
 }
 
 

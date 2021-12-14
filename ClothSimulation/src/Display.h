@@ -14,7 +14,7 @@ Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
 
 // Cloths
 ClothCreator clothCreator = ClothCreator("assets/cloth/woman-shirt.dxf");
-std::vector<Cloth*> cloths = clothCreator.cloths;
+std::vector<Cloth*>& cloths = clothCreator.cloths;
 Cloth* selectedCloth = nullptr; // 鼠标选中的衣片
 
 // 3D 点击选中物体功能
