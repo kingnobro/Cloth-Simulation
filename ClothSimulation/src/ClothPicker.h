@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vector>
 #include "Cloth.h"
 #include "Camera.h"
 
@@ -17,7 +15,7 @@ public:
      * check whether ray intersect with cloths
      * return the cloth with the greatest z
      */
-    Cloth* pickCloth(const vector<Cloth*>& cloths, const glm::vec3& ray)
+    Cloth* pickCloth(const std::vector<Cloth*>& cloths, const glm::vec3& ray)
     {
         // points on the cloth
         Cloth* selectedCloth = nullptr;
@@ -34,7 +32,7 @@ public:
 
             // 空间中直线与平面交点公式
             // -------------------------
-            // normal vector of the cloth
+            // normal std::vector of the cloth
             glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);
             // hitPoint = camera.Position + ray * t
             double t = glm::dot(pointLeftUpper - camera->Position, normal) / glm::dot(ray, normal);

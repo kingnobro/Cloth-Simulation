@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Spring.h"
+
 struct SpringRender
 {
     std::vector<Spring*> springs;

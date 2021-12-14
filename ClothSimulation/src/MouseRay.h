@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include "Camera.h"
 
 class MouseRay
@@ -40,7 +39,7 @@ private:
     }
 
     /*
-     * normally, to get into clip space from eye space we multiply the vector by a projection matrix
+     * normally, to get into clip space from eye space we multiply the std::vector by a projection matrix
      * we can go backwards by multiplying by the inverse of this matrix 
      */
     glm::vec4 toEyeCoords(glm::vec4 ray_clip)

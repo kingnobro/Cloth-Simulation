@@ -1,17 +1,6 @@
 ﻿#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "Model.h"
 #include "Display.h"
 
 #include "ClothRender.h"
@@ -83,8 +72,8 @@ int main(int argc, const char* argv[])
     glfwSetCursorPosCallback(window, mouse_position_callback);
 
     /** Generate Object Renderers **/
-    vector<ClothRender> clothRenders;
-    vector<ClothSpringRender> clothSpringRenders;
+    std::vector<ClothRender> clothRenders;
+    std::vector<ClothSpringRender> clothSpringRenders;
     for (Cloth* cloth : cloths)
     {
         clothRenders.push_back(ClothRender(cloth));

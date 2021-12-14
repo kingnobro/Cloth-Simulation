@@ -1,9 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <assert.h>
 #include "Cloth.h"
-#include "Shader.h"
 
 class ClothSewMachine
 {
@@ -177,7 +175,7 @@ private:
         const std::vector<Node*>& sewNode2 = cloth2->sewNode;
         // assert(sewNode1.size() == sewNode2.size());
         
-        for (size_t i = 0, sz = min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
+        for (size_t i = 0, sz = std::min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
             vertices.push_back(sewNode1[i]->worldPosition);
             vertices.push_back(sewNode2[i]->worldPosition);
         }

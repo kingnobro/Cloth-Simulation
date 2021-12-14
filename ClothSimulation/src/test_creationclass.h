@@ -26,10 +26,6 @@
 #define TEST_CREATIONCLASS_H
 
 #include <dxf/dl_creationadapter.h>
-#include <vector>
-#include "Point.h"
-
-
 
 /**
  * This class takes care of the entities read from the file.
@@ -40,7 +36,7 @@
  */
 class Test_CreationClass : public DL_CreationAdapter {
 public:
-    Test_CreationClass(std::vector<Node*>* nodes);
+    Test_CreationClass();
 
     virtual void addLayer(const DL_LayerData& data);
     virtual void addPoint(const DL_PointData& data);
@@ -54,7 +50,6 @@ public:
     void printAttributes();
 
 private:
-    std::vector<Node*>* nodes;
 };
 
 #endif

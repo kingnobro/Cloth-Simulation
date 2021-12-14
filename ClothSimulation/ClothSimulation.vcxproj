@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Cloth.h" />
+    <ClInclude Include="src\ClothCreator.h" />
     <ClInclude Include="src\ClothPicker.h" />
     <ClInclude Include="src\ClothRender.h" />
     <ClInclude Include="src\ClothSewMachine.h" />

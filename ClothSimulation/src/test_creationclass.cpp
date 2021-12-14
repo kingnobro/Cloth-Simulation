@@ -7,8 +7,7 @@
 /**
  * Default constructor.
  */
-Test_CreationClass::Test_CreationClass(std::vector<Node*>* nodes) {
-    this->nodes = nodes;
+Test_CreationClass::Test_CreationClass() {
 }
 
 
@@ -27,14 +26,17 @@ void Test_CreationClass::addPoint(const DL_PointData& data) {
     //printf("POINT    (%6.3f, %6.3f, %6.3f)\n",
     //       data.x, data.y, data.z);
     //printAttributes();
-    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
-    nodes->push_back(n);
+    //Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+    //clothCreator->nodes.push_back(n);
 }
 
 /**
  * Sample implementation of the method which handles line entities.
  */
 void Test_CreationClass::addLine(const DL_LineData& data) {
+    // 在当前场景下, Line 被用作丝路线, 每片衣片有且仅有一条丝路线, 且存在于顶点数据的末尾
+    // 所以, 使用 Line 作为分割衣片数据的标识
+    // clothCreator->createCloth();
     //printf("LINE     (%6.3f, %6.3f, %6.3f) (%6.3f, %6.3f, %6.3f)\n",
     //       data.x1, data.y1, data.z1, data.x2, data.y2, data.z2);
     //printAttributes();
@@ -65,7 +67,7 @@ void Test_CreationClass::addCircle(const DL_CircleData& data) {
  * Sample implementation of the method which handles polyline entities.
  */
 void Test_CreationClass::addPolyline(const DL_PolylineData& data) {
-    //printf("POLYLINE \n");
+    printf("POLYLINE \n");
     //printf("flags: %d\n", (int)data.flags);
     //printAttributes();
 }
@@ -79,8 +81,8 @@ void Test_CreationClass::addVertex(const DL_VertexData& data) {
     //       data.x, data.y, data.z,
     //       data.bulge);
     //printAttributes();
-    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
-    nodes->push_back(n);
+    // Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+    // clothCreator->nodes.push_back(n);
 }
 
 

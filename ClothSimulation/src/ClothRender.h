@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Cloth.h"
+
 Draw_Mode Cloth::drawMode = DRAW_FACES;
 
 struct ClothRender // Texture & Lighting
@@ -99,7 +101,7 @@ struct ClothRender // Texture & Lighting
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else {
-            cout << "Failed to load texture" << endl;
+            std::cout << "Failed to load texture" << std::endl;
         }
         // Always free image memory
         stbi_image_free(data);

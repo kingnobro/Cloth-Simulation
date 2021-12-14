@@ -1,7 +1,6 @@
 #pragma once
 
 #include <float.h>
-#include <glm/glm.hpp>
 
 #include "Camera.h"
 
@@ -61,7 +60,7 @@ public:
         width = maxZ - minZ;
         height = maxY - minY;
         length = maxX - minX;
-        phi = max(length, height);
+        phi = std::max(length, height);
         centroid = glm::vec3((maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
         origin = centroid - glm::vec3(0.0f, height / 2, width / 2);
 
@@ -84,8 +83,8 @@ public:
             << " phi:" << phi << std::endl;
         std::cout << "[AABB box] centroid: " << "(" << centroid.x << ", " << centroid.y << ", " << centroid.z << ")\n";
         std::cout << "[AABB box] origin: " << "(" << origin.x << ", " << origin.y << ", " << origin.z << ")\n";
-        std::cout << "[front camera] front vector:" << frontCamera.Front.z << std::endl;
-        std::cout << "[back camera]  front vector:" << backCamera.Front.z << std::endl;
+        std::cout << "[front camera] front std::vector:" << frontCamera.Front.z << std::endl;
+        std::cout << "[back camera]  front std::vector:" << backCamera.Front.z << std::endl;
     }
 
     /*

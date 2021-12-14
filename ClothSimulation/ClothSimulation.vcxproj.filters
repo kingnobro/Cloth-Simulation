@@ -71,9 +71,6 @@
     <ClInclude Include="src\MouseRay.h">
       <Filter>头文件\sew</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>头文件\model</Filter>
-    </ClInclude>
     <ClInclude Include="src\Mesh.h">
       <Filter>头文件\model</Filter>
     </ClInclude>
@@ -97,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="src\test_creationclass.h">
       <Filter>头文件\dxf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClothCreator.h">
+      <Filter>头文件\object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>头文件\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

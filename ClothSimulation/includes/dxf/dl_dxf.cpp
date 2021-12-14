@@ -795,7 +795,7 @@ void DL_Dxf::addSetting(DL_CreationInterface* creationInterface) {
         creationInterface->setVariableString(settingKey.c_str(), values[c].c_str(), c);
  #endif
     }
-    // vector
+    // std::vector
     else if (c>=10 && c<=39) {
         if (c==10) {
             creationInterface->setVariableVector(
@@ -1275,7 +1275,7 @@ void DL_Dxf::addMText(DL_CreationInterface* creationInterface) {
         getRealValue(10, 0.0),
         getRealValue(20, 0.0),
         getRealValue(30, 0.0),
-        // X direction vector
+        // X direction std::vector
         getRealValue(11, 0.0),
         getRealValue(21, 0.0),
         getRealValue(31, 0.0),
@@ -2216,11 +2216,11 @@ void DL_Dxf::addImage(DL_CreationInterface* creationInterface) {
         getRealValue(10, 0.0),
         getRealValue(20, 0.0),
         getRealValue(30, 0.0),
-        // u vector:
+        // u std::vector:
         getRealValue(11, 1.0),
         getRealValue(21, 0.0),
         getRealValue(31, 0.0),
-        // v vector:
+        // v std::vector:
         getRealValue(12, 0.0),
         getRealValue(22, 1.0),
         getRealValue(32, 0.0),
@@ -3722,12 +3722,12 @@ unsigned long DL_Dxf::writeImage(DL_WriterA& dw,
     dw.dxfReal(20, data.ipy);
     dw.dxfReal(30, data.ipz);
 
-    // vector along bottom side (1 pixel long)
+    // std::vector along bottom side (1 pixel long)
     dw.dxfReal(11, data.ux);
     dw.dxfReal(21, data.uy);
     dw.dxfReal(31, data.uz);
 
-    // vector along left side (1 pixel long)
+    // std::vector along left side (1 pixel long)
     dw.dxfReal(12, data.vx);
     dw.dxfReal(22, data.vy);
     dw.dxfReal(32, data.vz);

@@ -2,8 +2,6 @@
 
 #include "Point.h"
 
-using namespace std;
-
 class Spring
 {
 public:
