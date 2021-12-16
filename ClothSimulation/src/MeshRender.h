@@ -21,9 +21,9 @@ struct SpringRender
     Shader shader;
 
     // Render any spring set, color and modelVector
-    void init(std::vector<Spring*> s, glm::vec4 c, glm::vec3 modelVec)
+    void init(Cloth* cloth, glm::vec4 c)
     {
-        springs = s;
+        this->springs = cloth->springs;
         springCount = (int)(springs.size());
         if (springCount <= 0) {
             std::cout << "ERROR::SpringRender : No node exists." << std::endl;
@@ -37,6 +37,8 @@ struct SpringRender
         for (int i = 0; i < springCount; i++) {
             Node* node1 = springs[i]->node1;
             Node* node2 = springs[i]->node2;
+            // std::cout << node1->worldPosition.x << " " << node1->worldPosition.y << " " << node1->worldPosition.z << "\n";
+            // std::cout << node2->worldPosition.x << " " << node2->worldPosition.y << " " << node2->worldPosition.z << "\n\n";
             vboPos[i * 2] = node1->worldPosition;
             vboPos[i * 2 + 1] = node2->worldPosition;
             vboNor[i * 2] = node1->normal;
@@ -80,9 +82,7 @@ struct SpringRender
         shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
 
         /** Model Matrix : Put rigid into the world **/
-        glm::mat4 uniModelMatrix = glm::mat4(1.0f);
-        uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
-        shader.setMat4("uniModelMatrix", uniModelMatrix);
+        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
 
         /** Light **/
         shader.setVec3("uniLightPos", lightPos);
@@ -117,10 +117,10 @@ struct SpringRender
         for (int i = 0; i < springCount; i++) {
             Node* node1 = springs[i]->node1;
             Node* node2 = springs[i]->node2;
-            vboPos[i * 2] = glm::vec3(node1->worldPosition.x, node1->worldPosition.y, node1->worldPosition.z);
-            vboPos[i * 2 + 1] = glm::vec3(node2->worldPosition.x, node2->worldPosition.y, node2->worldPosition.z);
-            vboNor[i * 2] = glm::vec3(node1->normal.x, node1->normal.y, node1->normal.z);
-            vboNor[i * 2 + 1] = glm::vec3(node2->normal.x, node2->normal.y, node2->normal.z);
+            vboPos[i * 2] = node1->worldPosition;
+            vboPos[i * 2 + 1] = node2->worldPosition;
+            vboNor[i * 2] = node1->normal;
+            vboNor[i * 2 + 1] = node2->normal;
         }
 
         shader.use();
@@ -139,8 +139,9 @@ struct SpringRender
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         /** Draw **/
+        glLineWidth(3);
         glDrawArrays(GL_LINES, 0, springCount * 2);
-
+        
         // End flushing
         glDisable(GL_BLEND);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -159,7 +160,7 @@ struct ClothSpringRender
     {
         cloth = c;
         defaultColor = glm::vec4(1.0f);
-        render.init(cloth->springs, defaultColor, cloth->clothPos);
+        render.init(cloth, defaultColor);
     }
 
     void update(Camera *camera) { render.update(camera); }

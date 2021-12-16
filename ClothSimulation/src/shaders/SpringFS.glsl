@@ -22,5 +22,7 @@ void main()
 
     vec3 objectColor = vec3(uniSpringColor.x, uniSpringColor.y, uniSpringColor.z);
     vec3 result = (ambient + diffuse) * objectColor;
-    color = vec4(result, uniSpringColor.w);
+    // todo: uncomment me
+    // color = vec4(result, uniSpringColor.w);
+    color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }

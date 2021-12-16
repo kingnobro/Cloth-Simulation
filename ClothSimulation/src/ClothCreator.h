@@ -48,15 +48,19 @@ private:
             Cloth* cloth = new Cloth(clothPos);
             std::vector<Node*>& nodes = clothNodes[i];
 
-            std::cout << nodes.size() << std::endl;
-
             // todo: learn face and spring generation algorithm
             for (Node* n : nodes) {
                 n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
+                // std::cout << n->worldPosition.x << " " << n->worldPosition.y << " " << n->worldPosition.z << "\n";
                 cloth->faces.push_back(n);
                 cloth->nodes.push_back(n);
             }
-            cloth->springs.push_back(new Spring(nodes[0], nodes[1], cloth->structuralCoef));
+            for (int i = 1, sz = nodes.size(); i < sz; i++) {
+
+                cloth->springs.push_back(new Spring(nodes[i], nodes[i - 1], cloth->structuralCoef));
+
+            }
+            //cloth->springs.push_back(new Spring(nodes[0], nodes[1], cloth->structuralCoef));
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
 
             cloths.push_back(cloth);

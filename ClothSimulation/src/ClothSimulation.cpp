@@ -193,12 +193,15 @@ void processInput(GLFWwindow* window)
     /** Set draw mode **/
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         Cloth::modifyDrawMode(DRAW_NODES);
+        std::cout << "Mode: Draw Nodes\n";
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
         Cloth::modifyDrawMode(DRAW_LINES);
+        std::cout << "Mode: Draw Lines\n";
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         Cloth::modifyDrawMode(DRAW_FACES);
+        std::cout << "Mode: Draw Faces\n";
     }
 
     /** control : [W] [S] [A] [D] **/

@@ -33,7 +33,7 @@ public:
 
     glm::vec3 clothPos;             // 能够包围住衣片的矩形的左上角的世界坐标
     int collisionCount;             // 碰撞检测的迭代次数
-    int clothID;                    // 布料的唯一标识符
+    int clothID;
     int width;
     int height;
     bool isSewed;                   // 是否处于缝合状态
@@ -81,14 +81,15 @@ public:
                 continue;
             }
 
+            // TODO: update force and positions
             // 更新弹簧受力
-            for (Spring* s : springs) {
-                s->computeInternalForce(timeStep);
-            }
+            // for (Spring* s : springs) {
+            //     s->computeInternalForce(timeStep);
+            // }
             // 更新质点位置
-            for (Node* n : nodes) {
-                n->integrate(timeStep);
-            }
+            // for (Node* n : nodes) {
+            //     n->integrate(timeStep);
+            // }
             // 碰撞检测与碰撞响应. 开始缝制  之后才需要检测碰撞
             if (isSewed) {
                 for (Node* node : nodes) {
