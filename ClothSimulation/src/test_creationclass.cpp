@@ -27,9 +27,11 @@ void Test_CreationClass::addPoint(const DL_PointData& data) {
     //printf("POINT    (%6.3f, %6.3f, %6.3f)\n",
     //       data.x, data.y, data.z);
     //printAttributes();
-    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+    
+    // 忽略 Point 类型的点, 因为发现 dxf 文件中相邻的 Point 在空间上并不是相邻的
+    /*Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
     assert(blockCount > 0);
-    blockNodes[blockCount - 1].push_back(n);
+    blockNodes[blockCount - 1].push_back(n);*/
 }
 
 /**
@@ -72,7 +74,7 @@ void Test_CreationClass::addPolyline(const DL_PolylineData& data) {
     // 每个 POLYLINE 表示一段折线, flag 为 1 表示这是闭合的折线
     // 对于衣片而言, polyline 肯定是闭合的
     blockCount += 1;
-    blockNodes.push_back(std::vector<Node*>());
+    blockNodes.push_back(std::vector<point2D>());
     //printf("POLYLINE \n");
     //printf("flags: %d\n", (int)data.flags);
     //printAttributes();
@@ -87,9 +89,10 @@ void Test_CreationClass::addVertex(const DL_VertexData& data) {
            data.x, data.y, data.z,
            data.bulge);*/
     //printAttributes();
-    Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
+
+    // todo: add data.z
     assert(blockCount > 0);
-    blockNodes[blockCount - 1].push_back(n);
+    blockNodes[blockCount - 1].push_back(std::make_pair(data.x, data.y));
 }
 
 

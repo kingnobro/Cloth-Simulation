@@ -1,5 +1,6 @@
 #pragma once
 
+#include <CDT/CDT.h>
 #include <dxf/dl_dxf.h>
 #include <dxf/dl_creationadapter.h>
 #include "test_creationclass.h"
@@ -16,7 +17,8 @@ public:
 
 	ClothCreator(const std::string& clothFilePath) {
         clothPos = CLOTH_POSITION;
-		readClothData(clothFilePath);
+
+        readClothData(clothFilePath);
 	}
 
     ~ClothCreator() {
@@ -31,7 +33,7 @@ private:
     /*
      * dxf 文件解析
      */
-	void readClothData(const std::string& clothFilePath) {
+    void readClothData(const std::string& clothFilePath) {
         std::cout << "Reading file " << clothFilePath << "...\n";
 
         // 解析文件中的顶点
@@ -42,25 +44,51 @@ private:
             return;
         }
 
-        // 根据顶点数据创造布料对象
-        std::vector<std::vector<Node*>>& clothNodes = creationClass->blockNodes;
-        for (int i = 0, sz = clothNodes.size(); i < sz; i++) {
+        // 根据 Vertex 数据创造 Cloth 对象
+        std::vector<std::vector<point2D>>& clothNodes = creationClass->blockNodes;
+        for (size_t i = 0, sz = clothNodes.size(); i < sz; i++) {
             Cloth* cloth = new Cloth(clothPos);
-            std::vector<Node*>& nodes = clothNodes[i];
 
-            // todo: learn face and spring generation algorithm
-            for (Node* n : nodes) {
+            // Constrained Delaunay Triangulation
+            CDT::Triangulation<float> cdt;
+            std::vector<CDT::V2d<float>> vertices;
+            std::vector<CDT::Edge> edges;
+            for (size_t j = 0; j < clothNodes[i].size(); j++) {
+                const point2D& p = clothNodes[i][j];
+                vertices.push_back({ p.first, p.second });
+
+                // 添加轮廓线, 避免产生凸包. 轮廓线需要闭合
+                if (j == clothNodes[i].size() - 1) {
+                    edges.push_back({ CDT::VertInd(0), CDT::VertInd(j) });
+                }
+                else {
+                    edges.push_back({ CDT::VertInd(j), CDT::VertInd(j + 1) });
+                }
+
+                // 需要绘制的点
+                // todo: 添加 z 坐标
+                Node* n = new Node(p.first, p.second, 0.0f);
                 n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
-                // std::cout << n->worldPosition.x << " " << n->worldPosition.y << " " << n->worldPosition.z << "\n";
-                cloth->faces.push_back(n);
                 cloth->nodes.push_back(n);
             }
-            for (int i = 1, sz = nodes.size(); i < sz; i++) {
+            cdt.insertVertices(vertices);
+            cdt.insertEdges(edges);
+            cdt.eraseOuterTrianglesAndHoles();  // 抹去边框外和 hole 中的三角形
 
-                cloth->springs.push_back(new Spring(nodes[i], nodes[i - 1], cloth->structuralCoef));
-
+            // 取出三角形, 生成 springs 和 faces 数据
+            Node* n1, * n2, * n3;
+            for (const CDT::Triangle& triangle : cdt.triangles) {
+                CDT::VerticesArr3 tri = triangle.vertices;
+                n1 = cloth->nodes[tri[0]];
+                n2 = cloth->nodes[tri[1]];
+                n3 = cloth->nodes[tri[2]];
+                cloth->faces.push_back(n1);
+                cloth->faces.push_back(n2);
+                cloth->faces.push_back(n3);
+                cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
+                cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
+                cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
             }
-            //cloth->springs.push_back(new Spring(nodes[0], nodes[1], cloth->structuralCoef));
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
 
             cloths.push_back(cloth);

@@ -139,7 +139,7 @@ struct SpringRender
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         /** Draw **/
-        glLineWidth(3);
+        // glLineWidth(3);
         glDrawArrays(GL_LINES, 0, springCount * 2);
         
         // End flushing

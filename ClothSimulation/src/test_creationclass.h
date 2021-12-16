@@ -27,7 +27,10 @@
 
 #include <dxf/dl_creationadapter.h>
 #include <vector>
-#include "Point.h"
+#include <utility>
+#include <assert.h>
+
+typedef std::pair<float, float> point2D;
 
 /**
  * This class takes care of the entities read from the file.
@@ -38,7 +41,7 @@
  */
 class Test_CreationClass : public DL_CreationAdapter {
 public:
-    std::vector<std::vector<Node*>> blockNodes;
+    std::vector<std::vector<point2D>> blockNodes;
     Test_CreationClass();
 
     virtual void addLayer(const DL_LayerData& data);
