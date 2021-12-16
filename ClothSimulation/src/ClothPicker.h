@@ -25,10 +25,10 @@ public:
 
         for (Cloth* cloth : cloths)
         {
-            // upgrade: 如何选中不规则形状?
-            glm::vec3 pointLeftUpper = cloth->clothPos;
-            glm::vec3 pointRightUpper = pointLeftUpper + glm::vec3(cloth->width, 0, 0);
-            glm::vec3 pointRightBottom = pointLeftUpper + glm::vec3(cloth->width, -cloth->height, 0);
+            glm::mat4 modelMatrix = cloth->GetModelMatrix();
+            glm::vec3 pointLeftUpper = modelMatrix * glm::vec4(cloth->leftUpper, 1.0f);
+            glm::vec3 pointRightUpper = modelMatrix * glm::vec4(cloth->rightUpper, 1.0f);
+            glm::vec3 pointRightBottom = modelMatrix * glm::vec4(cloth->rightBottom, 1.0f);
 
             // 空间中直线与平面交点公式
             // -------------------------

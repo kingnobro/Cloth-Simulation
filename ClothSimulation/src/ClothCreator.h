@@ -58,7 +58,6 @@ private:
     void createCloths(std::vector<std::vector<point2D>>& clothNodes) {
         // 一个 dxf 文件可能包含多个衣片, 所以用一个循环取出所有的衣片
         for (size_t i = 0, sz = clothNodes.size(); i < sz; i++) {
-            Cloth* cloth = new Cloth(clothPos);
             float minX =  FLT_MAX, minY =  FLT_MAX;   // 用于生成衣片的包围盒
             float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
@@ -83,6 +82,7 @@ private:
 
             // 在衣片的矩形包围盒内随机生成点, 假如生成的点落在衣片轮廓外部, 它会被 eraseOuterTrianglesAndHoles 删除
             // 添加随机偏移, 使得生成的三角形网格更加接近面料
+            Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
             cloth->width = int(maxX - minX);
             cloth->height = int(maxY - minY);
             int round = 0;
@@ -115,6 +115,7 @@ private:
                 cloth->faces.push_back(n1);
                 cloth->faces.push_back(n2);
                 cloth->faces.push_back(n3);
+                // todo: add different forces
                 cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));

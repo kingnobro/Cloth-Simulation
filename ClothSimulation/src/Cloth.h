@@ -32,6 +32,7 @@ public:
     const float bendingCoef = BENDING_COEF;
 
     glm::vec3 clothPos;             // 能够包围住衣片的矩形的左上角的世界坐标
+    glm::vec3 leftUpper, rightUpper, rightBottom;
     int collisionCount;             // 碰撞检测的迭代次数
     int clothID;
     int width;
@@ -43,9 +44,12 @@ public:
     std::vector<Node*> faces;       // 构成面的顶点, OpenGL画图时用的是faces中的数据(因为GL_TRIANGLE要求三角形顶点有序）
     std::vector<Spring*> springs;   // 点之间的弹簧
 
-    Cloth(glm::vec3 position)
+    Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)
     {
         clothPos = position;
+        leftUpper = clothPos + glm::vec3(minX, maxY, 0.0f);
+        rightUpper = clothPos + glm::vec3(maxX, maxY, 0.0f);
+        rightBottom = clothPos + glm::vec3(maxX, minY, 0.0f);
         clothID = ++clothNumber;
         isSewed = false;
         collisionCount = 0;
@@ -110,6 +114,9 @@ public:
     void moveCloth(glm::vec3 offset)
     {
         clothPos += offset;
+        leftUpper += offset;
+        rightUpper += offset;
+        rightBottom += offset;
         for (Node* n : nodes) {
             n->worldPosition += offset;
             n->lastWorldPosition = n->worldPosition;
