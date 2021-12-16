@@ -85,9 +85,9 @@ void Test_CreationClass::addPolyline(const DL_PolylineData& data) {
  * Sample implementation of the method which handles vertices.
  */
 void Test_CreationClass::addVertex(const DL_VertexData& data) {
-    /*printf("VERTEX   (%6.3f, %6.3f, %6.3f) %6.3f\n",
-           data.x, data.y, data.z,
-           data.bulge);*/
+    //printf("VERTEX   (%6.3f, %6.3f, %6.3f) %6.3f\n",
+    //       data.x, data.y, data.z,
+    //       data.bulge);
     //printAttributes();
 
     // todo: add data.z

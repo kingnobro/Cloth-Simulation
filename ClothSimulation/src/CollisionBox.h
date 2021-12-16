@@ -27,7 +27,7 @@ public:
     CollisionBox()
     {
         minX = minY = minZ = FLT_MAX;
-        maxX = maxY = maxZ = FLT_MIN;
+        maxX = maxY = maxZ = -FLT_MAX;
         width = height = length = phi = 0;
         centroid = glm::vec3(0.0f);
     }
