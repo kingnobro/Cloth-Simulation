@@ -82,9 +82,15 @@ private:
             }
 
             // 在衣片的矩形包围盒内随机生成点, 假如生成的点落在衣片轮廓外部, 它会被 eraseOuterTrianglesAndHoles 删除
+            // 添加随机偏移, 使得生成的三角形网格更加接近面料
+            cloth->width = int(maxX - minX);
+            cloth->height = int(maxY - minY);
+            int round = 0;
             for (float x = minX; x < maxX; x += step) {
                 for (float y = minY; y < maxY; y += step) {
-                    contour.push_back({ x, y });
+                    // 随机偏移的参数是随便设置的
+                    contour.push_back({ x + (round % 7) * 0.7f, y - (round % 7) * 1.0f });
+                    round += 1;
                 }
             }
 
@@ -116,7 +122,10 @@ private:
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
 
             cloths.push_back(cloth);
-            break;
+
+            // todo: delete me
+            // debug 时用 break 控制衣片生成的数量
+            if (i == 1) break;
         }
     }
 
