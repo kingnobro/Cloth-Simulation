@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef CLOTH_H
+#define CLOTH_H
 
 #include <vector>
 
@@ -9,9 +10,10 @@
 const float STRUCTURAL_COEF = 40.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
+const float SCALE_COEF = 0.01;
 const int MAX_COLLISION_TIME = 2000;
 
-// 用于唯一标识一块布料
+// unique identifier of cloth
 int clothNumber = 0;
 
 enum Draw_Mode
@@ -24,37 +26,44 @@ enum Draw_Mode
 class Cloth
 {
 public:
-    static Draw_Mode drawMode;      // 显示方式, 可以为 点、线、面
+    static Draw_Mode drawMode;
 
     const float structuralCoef = STRUCTURAL_COEF;
     const float shearCoef = SHEAR_COEF;
     const float bendingCoef = BENDING_COEF;
+    const float scaleCoef = SCALE_COEF;
 
-    glm::vec3 clothPos;             // 能够包围住衣片的矩形的左上角的世界坐标
-    glm::vec3 leftUpper, rightUpper, rightBottom;   // 记录包围盒的角落
-    int collisionCount;             // 碰撞检测的迭代次数
+    glm::vec3 clothPos;             // world space of cloth
+    glm::vec3 leftUpper;            // corners of bounding box
+    glm::vec3 rightUpper;
+    glm::vec3 rightBottom;
+    glm::mat4 modelMatrix;
+
+    int collisionCount;
     int clothID;
     int width;
     int height;
-    bool isSewed;                   // 是否处于缝合状态
+    bool isSewed;                   // whether the cloth is sewed
 
-    std::vector<Node*> nodes;       // 质点(无序的)
-    std::vector<Node*> sewNode;	    // 即将被缝合的顶点
-    std::vector<Node*> faces;       // 构成面的顶点, OpenGL画图时用的是faces中的数据(因为GL_TRIANGLE要求三角形顶点有序）
-    std::vector<Spring*> springs;   // 点之间的弹簧
+    std::vector<Node*> nodes;
+    std::vector<Node*> sewNode;	    // nodes to be sewed
+    std::vector<Node*> faces;       // every 3 nodes make up a face; use to draw triangles
+    std::vector<Spring*> springs;   // springs of cloth
 
     Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)
     {
         clothPos = position;
-        glm::mat4 modelMatrix = GetModelMatrix();
-        leftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
-        rightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
-        rightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
         width = int(maxX - minX);
         height = int(maxY - minY);
         clothID = ++clothNumber;
         isSewed = false;
         collisionCount = 0;
+
+        modelMatrix = glm::translate(glm::mat4(1.0f), clothPos);
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(scaleCoef, scaleCoef, scaleCoef));
+        leftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
+        rightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
+        rightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
     }
 
     ~Cloth()
@@ -80,20 +89,18 @@ public:
      */
     void update(float timeStep, ModelRender& modelRender)
     {
-        // 此时衣片已经缝合在衣服上了, 不需要再更新弹簧受力和质点位置了
+        // no need to update positions after sewing
         if (collisionCount > MAX_COLLISION_TIME) {
             return;
         }
 
-        // 更新弹簧受力
         for (Spring* s : springs) {
             s->computeInternalForce(timeStep);
         }
-        // 更新质点位置
         for (Node* n : nodes) {
             n->integrate(timeStep);
         }
-        // 碰撞检测与碰撞响应. 开始缝制  之后才需要检测碰撞
+        // collision detection and response
         if (isSewed) {
             for (Node* node : nodes) {
                 if (modelRender.collideWithModel(node)) {
@@ -106,9 +113,6 @@ public:
         //computeFaceNormal();
     }
 
-    /*
-     * 移动衣片位置. 衣片坐标和质点的世界坐标需要改变 
-     */
     void moveCloth(glm::vec3 offset)
     {
         clothPos += offset;
@@ -128,24 +132,16 @@ public:
 
     void reset()
     {
-        // 重置局部坐标
+        // reset position
         for (Node* n : nodes) {
-            n->lastWorldPosition = n->worldPosition = GetModelMatrix() * glm::vec4(clothPos + n->localPosition, 1.0f);
+            n->lastWorldPosition = n->worldPosition = modelMatrix * glm::vec4(clothPos + n->localPosition, 1.0f);
             n->reset();
         }
-        // 恢复到未缝合的状态
         isSewed = false;
         sewNode.clear();
         collisionCount = 0;
     }
 
-    glm::mat4 GetModelMatrix() const {
-        float scaleFactor = 0.01f;
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, clothPos);
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(scaleFactor, scaleFactor, scaleFactor));
-        return modelMatrix;
-    }
 
 private:
 
@@ -194,3 +190,5 @@ private:
     //    }
     //}
 };
+
+#endif

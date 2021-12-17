@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POINT_H
+#define POINT_H
 
 #include <glm/glm.hpp>
 
@@ -86,3 +87,5 @@ private:
         acceleration = glm::vec3(0);
     }
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COLLISION_BOX_H
+#define BOLLISION_BOX_H
 
 #include <float.h>
 
@@ -142,3 +143,5 @@ public:
         return glm::vec3(x, y, z);
     }
 };
+
+#endif

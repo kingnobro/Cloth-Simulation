@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MOUSE_RAY_H
+#define MOUSE_RAY_H
 
 #include "Camera.h"
 
@@ -60,3 +61,5 @@ private:
 
     Camera* camera;
 };
+
+#endif

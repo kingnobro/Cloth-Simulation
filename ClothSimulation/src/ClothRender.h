@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLOTH_RENDER_H
+#define CLOTH_RENDER_H
 
 #include "Cloth.h"
 
@@ -201,3 +202,5 @@ struct ClothRender // Texture & Lighting
         glUseProgram(0);
     }
 };
+
+#endif

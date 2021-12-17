@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MESH_RENDER_H
+#define MESH_RENDER_H
 
 #include "Spring.h"
 
@@ -165,3 +166,5 @@ struct ClothSpringRender
 
     void update(Camera *camera) { render.update(camera); }
 };
+
+#endif

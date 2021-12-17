@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLOTH_PICKER_H
+#define CLOTH_PICKER_H
 
 #include "Cloth.h"
 #include "Camera.h"
@@ -25,11 +26,12 @@ public:
 
         for (Cloth* cloth : cloths)
         {
+            // corners of bounding box
             glm::vec3 pointLeftUpper = cloth->leftUpper;
             glm::vec3 pointRightUpper = cloth->rightUpper;
             glm::vec3 pointRightBottom = cloth->rightBottom;
 
-            // 空间中直线与平面交点公式
+            // Point Of Intersection Of A Line And A Plane
             // -------------------------
             // normal vector of the cloth
             glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);
@@ -40,7 +42,7 @@ public:
             if (hit.x >= pointLeftUpper.x && hit.x <= pointRightUpper.x && hit.y <= pointLeftUpper.y && hit.y >= pointRightBottom.y)
             {
                 float d = glm::length(hit - camera->Position);
-                // 当多个衣片重叠时, 选择距离相机最近的衣片
+                // when cloths are overlapping, select cloth closest to camera
                 if (selectedCloth == nullptr || (selectedCloth != nullptr && d < distance)) {
                     selectedCloth = cloth;
                     distance = d;
@@ -95,3 +97,5 @@ public:
 private:
     Camera* camera;
 };
+
+#endif

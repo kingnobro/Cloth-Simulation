@@ -16,20 +16,20 @@
     <Filter Include="头文件\renders">
       <UniqueIdentifier>{f93445eb-130e-4f83-95cb-58fcd732ce78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\sew">
-      <UniqueIdentifier>{ba8f2bad-b924-4539-96eb-6821f2e568cf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\model">
       <UniqueIdentifier>{7f1ee743-85c9-4570-a9b6-a38a7f54e9e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\object">
-      <UniqueIdentifier>{130a5a95-3c6e-4c7a-901c-ccd2b4d3a1c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\shaders">
       <UniqueIdentifier>{2d16e129-e989-4979-af9a-81588c29856f}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\dxf">
       <UniqueIdentifier>{2100fef1-c057-4fff-8815-83e349cb8972}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\cloth">
+      <UniqueIdentifier>{ba8f2bad-b924-4539-96eb-6821f2e568cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\utils">
+      <UniqueIdentifier>{130a5a95-3c6e-4c7a-901c-ccd2b4d3a1c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,42 +63,42 @@
       <Filter>头文件\renders</Filter>
     </ClInclude>
     <ClInclude Include="src\ClothPicker.h">
-      <Filter>头文件\sew</Filter>
+      <Filter>头文件\cloth</Filter>
     </ClInclude>
     <ClInclude Include="src\ClothSewMachine.h">
-      <Filter>头文件\sew</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MouseRay.h">
-      <Filter>头文件\sew</Filter>
+      <Filter>头文件\cloth</Filter>
     </ClInclude>
     <ClInclude Include="src\Mesh.h">
       <Filter>头文件\model</Filter>
     </ClInclude>
     <ClInclude Include="src\Camera.h">
-      <Filter>头文件\object</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Cloth.h">
-      <Filter>头文件\object</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CollisionBox.h">
-      <Filter>头文件\object</Filter>
+      <Filter>头文件\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Point.h">
-      <Filter>头文件\object</Filter>
+      <Filter>头文件\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Spring.h">
-      <Filter>头文件\object</Filter>
+      <Filter>头文件\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Shader.h">
-      <Filter>头文件\object</Filter>
+      <Filter>头文件\utils</Filter>
     </ClInclude>
     <ClInclude Include="src\test_creationclass.h">
       <Filter>头文件\dxf</Filter>
     </ClInclude>
-    <ClInclude Include="src\ClothCreator.h">
-      <Filter>头文件\object</Filter>
-    </ClInclude>
     <ClInclude Include="src\Model.h">
+      <Filter>头文件\model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MouseRay.h">
+      <Filter>头文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClothCreator.h">
+      <Filter>头文件\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cloth.h">
+      <Filter>头文件\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CollisionBox.h">
       <Filter>头文件\model</Filter>
     </ClInclude>
   </ItemGroup>

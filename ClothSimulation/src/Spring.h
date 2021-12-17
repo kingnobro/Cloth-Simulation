@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPRING_H
+#define SPRING_H
 
 #include "Point.h"
 
@@ -27,6 +28,7 @@ public:
     void computeInternalForce(float timeStep)
     {
         float currentLength = glm::distance(node1->worldPosition, node2->worldPosition);
+        assert(fabs(currentLength) > 1e-3);
         
         glm::vec3 forceDirection = (node2->worldPosition - node1->worldPosition) / currentLength;
         glm::vec3 velocityDifference = node2->velocity - node1->velocity;
@@ -45,3 +47,5 @@ public:
      */
     // void velocityModification() {}
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MODEL_H
+#define MODEL_H
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -239,3 +240,5 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
 
     return textureID;
 }
+
+#endif

@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef CLOTH_SEWMACHINE_H
+#define CLOTH_SEWMACHINE_H
 #include <assert.h>
 #include "Cloth.h"
 
@@ -218,3 +218,5 @@ private:
         glBindVertexArray(0);		      // Unbined VAO
     }
 };
+
+#endif

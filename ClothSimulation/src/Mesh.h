@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MESH_H
+#define MESH_H
 
 #include "Shader.h"
 #include <vector>
@@ -134,3 +135,5 @@ private:
         glBindVertexArray(0);
     }
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DISPLAY_H
+#define DISPLAY_H
 
 #include "ClothCreator.h"
 #include "MouseRay.h"
@@ -23,3 +24,5 @@ ClothPicker clothPicker = ClothPicker(&camera);
 
 // ·ìÈÒ»ú
 ClothSewMachine sewMachine = ClothSewMachine(&camera);
+
+#endif

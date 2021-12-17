@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MODEL_RENDER_H
+#define MODEL_RENDER_H
 
 #include "Model.h"
 
@@ -227,3 +228,5 @@ private:
         return glm::vec3(normalMap[index], normalMap[index + 1], normalMap[index + 2]);
     }
 };
+
+#endif

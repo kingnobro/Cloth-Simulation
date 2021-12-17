@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLOTHCREATOR_H
+#define CLOTHCREATOR_H
 
 #include <CDT/CDT.h>
 #include <dxf/dl_dxf.h>
@@ -15,13 +16,12 @@ class ClothCreator
 {
 public:
     std::vector<Cloth*> cloths;  // 从 dxf 文件中解析出的衣片. 一个 dxf 文件可以包含多个衣片
-    const float step = STEP;    // 生成点的步长
+    const float step = STEP;     // 生成点的步长
 
-	ClothCreator(const std::string& clothFilePath) {
+    ClothCreator(const std::string& clothFilePath) {
         clothPos = CLOTH_POSITION;
-
         readClothData(clothFilePath);
-	}
+    }
 
     ~ClothCreator() {
         for (Cloth* c : cloths) {
@@ -50,7 +50,7 @@ private:
 
         delete dxf;
         delete creationClass;
-	}
+    }
 
     /*
      * 根据解析出的 Vertex 数据创造 Cloth 对象
@@ -58,7 +58,7 @@ private:
     void createCloths(std::vector<std::vector<point2D>>& clothNodes) {
         // 一个 dxf 文件可能包含多个衣片, 所以用一个循环取出所有的衣片
         for (size_t i = 0, sz = clothNodes.size(); i < sz; i++) {
-            float minX =  FLT_MAX, minY =  FLT_MAX;   // 用于生成衣片的包围盒
+            float minX = FLT_MAX, minY = FLT_MAX;   // 用于生成衣片的包围盒
             float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
             // 三角网格化, Constrained Delaunay Triangulation(CDT)
@@ -66,7 +66,7 @@ private:
             std::vector<CDT::V2d<float>> contour;
             std::vector<CDT::Edge> edges;
 
-            // 把轮廓上的点加入三角化的类中, 并添加轮廓线, 避免产生凸包; 轮廓线需要闭合
+            // 把轮廓上的点加入三角化的类中, 并添加轮廓线; 轮廓线需要闭合
             for (size_t j = 0; j < clothNodes[i].size(); j++) {
                 const point2D& p = clothNodes[i][j];
                 contour.push_back({ p.first, p.second });
@@ -83,12 +83,12 @@ private:
             // 在衣片的矩形包围盒内随机生成点, 假如生成的点落在衣片轮廓外部, 它会被 eraseOuterTrianglesAndHoles 删除
             // 添加随机偏移, 使得生成的三角形网格更加接近面料
             Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
-            int round = 0;
+            int cnt = 0;
             for (float x = minX; x < maxX; x += step) {
                 for (float y = minY; y < maxY; y += step) {
                     // 随机偏移的参数是随便设置的
-                    contour.push_back({ x + (round % 7) * 0.7f, y - (round % 7) * 1.0f });
-                    round += 1;
+                    contour.push_back({ x + (cnt % 7) * 0.7f, y - (cnt % 7) * 1.0f });
+                    cnt += 1;
                 }
             }
 
@@ -100,7 +100,8 @@ private:
             // 在此处生成衣片上的点, 因为经过 eraseOuterTrianglesAndHoles 后在轮廓外的点会被 erase
             for (const CDT::V2d<float>& p : cdt.vertices) {
                 Node* n = new Node(p.x, p.y, 0.0f);
-                n->lastWorldPosition = n->worldPosition = cloth->GetModelMatrix() * glm::vec4(clothPos + n->localPosition, 1.0f);
+                n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(clothPos + n->localPosition, 1.0f);
+
                 cloth->nodes.push_back(n);
             }
 
@@ -116,23 +117,17 @@ private:
                 cloth->faces.push_back(n2);
                 cloth->faces.push_back(n3);
                 // todo: add different forces
-                // cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
-                // cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
-                // cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
-                // cloth->springs.push_back(new Spring(n1, n2, cloth->bendingCoef));
-                // cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
-                // cloth->springs.push_back(new Spring(n2, n3, cloth->bendingCoef));
-                cloth->springs.push_back(new Spring(n1, n2, cloth->shearCoef));
-                cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
+                cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
+                cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
             }
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
 
             cloths.push_back(cloth);
 
-            // todo: delete me
+            // TODO: delete me
             // debug 时用 break 控制衣片生成的数量
-            if (i == 0) break;
+            if (i == 1) break;
         }
     }
 
@@ -147,3 +142,5 @@ private:
         if (y > maxY) maxY = y;
     }
 };
+
+#endif
