@@ -27,9 +27,16 @@ public:
         for (Cloth* cloth : cloths)
         {
             // corners of bounding box
-            glm::vec3 pointLeftUpper = cloth->leftUpper;
-            glm::vec3 pointRightUpper = cloth->rightUpper;
-            glm::vec3 pointRightBottom = cloth->rightBottom;
+            // TODO: fixbug
+            glm::mat4 modelMatrix = cloth->modelMatrix;
+            glm::vec3 clothPos = cloth->clothPos;
+            float minX = cloth->minX;
+            float minY = cloth->minY;
+            float maxX = cloth->maxX;
+            float maxY = cloth->maxY;
+            glm::vec3 pointLeftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
+            glm::vec3 pointRightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
+            glm::vec3 pointRightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
 
             // Point Of Intersection Of A Line And A Plane
             // -------------------------
@@ -53,43 +60,20 @@ public:
         if (selectedCloth != nullptr) {
             std::cout << "Cloth " << selectedCloth->GetClothID() << " Selected\n";
 
-            // todo: select sewing line
-            // 用户点击一点，将距离该点最近的那条边上的点加入到待缝合列表
-            // ------------------------------------------
-            // 上、下、左、右 四条边的中点
-            // int width = selectedCloth->width;
-            // int height = selectedCloth->height;
-            // glm::vec3 clothPos = selectedCloth->clothPos;
-            // glm::vec3 topMiddle = clothPos + glm::vec3(width / 2.0f, 0, 0);
-            // glm::vec3 bottomMiddle = clothPos + glm::vec3(width / 2.0f, -height, 0);
-            // glm::vec3 leftMiddle = clothPos + glm::vec3(0, -height / 2, 0);
-            // glm::vec3 rightMiddle = clothPos + glm::vec3(width, -height / 2, 0);
-            // 
-            // // 将该边缘上的点加入到 sewNode 中
-            // const float d1 = glm::distance(hitPoint, topMiddle);
-            // const float d2 = glm::distance(hitPoint, bottomMiddle);
-            // const float d3 = glm::distance(hitPoint, leftMiddle);
-            // const float d4 = glm::distance(hitPoint, rightMiddle);
-            // if (d1 < d2 && d1 < d3 && d1 < d4) {
-            //     for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
-            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(i, 0));
-            //     }
-            // }
-            // if (d2 < d1 && d2 < d3 && d2 < d4) {
-            //     for (int i = 0; i < selectedCloth->nodesPerRow; i++) {
-            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(i, selectedCloth->nodesPerCol - 1));
-            //     }
-            // }
-            // if (d3 < d1 && d3 < d2 && d3 < d4) {
-            //     for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
-            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(0, i));
-            //     }
-            // }
-            // if (d4 < d1 && d4 < d2 && d4 < d3) {
-            //     for (int i = 0; i < selectedCloth->nodesPerCol; i++) {
-            //         selectedCloth->sewNode.push_back(selectedCloth->getNode(selectedCloth->nodesPerRow - 1, i));
-            //     }
-            // }
+            // select n points closest to the hitpoint
+            // ---------------------------------------
+            distance = FLT_MAX;
+            Node* nearPoint = nullptr;
+            for (Node* n : selectedCloth->contour) {
+                float d = glm::distance(hitPoint, n->worldPosition);
+                if (d < distance) {
+                    distance = d;
+                    nearPoint = n;
+                }
+            }
+            if (!nearPoint->isSelected) {
+                selectedCloth->sewNode.push_back(nearPoint);
+            }
 
         }
         return selectedCloth;

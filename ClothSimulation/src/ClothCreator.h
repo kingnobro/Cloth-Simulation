@@ -10,7 +10,7 @@
 #include "Cloth.h"
 
 // Defaults
-const float STEP = 25.0f;
+const float STEP = 50.0f;
 const glm::vec3 CLOTH_POSITION = glm::vec3(-3.0f, 9.0f, 0.0f);
 
 class ClothCreator
@@ -57,6 +57,7 @@ private:
     void createCloths(std::vector<std::vector<point2D>>& clothNodes) {
         // use for loop to retrieve all cloths
         for (size_t i = 0, sz = clothNodes.size(); i < sz; i++) {
+
             // boundary of bounding box
             float minX = FLT_MAX, minY = FLT_MAX;
             float maxX = -FLT_MAX, maxY = -FLT_MAX;
@@ -71,6 +72,7 @@ private:
             for (size_t j = 0; j < clothNodes[i].size(); j++) {
                 const point2D& p = clothNodes[i][j];
                 contour.push_back({ p.first, p.second });
+
                 updateBoundary(p, minX, maxX, minY, maxY);
 
                 if (j == clothNodes[i].size() - 1) {
@@ -80,6 +82,8 @@ private:
                     edges.push_back({ CDT::VertInd(j), CDT::VertInd(j + 1) });
                 }
             }
+
+            std::cout << "contour size: " << contour.size() << "\n";
 
             // randomly generate vertex in the bounding box
             // if the vertex lies outside of contour, eraseOuterTrianglesAndHoles will erase it
@@ -115,7 +119,7 @@ private:
                 cloth->nodes.push_back(n);
 
                 if (contourIndex.count(j)) {
-                    cloth->sewNode.push_back(n);
+                    cloth->contour.push_back(n);
                 }
             }
 
@@ -134,14 +138,39 @@ private:
                 cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
-                /*cloth->springs.push_back(new Spring(n1, n2, cloth->shearCoef));
-                cloth->springs.push_back(new Spring(n1, n3, cloth->shearCoef));
-                cloth->springs.push_back(new Spring(n2, n3, cloth->shearCoef));
-                cloth->springs.push_back(new Spring(n1, n2, cloth->bendingCoef));
-                cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
-                cloth->springs.push_back(new Spring(n2, n3, cloth->bendingCoef));*/
+
+                // traverse 3 neightbours, add springs between diagonal points
+                for (size_t j = 0; j < 3; j++) {
+                    if (tri.neighbors[j] >= cdt.triangles.size()) continue;
+                    CDT::VerticesArr3 neighborTriIndex = (cdt.triangles[tri.neighbors[j]]).vertices;
+
+                    // in triIndex and neightborTriIndex, two indices are identical
+                    // we need to find the third index and connect them
+                    //     ind2
+                    //     /|\
+                    //    / | \
+                    //   /__|__\
+                    //   \  |  /
+                    //    \ | /
+                    //     \|/
+                    //     ind1
+                    CDT::VertInd ind1, ind2;
+                    for (size_t k = 0; k < 3; k++) {
+                        ind1 = triIndex[k];
+                        if (ind1 != neighborTriIndex[0] && ind1 != neighborTriIndex[1] && ind1 != neighborTriIndex[2]) {
+                            break;
+                        }
+                    }
+                    for (size_t k = 0; k < 3; k++) {
+                        ind2 = neighborTriIndex[k];
+                        if (ind2 != triIndex[0] && ind2 != triIndex[1] && ind2 != triIndex[2]) {
+                            break;
+                        }
+                    }
+                    cloth->springs.push_back(new Spring(cloth->nodes[ind1], cloth->nodes[ind2], cloth->bendingCoef));
+                }
             }
-            std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
+            std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() / 3 << " triangles\n";
 
             cloths.push_back(cloth);
 

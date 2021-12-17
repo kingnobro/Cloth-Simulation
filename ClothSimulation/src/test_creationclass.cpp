@@ -29,9 +29,8 @@ void Test_CreationClass::addPoint(const DL_PointData& data) {
     //printAttributes();
     
     // 忽略 Point 类型的点, 因为发现 dxf 文件中相邻的 Point 在空间上并不是相邻的
-    /*Node* n = new Node((float)data.x, (float)data.y, (float)data.z);
-    assert(blockCount > 0);
-    blockNodes[blockCount - 1].push_back(n);*/
+    //assert(blockCount > 0);
+    //blockNodes[blockCount - 1].push_back(std::make_pair(data.x, data.y));
 }
 
 /**

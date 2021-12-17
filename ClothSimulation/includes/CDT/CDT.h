@@ -89,7 +89,7 @@ public:
     typedef std::vector<TriIndVec> VerticesTriangles; ///< Triangles by vertex
     V2dVec vertices;            ///< triangulation's vertices
     TriangleVec triangles;      ///< triangulation's triangles
-    EdgeUSet fixedEdges;        ///<  triangulation's constraints (fixed edges)
+    EdgeUSet fixedEdges;        ///< triangulation's constraints (fixed edges)
     VerticesTriangles vertTris; ///< triangles adjacent to each vertex
 
     /** Stores count of overlapping boundaries for a fixed edge. If no entry is

@@ -7,7 +7,7 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 10.0;
+const float STRUCTURAL_COEF = 50.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
 const float SCALE_COEF = 0.01;
@@ -35,23 +35,22 @@ public:
     const float scaleCoef = SCALE_COEF;
 
     glm::vec3 clothPos;             // world space of cloth
-    glm::vec3 leftUpper;            // corners of bounding box
-    glm::vec3 rightUpper;
-    glm::vec3 rightBottom;
     glm::mat4 modelMatrix;
 
     int collisionCount;
     int clothID;
     int width;
     int height;
+    float minX, maxX, minY, maxY;
     bool isSewed;                   // whether the cloth is sewed
 
     std::vector<Node*> nodes;
     std::vector<Node*> sewNode;	    // nodes to be sewed
     std::vector<Node*> faces;       // every 3 nodes make up a face; use to draw triangles
+    std::vector<Node*> contour;
     std::vector<Spring*> springs;   // springs of cloth
 
-    Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)
+    Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY): minX(minX), maxX(maxX), minY(minY), maxY(maxY)
     {
         clothPos = position;
         width = int(maxX - minX);
@@ -62,9 +61,6 @@ public:
 
         modelMatrix = glm::translate(glm::mat4(1.0f), clothPos);
         modelMatrix = glm::scale(modelMatrix, glm::vec3(scaleCoef, scaleCoef, scaleCoef));
-        leftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
-        rightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
-        rightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
     }
 
     ~Cloth()
@@ -117,9 +113,6 @@ public:
     void moveCloth(glm::vec3 offset)
     {
         clothPos += offset;
-        leftUpper += offset;
-        rightUpper += offset;
-        rightBottom += offset;
         for (Node* n : nodes) {
             n->worldPosition += offset;
             n->lastWorldPosition = n->worldPosition;
@@ -139,6 +132,7 @@ public:
             n->reset();
         }
         isSewed = false;
+        // TODO: bugfix
         sewNode.clear();
         collisionCount = 0;
     }

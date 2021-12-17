@@ -29,6 +29,7 @@ class Node
 public:
     float		mass;
     bool        isSewed;        // 判断该点是否已缝合
+    bool        isSelected;     // 判断是否已经被选为缝合点
     glm::vec2	texCoord;       // Texture coord
     glm::vec3	normal;         // For smoothly shading
     glm::vec3   localPosition;  // 局部坐标, 仅用于恢复服装的原始位置
@@ -71,7 +72,7 @@ public:
 
     void reset()
     {
-        isSewed = false;
+        isSewed = isSelected = false;
         velocity = acceleration = force = glm::vec3(0);
     }
 
@@ -80,6 +81,7 @@ private:
     {
         mass = MASS;
         isSewed = false;
+        isSelected = false;
         worldPosition = glm::vec3(0);
         lastWorldPosition = glm::vec3(0);
         velocity = glm::vec3(0);

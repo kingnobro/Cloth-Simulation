@@ -112,9 +112,10 @@ int main(int argc, const char* argv[])
         for (size_t i = 0; i < cloths.size(); i += 1)
         {
             Cloth* cloth = cloths[i];
-            if (cloth->isSewed) {
+            // TODO: uncomment me
+            // if (cloth->isSewed) {
                 cloth->update((float)TIME_STEP, modelRender);
-            }
+            // }
         
             /** Display **/
             if (Cloth::drawMode == DRAW_LINES) {
