@@ -14,7 +14,7 @@ public:
     GLuint VBO;
     Shader shader;
 
-    std::vector<glm::vec3> vertices;    // 衣片上的顶点
+    std::vector<glm::vec3> vertices;    // 衣片上的顶点, 两片衣片的顶点交错排列
     std::vector<Spring*> springs;		// 缝合点间的弹簧
     const float sewCoef = 1000.0f;
     bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
@@ -77,9 +77,9 @@ public:
         // 把两片衣片中要缝合的点取出
         const std::vector<Node*>& sewNode1 = cloth1->sewNode;
         const std::vector<Node*>& sewNode2 = cloth2->sewNode;
-        assert(sewNode1.size() == sewNode2.size());
+        // assert(sewNode1.size() == sewNode2.size());
 
-        for (size_t i = 0, sz = sewNode1.size(); i < sz; i++) {
+        for (size_t i = 0, sz = std::min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
             Node* n1 = sewNode1[i];
             Node* n2 = sewNode2[i];
 

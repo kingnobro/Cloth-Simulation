@@ -7,11 +7,12 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 40.0;
+const float STRUCTURAL_COEF = 10.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
 const float SCALE_COEF = 0.01;
 const int MAX_COLLISION_TIME = 2000;
+const int iterationFreq = 10;
 
 // unique identifier of cloth
 int clothNumber = 0;
@@ -93,24 +94,24 @@ public:
         if (collisionCount > MAX_COLLISION_TIME) {
             return;
         }
-
-        for (Spring* s : springs) {
-            s->computeInternalForce(timeStep);
-        }
-        for (Node* n : nodes) {
-            n->integrate(timeStep);
-        }
-        // collision detection and response
-        if (isSewed) {
-            for (Node* node : nodes) {
-                if (modelRender.collideWithModel(node)) {
-                    modelRender.collisionResponse(node);
-                }
+        for (int i = 0; i < iterationFreq; i++) {
+            for (Spring* s : springs) {
+                s->computeInternalForce(timeStep);
             }
-            collisionCount += 1;
+            for (Node* n : nodes) {
+                n->integrate(timeStep);
+            }
+            // collision detection and response
+            if (isSewed) {
+                for (Node* node : nodes) {
+                    if (modelRender.collideWithModel(node)) {
+                        modelRender.collisionResponse(node);
+                    }
+                }
+                collisionCount += 1;
+            }
         }
-        // todo: uncomment me
-        //computeFaceNormal();
+        computeFaceNormal();
     }
 
     void moveCloth(glm::vec3 offset)
@@ -159,36 +160,36 @@ private:
     // if (y < nodesPerCol - 2) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 2), bendingCoef));
 
     /*
-     * 计算面的法向量, 用于生成光照效果
+     * calculate face normals to generate lighting effects
      */
-    //void computeFaceNormal()
-    //{
-    //    /** Reset nodes' normal **/
-    //    glm::vec3 normal(0.0f);
-    //    for (Node* node : nodes) {
-    //        node->normal = normal;
-    //    }
-    //    /** Compute normal of each face **/
-    //    Node* n1;
-    //    Node* n2;
-    //    Node* n3;
-    //    for (size_t i = 0; i < faces.size() / 3; i++) { // 3 nodes in each face
-    //        n1 = faces[3 * i];
-    //        n2 = faces[3 * i + 1];
-    //        n3 = faces[3 * i + 2];
+    void computeFaceNormal()
+    {
+        /** Reset nodes' normal **/
+        glm::vec3 normal(0.0f);
+        for (Node* node : nodes) {
+            node->normal = normal;
+        }
+        /** Compute normal of each face **/
+        Node* n1, * n2, * n3;
+        assert(faces.size() % 3 == 0);
 
-    //        // Face normal
-    //        normal = glm::cross(n2->worldPosition - n1->worldPosition, n3->worldPosition - n1->worldPosition);
-    //        // Add all face normal
-    //        n1->normal += normal;
-    //        n2->normal += normal;
-    //        n3->normal += normal;
-    //    }
+        for (size_t i = 0; i < faces.size() / 3; i++) { // 3 nodes in each face
+            n1 = faces[3 * i];
+            n2 = faces[3 * i + 1];
+            n3 = faces[3 * i + 2];
 
-    //    for (Node* node : nodes) {
-    //        node->normal = glm::normalize(node->normal);
-    //    }
-    //}
+            // Face normal
+            normal = glm::cross(n2->worldPosition - n1->worldPosition, n3->worldPosition - n1->worldPosition);
+            // Add all face normal
+            n1->normal += normal;
+            n2->normal += normal;
+            n3->normal += normal;
+        }
+
+        for (Node* node : nodes) {
+            node->normal = glm::normalize(node->normal);
+        }
+    }
 };
 
 #endif

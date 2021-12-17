@@ -24,7 +24,9 @@ void main()
     vec3 diffuse = diff * uniLightColor;
 
     // texture() will output the color obtained by sampling the texture with configured conditions
-    color = texture(uniTex, texCoord);
+    // FIXME: currently, cloth read from .dxf has no texture
+    // color = texture(uniTex, texCoord);
+    color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     vec3 objectColor = vec3(color.x, color.y, color.z);
     vec3 result = (ambient + diffuse) * objectColor;
     color = vec4(result, 1.0f);

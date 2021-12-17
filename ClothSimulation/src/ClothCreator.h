@@ -1,6 +1,7 @@
 #ifndef CLOTHCREATOR_H
 #define CLOTHCREATOR_H
 
+#include <map>
 #include <CDT/CDT.h>
 #include <dxf/dl_dxf.h>
 #include <dxf/dl_creationadapter.h>
@@ -15,11 +16,10 @@ const glm::vec3 CLOTH_POSITION = glm::vec3(-3.0f, 9.0f, 0.0f);
 class ClothCreator
 {
 public:
-    std::vector<Cloth*> cloths;  // 从 dxf 文件中解析出的衣片. 一个 dxf 文件可以包含多个衣片
-    const float step = STEP;     // 生成点的步长
+    std::vector<Cloth*> cloths;  // cloths parsed from .dxf file;
+    const float step = STEP;     // steps between points
 
     ClothCreator(const std::string& clothFilePath) {
-        clothPos = CLOTH_POSITION;
         readClothData(clothFilePath);
     }
 
@@ -30,15 +30,14 @@ public:
     }
 
 private:
-    glm::vec3 clothPos;     // 衣片的世界坐标
+    glm::vec3 clothPos = CLOTH_POSITION;     // world position of cloth
 
     /*
-     * dxf 文件解析
+     * dxf file parser
      */
     void readClothData(const std::string& clothFilePath) {
         std::cout << "Reading file " << clothFilePath << "...\n";
 
-        // 使用 dxflib 解析文件中的顶点
         Test_CreationClass* creationClass = new Test_CreationClass();
         DL_Dxf* dxf = new DL_Dxf();
         if (!dxf->in(clothFilePath, creationClass)) { // if file open failed
@@ -53,20 +52,22 @@ private:
     }
 
     /*
-     * 根据解析出的 Vertex 数据创造 Cloth 对象
+     * create Cloth using VERTEX data
      */
     void createCloths(std::vector<std::vector<point2D>>& clothNodes) {
-        // 一个 dxf 文件可能包含多个衣片, 所以用一个循环取出所有的衣片
+        // use for loop to retrieve all cloths
         for (size_t i = 0, sz = clothNodes.size(); i < sz; i++) {
-            float minX = FLT_MAX, minY = FLT_MAX;   // 用于生成衣片的包围盒
+            // boundary of bounding box
+            float minX = FLT_MAX, minY = FLT_MAX;
             float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-            // 三角网格化, Constrained Delaunay Triangulation(CDT)
+            // Constrained Delaunay Triangulation(CDT)
+            // ---------------------------------------
             CDT::Triangulation<float> cdt;
             std::vector<CDT::V2d<float>> contour;
             std::vector<CDT::Edge> edges;
 
-            // 把轮廓上的点加入三角化的类中, 并添加轮廓线; 轮廓线需要闭合
+            // add vertex into contour; contour should be closed
             for (size_t j = 0; j < clothNodes[i].size(); j++) {
                 const point2D& p = clothNodes[i][j];
                 contour.push_back({ p.first, p.second });
@@ -80,33 +81,46 @@ private:
                 }
             }
 
-            // 在衣片的矩形包围盒内随机生成点, 假如生成的点落在衣片轮廓外部, 它会被 eraseOuterTrianglesAndHoles 删除
-            // 添加随机偏移, 使得生成的三角形网格更加接近面料
+            // randomly generate vertex in the bounding box
+            // if the vertex lies outside of contour, eraseOuterTrianglesAndHoles will erase it
+            // add random offset to x, y to mimic real cloth
             Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
             int cnt = 0;
             for (float x = minX; x < maxX; x += step) {
                 for (float y = minY; y < maxY; y += step) {
-                    // 随机偏移的参数是随便设置的
+                    // you can modify params directly
                     contour.push_back({ x + (cnt % 7) * 0.7f, y - (cnt % 7) * 1.0f });
                     cnt += 1;
                 }
             }
 
-            CDT::RemoveDuplicatesAndRemapEdges(contour, edges); // 移除重复的点
+            CDT::RemoveDuplicatesAndRemapEdges(contour, edges);
             cdt.insertVertices(contour);
             cdt.insertEdges(edges);
-            cdt.eraseOuterTrianglesAndHoles();  // 抹去边框外和 hole 中的三角形与顶点
+            cdt.eraseOuterTrianglesAndHoles();
 
-            // 在此处生成衣片上的点, 因为经过 eraseOuterTrianglesAndHoles 后在轮廓外的点会被 erase
-            for (const CDT::V2d<float>& p : cdt.vertices) {
+            // store index of nodes lying on the contour
+            std::map<CDT::VertInd, int> contourIndex;
+            for (const CDT::Edge& e : edges) {
+                ++contourIndex[e.v1()];
+                ++contourIndex[e.v2()];
+            }
+
+            // generate Node of Cloth
+            for (size_t j = 0; j < cdt.vertices.size(); j++) {
+                const CDT::V2d<float>& p = cdt.vertices[j];
                 Node* n = new Node(p.x, p.y, 0.0f);
                 n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(clothPos + n->localPosition, 1.0f);
 
                 cloth->nodes.push_back(n);
+
+                if (contourIndex.count(j)) {
+                    cloth->sewNode.push_back(n);
+                }
             }
 
             std::cout << "# tri:" << cdt.triangles.size() << std::endl;
-            // 取出三角形, 生成 springs 和 faces 数据
+            // retrieve triangles, generate springs and faces
             Node* n1, * n2, * n3;
             for (const CDT::Triangle& tri : cdt.triangles) {
                 CDT::VerticesArr3 triIndex = tri.vertices;
@@ -116,17 +130,23 @@ private:
                 cloth->faces.push_back(n1);
                 cloth->faces.push_back(n2);
                 cloth->faces.push_back(n3);
-                // todo: add different forces
+                // TODO: add different forces
                 cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
                 cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
+                /*cloth->springs.push_back(new Spring(n1, n2, cloth->shearCoef));
+                cloth->springs.push_back(new Spring(n1, n3, cloth->shearCoef));
+                cloth->springs.push_back(new Spring(n2, n3, cloth->shearCoef));
+                cloth->springs.push_back(new Spring(n1, n2, cloth->bendingCoef));
+                cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
+                cloth->springs.push_back(new Spring(n2, n3, cloth->bendingCoef));*/
             }
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
 
             cloths.push_back(cloth);
 
             // TODO: delete me
-            // debug 时用 break 控制衣片生成的数量
+            // for debug purpose
             if (i == 1) break;
         }
     }

@@ -28,7 +28,8 @@ public:
     void computeInternalForce(float timeStep)
     {
         float currentLength = glm::distance(node1->worldPosition, node2->worldPosition);
-        assert(fabs(currentLength) > 1e-3);
+        // restrain min length; otherwise force will be very large
+        currentLength = std::max(currentLength, restLength / 10);
         
         glm::vec3 forceDirection = (node2->worldPosition - node1->worldPosition) / currentLength;
         glm::vec3 velocityDifference = node2->velocity - node1->velocity;
