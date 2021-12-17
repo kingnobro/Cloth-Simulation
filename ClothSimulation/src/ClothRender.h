@@ -113,7 +113,8 @@ struct ClothRender // Texture & Lighting
 
         /** Set Matrix **/
         shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
-        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
+        // points are already world coordinates, no need to transform
+        shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
 
         /** Set Light **/
         shader.setVec3("uniLightPos", lightPos);
@@ -173,7 +174,8 @@ struct ClothRender // Texture & Lighting
 
         /** Update Matrix **/
         shader.setMat4("uniViewMatrix", camera->GetViewMatrix());
-        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
+        // points are already world coordinates, no need to transform
+        shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

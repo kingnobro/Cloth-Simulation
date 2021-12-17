@@ -8,7 +8,7 @@
 #include "Cloth.h"
 
 // Defaults
-const float STEP = 20.0f;
+const float STEP = 25.0f;
 const glm::vec3 CLOTH_POSITION = glm::vec3(-3.0f, 9.0f, 0.0f);
 
 class ClothCreator
@@ -83,8 +83,6 @@ private:
             // 在衣片的矩形包围盒内随机生成点, 假如生成的点落在衣片轮廓外部, 它会被 eraseOuterTrianglesAndHoles 删除
             // 添加随机偏移, 使得生成的三角形网格更加接近面料
             Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
-            cloth->width = int(maxX - minX);
-            cloth->height = int(maxY - minY);
             int round = 0;
             for (float x = minX; x < maxX; x += step) {
                 for (float y = minY; y < maxY; y += step) {
@@ -94,6 +92,7 @@ private:
                 }
             }
 
+            CDT::RemoveDuplicatesAndRemapEdges(contour, edges); // 移除重复的点
             cdt.insertVertices(contour);
             cdt.insertEdges(edges);
             cdt.eraseOuterTrianglesAndHoles();  // 抹去边框外和 hole 中的三角形与顶点
@@ -101,10 +100,11 @@ private:
             // 在此处生成衣片上的点, 因为经过 eraseOuterTrianglesAndHoles 后在轮廓外的点会被 erase
             for (const CDT::V2d<float>& p : cdt.vertices) {
                 Node* n = new Node(p.x, p.y, 0.0f);
-                n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
+                n->lastWorldPosition = n->worldPosition = cloth->GetModelMatrix() * glm::vec4(clothPos + n->localPosition, 1.0f);
                 cloth->nodes.push_back(n);
             }
 
+            std::cout << "# tri:" << cdt.triangles.size() << std::endl;
             // 取出三角形, 生成 springs 和 faces 数据
             Node* n1, * n2, * n3;
             for (const CDT::Triangle& tri : cdt.triangles) {
@@ -116,8 +116,14 @@ private:
                 cloth->faces.push_back(n2);
                 cloth->faces.push_back(n3);
                 // todo: add different forces
-                cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
-                cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
+                // cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
+                // cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
+                // cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
+                // cloth->springs.push_back(new Spring(n1, n2, cloth->bendingCoef));
+                // cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
+                // cloth->springs.push_back(new Spring(n2, n3, cloth->bendingCoef));
+                cloth->springs.push_back(new Spring(n1, n2, cloth->shearCoef));
+                cloth->springs.push_back(new Spring(n1, n3, cloth->bendingCoef));
                 cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
             }
             std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() << " faces\n";
@@ -126,7 +132,7 @@ private:
 
             // todo: delete me
             // debug 时用 break 控制衣片生成的数量
-            if (i == 1) break;
+            if (i == 0) break;
         }
     }
 

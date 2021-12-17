@@ -25,14 +25,13 @@ public:
 
         for (Cloth* cloth : cloths)
         {
-            glm::mat4 modelMatrix = cloth->GetModelMatrix();
-            glm::vec3 pointLeftUpper = modelMatrix * glm::vec4(cloth->leftUpper, 1.0f);
-            glm::vec3 pointRightUpper = modelMatrix * glm::vec4(cloth->rightUpper, 1.0f);
-            glm::vec3 pointRightBottom = modelMatrix * glm::vec4(cloth->rightBottom, 1.0f);
+            glm::vec3 pointLeftUpper = cloth->leftUpper;
+            glm::vec3 pointRightUpper = cloth->rightUpper;
+            glm::vec3 pointRightBottom = cloth->rightBottom;
 
             // 空间中直线与平面交点公式
             // -------------------------
-            // normal std::vector of the cloth
+            // normal vector of the cloth
             glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);
             // hitPoint = camera.Position + ray * t
             double t = glm::dot(pointLeftUpper - camera->Position, normal) / glm::dot(ray, normal);

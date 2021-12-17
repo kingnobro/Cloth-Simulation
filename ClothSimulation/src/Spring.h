@@ -27,9 +27,11 @@ public:
     void computeInternalForce(float timeStep)
     {
         float currentLength = glm::distance(node1->worldPosition, node2->worldPosition);
+        
         glm::vec3 forceDirection = (node2->worldPosition - node1->worldPosition) / currentLength;
         glm::vec3 velocityDifference = node2->velocity - node1->velocity;
         glm::vec3 force = forceDirection * ((currentLength - restLength) * hookCoef + glm::dot(velocityDifference, forceDirection) * dampCoef);
+
         node1->addForce(force);
         node2->addForce(-force);
     }

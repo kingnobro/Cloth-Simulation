@@ -80,9 +80,9 @@ struct SpringRender
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
         shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
-
-        /** Model Matrix : Put rigid into the world **/
-        shader.setMat4("uniModelMatrix", cloth->GetModelMatrix());
+        
+        // points are world coordinates, no need to transform
+        shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
 
         /** Light **/
         shader.setVec3("uniLightPos", lightPos);

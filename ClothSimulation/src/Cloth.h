@@ -6,11 +6,10 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 400.0;
+const float STRUCTURAL_COEF = 40.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
 const int MAX_COLLISION_TIME = 2000;
-const int iterationFreq = 10;   // todo: remove me. 
 
 // 用于唯一标识一块布料
 int clothNumber = 0;
@@ -32,7 +31,7 @@ public:
     const float bendingCoef = BENDING_COEF;
 
     glm::vec3 clothPos;             // 能够包围住衣片的矩形的左上角的世界坐标
-    glm::vec3 leftUpper, rightUpper, rightBottom;
+    glm::vec3 leftUpper, rightUpper, rightBottom;   // 记录包围盒的角落
     int collisionCount;             // 碰撞检测的迭代次数
     int clothID;
     int width;
@@ -47,9 +46,12 @@ public:
     Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)
     {
         clothPos = position;
-        leftUpper = clothPos + glm::vec3(minX, maxY, 0.0f);
-        rightUpper = clothPos + glm::vec3(maxX, maxY, 0.0f);
-        rightBottom = clothPos + glm::vec3(maxX, minY, 0.0f);
+        glm::mat4 modelMatrix = GetModelMatrix();
+        leftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
+        rightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
+        rightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
+        width = int(maxX - minX);
+        height = int(maxY - minY);
         clothID = ++clothNumber;
         isSewed = false;
         collisionCount = 0;
@@ -78,31 +80,27 @@ public:
      */
     void update(float timeStep, ModelRender& modelRender)
     {
-        for (int i = 0; i < iterationFreq; i++)
-        {
-            // 此时衣片已经缝合在衣服上了, 不需要再更新弹簧受力和质点位置了
-            if (collisionCount > MAX_COLLISION_TIME) {
-                continue;
-            }
+        // 此时衣片已经缝合在衣服上了, 不需要再更新弹簧受力和质点位置了
+        if (collisionCount > MAX_COLLISION_TIME) {
+            return;
+        }
 
-            // TODO: update force and positions
-            // 更新弹簧受力
-            // for (Spring* s : springs) {
-            //     s->computeInternalForce(timeStep);
-            // }
-            // 更新质点位置
-            // for (Node* n : nodes) {
-            //     n->integrate(timeStep);
-            // }
-            // 碰撞检测与碰撞响应. 开始缝制  之后才需要检测碰撞
-            if (isSewed) {
-                for (Node* node : nodes) {
-                    if (modelRender.collideWithModel(node)) {
-                        modelRender.collisionResponse(node);
-                    }
+        // 更新弹簧受力
+        for (Spring* s : springs) {
+            s->computeInternalForce(timeStep);
+        }
+        // 更新质点位置
+        for (Node* n : nodes) {
+            n->integrate(timeStep);
+        }
+        // 碰撞检测与碰撞响应. 开始缝制  之后才需要检测碰撞
+        if (isSewed) {
+            for (Node* node : nodes) {
+                if (modelRender.collideWithModel(node)) {
+                    modelRender.collisionResponse(node);
                 }
-                collisionCount += 1;
             }
+            collisionCount += 1;
         }
         // todo: uncomment me
         //computeFaceNormal();
@@ -132,7 +130,7 @@ public:
     {
         // 重置局部坐标
         for (Node* n : nodes) {
-            n->lastWorldPosition = n->worldPosition = clothPos + n->localPosition;
+            n->lastWorldPosition = n->worldPosition = GetModelMatrix() * glm::vec4(clothPos + n->localPosition, 1.0f);
             n->reset();
         }
         // 恢复到未缝合的状态
