@@ -7,10 +7,10 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 50.0;
+const float STRUCTURAL_COEF = 500.0;
 const float SHEAR_COEF = 80.0;
-const float BENDING_COEF = 50.0;
-const float SCALE_COEF = 0.009;
+const float BENDING_COEF = 200.0;
+const float SCALE_COEF = 0.01;
 const int MAX_COLLISION_TIME = 2000;
 const int iterationFreq = 10;
 

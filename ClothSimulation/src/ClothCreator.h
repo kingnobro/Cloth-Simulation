@@ -10,7 +10,7 @@
 #include "Cloth.h"
 
 // Defaults
-const float STEP = 50.0f;
+const float STEP = 20.0f;
 const glm::vec3 CLOTH_POSITION = glm::vec3(-3.0f, 9.0f, 0.0f);
 
 class ClothCreator
@@ -174,13 +174,15 @@ private:
         // -------------------------
         // divide contour into several segments
         // each segments have plenty of points; points in the same segment have same segmentID
-        // ©°---*---*----©´
-        // ©¸----*----*--©¼
+        // ¡¤¡¤¡¤¡¤*¡¤¡¤¡¤*¡¤¡¤¡¤¡¤¡¤¡¤
+        // ¡¤             ¡¤
+        // ¡¤¡¤¡¤¡¤¡¤*¡¤¡¤¡¤¡¤*¡¤¡¤¡¤¡¤
         std::vector<Node*> segment;
         int segmentID = 0;
         for (int cnt = 0, ctr_sz = cloth->contour.size(); cnt <= ctr_sz; ++cnt) {
             Node* n = cloth->contour[(index + cnt) % ctr_sz];
             if (n->isTurningPoint && cnt != 0) {
+                segment.push_back(n);   // add turning points of two end
                 cloth->segments.push_back(segment);
                 std::cout << "segment size: " << segment.size() << "\n";
                 segment.clear();

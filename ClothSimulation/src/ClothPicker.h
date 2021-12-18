@@ -68,10 +68,14 @@ public:
             }
             if (nearPoint && !nearPoint->isSelected) {
                 int segmentId = nearPoint->segmentID;
+                std::vector<Node*> segment;
                 for (Node* n : selectedCloth->segments[segmentId]) {
+                    if (!n->isSelected) {   // turning point may be selected before
+                        segment.push_back(n);
+                    }
                     n->isSelected = true;
                 }
-                selectedCloth->sewNode.push_back(selectedCloth->segments[segmentId]);
+                selectedCloth->sewNode.push_back(segment);
             }
 
         }

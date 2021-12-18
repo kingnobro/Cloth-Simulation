@@ -14,9 +14,10 @@ public:
     GLuint VBO;
     Shader shader;
 
-    std::vector<glm::vec3> vertices;    // 衣片上的顶点, 两片衣片的顶点交错排列
+    std::vector<Node*> vertices;    // 衣片上的顶点, 两片衣片的顶点交错排列
+    std::vector<glm::vec3> positions;   // 衣片顶点的位置, 用于绘制缝合线
     std::vector<Spring*> springs;		// 缝合点间的弹簧
-    const float sewCoef = 1000.0f;
+    const float sewCoef = 500.0f;
     bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
                         // 用一个 bool 变量记录是否处于可以 reset 状态, 避免多次删除会报错
 
@@ -75,23 +76,15 @@ public:
             return;
         }
         // 把两片衣片中要缝合的点取出
-        const std::vector<std::vector<Node*>>& sewNode1 = cloth1->sewNode;
-        const std::vector<std::vector<Node*>>& sewNode2 = cloth2->sewNode;
-        // assert(sewNode1.size() == sewNode2.size());
-
-        for (size_t i = 0, seg_sz = std::min(sewNode1.size(), sewNode2.size()); i < seg_sz; i++) {
-            const std::vector<Node*>& nodes1 = sewNode1[i];
-            const std::vector<Node*>& nodes2 = sewNode2[i];
-
-            for (size_t j = 0, node_sz = std::min(nodes1.size(), nodes2.size()); j < node_sz; j++) {
-                Node* n1 = nodes1[j];
-                Node* n2 = nodes2[j];
-                // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
-                n1->isSewed = n2->isSewed = true;
-                Spring* s = new Spring(n1, n2, sewCoef);
-                s->restLength = 0.0f;	// 让缝合点尽可能靠近
-                springs.push_back(s);
-            }
+        Node* n1, * n2;
+        for (int i = 0; i < vertices.size(); i += 2) {
+            n1 = vertices[i];
+            n2 = vertices[i + 1];
+            n1->isSewed = n2->isSewed = true;
+            // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
+            Spring* s = new Spring(n1, n2, sewCoef);
+            s->restLength = 0.0f;	// 让缝合点尽可能靠近
+            springs.push_back(s);
         }
         cloth1->isSewed = cloth2->isSewed = true;
     }
@@ -106,19 +99,19 @@ public:
         }
         // 衣片的位置会更新, 所以线的位置也要更新
         setSewNode();
-        // std::cout << vertices.size() << std::endl;
+        // std::cout << positions.size() << std::endl;
 
         shader.use();
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_DYNAMIC_DRAW);
 
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
         // draw
-        glDrawArrays(GL_LINES, 0, vertices.size());
+        glDrawArrays(GL_LINES, 0, positions.size());
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -176,7 +169,8 @@ private:
      */ 
     void setSewNode() {
         vertices.clear();
-        
+        positions.clear();
+
         // 把两片衣片中要缝合的点取出
         const std::vector<std::vector<Node*>>& sewNode1 = cloth1->sewNode;
         const std::vector<std::vector<Node*>>& sewNode2 = cloth2->sewNode;
@@ -186,9 +180,23 @@ private:
             const std::vector<Node*>& nodes1 = sewNode1[i];
             const std::vector<Node*>& nodes2 = sewNode2[i];
 
-            for (size_t j = 0, node_sz = std::min(nodes1.size(), nodes2.size()); j < node_sz; j++) {
-                vertices.push_back(nodes1[j]->worldPosition);
-                vertices.push_back(nodes2[j]->worldPosition);
+            int j = 0;
+            for (size_t cnt = 0, sz1 = nodes1.size(), sz2 = nodes2.size(), node_sz = std::min(sz1, sz2); cnt < node_sz; cnt++) {
+                Node* n1, * n2;
+                // number of nodes on contour may not be identical, we need to distribute them evenly
+                if (cnt % 2 == 0) {
+                    n1 = nodes1[j];
+                    n2 = nodes2[j];
+                }
+                else {
+                    n1 = nodes1[sz1 - 1 - j];
+                    n2 = nodes2[sz2 - 1 - j];
+                    j += 1;
+                }
+                vertices.push_back(n1);
+                vertices.push_back(n2);
+                positions.push_back(n1->worldPosition);
+                positions.push_back(n2->worldPosition);
             }
         }
     }
