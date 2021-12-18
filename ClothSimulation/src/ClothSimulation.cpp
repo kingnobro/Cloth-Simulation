@@ -204,14 +204,7 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos)
  */
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    // speed up zoom
-    float sensitivity = 2.0f;
-    if (yoffset > 0) {
-        camera.ProcessMouseScroll(yoffset);
-    }
-    else if (yoffset < 0) {
-        camera.ProcessMouseScroll(yoffset);
-    }
+    camera.ProcessMouseScroll(yoffset);
 }
 
 void processInput(GLFWwindow* window)

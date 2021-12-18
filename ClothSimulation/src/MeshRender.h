@@ -81,6 +81,7 @@ struct SpringRender
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
         shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
+        shader.setMat4("uniViewMatrix", camera.GetViewMatrix());
         
         // points are world coordinates, no need to transform
         shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
@@ -134,6 +135,7 @@ struct SpringRender
         glBufferSubData(GL_ARRAY_BUFFER, 0, springCount * 2 * sizeof(glm::vec3), vboNor);
 
         /** View Matrix : The camera **/
+        shader.setMat4("uniProjMatrix", camera->GetPerspectiveProjectionMatrix());
         shader.setMat4("uniViewMatrix", camera->GetViewMatrix());
 
         glEnable(GL_BLEND);
