@@ -10,7 +10,7 @@
 const float STRUCTURAL_COEF = 50.0;
 const float SHEAR_COEF = 80.0;
 const float BENDING_COEF = 50.0;
-const float SCALE_COEF = 0.01;
+const float SCALE_COEF = 0.009;
 const int MAX_COLLISION_TIME = 2000;
 const int iterationFreq = 10;
 
@@ -47,9 +47,10 @@ public:
     bool isSewed;                   // whether the cloth is sewed
 
     std::vector<Node*> nodes;
-    std::vector<Node*> sewNode;	    // nodes to be sewed
     std::vector<Node*> faces;       // every 3 nodes make up a face; use to draw triangles
     std::vector<Node*> contour;
+    std::vector<std::vector<Node*>> sewNode;	// nodes to be sewed
+    std::vector<std::vector<Node*>> segments;
     std::vector<Spring*> springs;   // springs of cloth
 
     Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)

@@ -96,14 +96,14 @@ private:
             // randomly generate vertex in the bounding box
             // if the vertex lies outside of contour, eraseOuterTrianglesAndHoles will erase it
             // add random offset to x, y to mimic real cloth
-            //int cnt = 0;
-            //for (float x = minX; x < maxX; x += step) {
-            //    for (float y = minY; y < maxY; y += step) {
-            //        // you can modify params directly
-            //        contour.push_back({ x + (cnt % 7) * 0.7f, y - (cnt % 7) * 1.0f });
-            //        cnt += 1;
-            //    }
-            //}
+            int cnt = 0;
+            for (float x = minX; x < maxX; x += step) {
+                for (float y = minY; y < maxY; y += step) {
+                    // you can modify params directly
+                    contour.push_back({ x + (cnt % 7) * 0.7f, y - (cnt % 7) * 1.0f });
+                    cnt += 1;
+                }
+            }
 
             CDT::RemoveDuplicatesAndRemapEdges(contour, edges);
             cdt.insertVertices(contour);
@@ -145,12 +145,13 @@ private:
             }
         }
 
-        // Generate Contour Segments
-        // -------------------------
+        // Find Turning Nodes
+        // ------------------
         // for every node 'middle' in contour, find its neighbors 'prev' and 'next'
         // we can get 2 vectors: v1 = middle - prev, v2 = next - middle
         // if theta between (n1, n2) > threshold, then we take 'middle' as a 'turning point'
         Node* prev, * middle, * next;
+        int index;  // index of one of the turning point
         for (int j = 0, ctr_sz = cloth->contour.size(); j < ctr_sz; j++) {
             middle = cloth->contour[j];
             prev = cloth->contour[((j - 1) + ctr_sz) % ctr_sz];
@@ -164,7 +165,31 @@ private:
 
             float cos = glm::dot(v1, v2) / (len1 * len2);
             middle->isTurningPoint = glm::dot(v1, v2) < 0 || (cos < glm::cos(20));
+            if (middle->isTurningPoint) {
+                index = j;
+            }
         }
+
+        // Generate Contour Segments
+        // -------------------------
+        // divide contour into several segments
+        // each segments have plenty of points; points in the same segment have same segmentID
+        // ©°---*---*----©´
+        // ©¸----*----*--©¼
+        std::vector<Node*> segment;
+        int segmentID = 0;
+        for (int cnt = 0, ctr_sz = cloth->contour.size(); cnt <= ctr_sz; ++cnt) {
+            Node* n = cloth->contour[(index + cnt) % ctr_sz];
+            if (n->isTurningPoint && cnt != 0) {
+                cloth->segments.push_back(segment);
+                std::cout << "segment size: " << segment.size() << "\n";
+                segment.clear();
+                segmentID += 1;
+            }
+            n->segmentID = segmentID;
+            segment.push_back(n);
+        }
+
 
         std::cout << "# tri:" << cdt.triangles.size() << std::endl;
         // retrieve triangles, generate springs and faces

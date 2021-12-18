@@ -71,8 +71,8 @@ public:
         glm::vec3 backPosition = centroid - glm::vec3(0.0f, 0.0f, width / 2);
         float frontYaw = -90.0f;
         float backYaw = 90.0f;
-        frontCamera = Camera(frontPosition, up, frontYaw);
-        backCamera = Camera(backPosition, up, backYaw);
+        frontCamera = Camera(Orthographic, frontPosition, up, frontYaw);
+        backCamera = Camera(Orthographic, backPosition, up, backYaw);
         frontCamera.SetOrthoBoundary(-phi / 2, phi / 2, -phi / 2, phi / 2, 0, width);
         backCamera.SetOrthoBoundary(-phi / 2, phi / 2, -phi / 2, phi / 2, 0, width);
 
@@ -84,8 +84,8 @@ public:
             << " phi:" << phi << std::endl;
         std::cout << "[AABB box] centroid: " << "(" << centroid.x << ", " << centroid.y << ", " << centroid.z << ")\n";
         std::cout << "[AABB box] origin: " << "(" << origin.x << ", " << origin.y << ", " << origin.z << ")\n";
-        std::cout << "[front camera] front std::vector:" << frontCamera.Front.z << std::endl;
-        std::cout << "[back camera]  front std::vector:" << backCamera.Front.z << std::endl;
+        std::cout << "[front camera] front vector:" << frontCamera.Front.z << std::endl;
+        std::cout << "[back camera]  front vector:" << backCamera.Front.z << std::endl;
     }
 
     /*

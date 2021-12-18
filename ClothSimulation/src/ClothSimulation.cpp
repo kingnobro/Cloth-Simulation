@@ -115,10 +115,7 @@ int main(int argc, const char* argv[])
         for (size_t i = 0; i < cloths.size(); i += 1)
         {
             Cloth* cloth = cloths[i];
-            // TODO: uncomment me
-            // if (cloth->isSewed) {
-                cloth->update((float)TIME_STEP, modelRender);
-            // }
+            cloth->update((float)TIME_STEP, modelRender);
         
             /** Display **/
             if (Cloth::drawMode == DRAW_LINES) {
@@ -130,7 +127,7 @@ int main(int argc, const char* argv[])
         }
         sewMachine.update((float)TIME_STEP);
         modelRender.flush(&camera);
-        sewMachine.drawSewingLine(camera.GetViewMatrix()); // sewing line
+        sewMachine.drawSewingLine(camera.GetViewMatrix(), camera.GetPerspectiveProjectionMatrix()); // sewing line
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
 
         glfwSwapBuffers(window);
@@ -245,7 +242,7 @@ void processInput(GLFWwindow* window)
     /** Move Cloth **/
     if (selectedCloth != nullptr)
     {
-        float moveStep = 0.02f;
+        float moveStep = 0.04f;
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
             selectedCloth->moveCloth(glm::vec3(0.0f, moveStep, 0.0f));
         }
@@ -269,5 +266,8 @@ void processInput(GLFWwindow* window)
     // reset sewing status
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         sewMachine.reset();
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        sewMachine.SewCloths();
     }
 }

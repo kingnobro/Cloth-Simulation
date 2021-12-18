@@ -54,19 +54,24 @@ public:
         if (selectedCloth != nullptr) {
             std::cout << "Cloth " << selectedCloth->GetClothID() << " Selected\n";
 
-            // select n points closest to the hitpoint
+            // find the point 'P' that is closest to the hitpoint on the contour
+            // according to P.segmentID, we select all points in that segment
             // ---------------------------------------
             distance = FLT_MAX;
             Node* nearPoint = nullptr;
             for (Node* n : selectedCloth->contour) {
                 float d = glm::distance(hitPoint, n->worldPosition);
-                if (d < distance) {
+                if (d < distance && d < 0.2f) {
                     distance = d;
                     nearPoint = n;
                 }
             }
-            if (!nearPoint->isSelected) {
-                selectedCloth->sewNode.push_back(nearPoint);
+            if (nearPoint && !nearPoint->isSelected) {
+                int segmentId = nearPoint->segmentID;
+                for (Node* n : selectedCloth->segments[segmentId]) {
+                    n->isSelected = true;
+                }
+                selectedCloth->sewNode.push_back(selectedCloth->segments[segmentId]);
             }
 
         }

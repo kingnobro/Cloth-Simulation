@@ -75,19 +75,23 @@ public:
             return;
         }
         // 把两片衣片中要缝合的点取出
-        const std::vector<Node*>& sewNode1 = cloth1->sewNode;
-        const std::vector<Node*>& sewNode2 = cloth2->sewNode;
+        const std::vector<std::vector<Node*>>& sewNode1 = cloth1->sewNode;
+        const std::vector<std::vector<Node*>>& sewNode2 = cloth2->sewNode;
         // assert(sewNode1.size() == sewNode2.size());
 
-        for (size_t i = 0, sz = std::min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
-            Node* n1 = sewNode1[i];
-            Node* n2 = sewNode2[i];
+        for (size_t i = 0, seg_sz = std::min(sewNode1.size(), sewNode2.size()); i < seg_sz; i++) {
+            const std::vector<Node*>& nodes1 = sewNode1[i];
+            const std::vector<Node*>& nodes2 = sewNode2[i];
 
-            // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
-            n1->isSewed = n2->isSewed = true;
-            Spring* s = new Spring(n1, n2, sewCoef);
-            s->restLength = 0.0f;	// 让缝合点尽可能靠近
-            springs.push_back(s);
+            for (size_t j = 0, node_sz = std::min(nodes1.size(), nodes2.size()); j < node_sz; j++) {
+                Node* n1 = nodes1[j];
+                Node* n2 = nodes2[j];
+                // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
+                n1->isSewed = n2->isSewed = true;
+                Spring* s = new Spring(n1, n2, sewCoef);
+                s->restLength = 0.0f;	// 让缝合点尽可能靠近
+                springs.push_back(s);
+            }
         }
         cloth1->isSewed = cloth2->isSewed = true;
     }
@@ -95,7 +99,7 @@ public:
     /*
      * 绘制衣片的缝合线
      */
-    void drawSewingLine(const glm::mat4& view)
+    void drawSewingLine(const glm::mat4& view, const glm::mat4& projection)
     {
         if (cloth1 == nullptr || cloth2 == nullptr || cloth1->isSewed || cloth2->isSewed) {
             return;
@@ -111,6 +115,7 @@ public:
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
 
         shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
 
         // draw
         glDrawArrays(GL_LINES, 0, vertices.size());
@@ -171,13 +176,20 @@ private:
      */ 
     void setSewNode() {
         vertices.clear();
-        const std::vector<Node*>& sewNode1 = cloth1->sewNode;
-        const std::vector<Node*>& sewNode2 = cloth2->sewNode;
-        // assert(sewNode1.size() == sewNode2.size());
         
-        for (size_t i = 0, sz = std::min(sewNode1.size(), sewNode2.size()); i < sz; i++) {
-            vertices.push_back(sewNode1[i]->worldPosition);
-            vertices.push_back(sewNode2[i]->worldPosition);
+        // 把两片衣片中要缝合的点取出
+        const std::vector<std::vector<Node*>>& sewNode1 = cloth1->sewNode;
+        const std::vector<std::vector<Node*>>& sewNode2 = cloth2->sewNode;
+        // assert(sewNode1.size() == sewNode2.size());
+
+        for (size_t i = 0, seg_sz = std::min(sewNode1.size(), sewNode2.size()); i < seg_sz; i++) {
+            const std::vector<Node*>& nodes1 = sewNode1[i];
+            const std::vector<Node*>& nodes2 = sewNode2[i];
+
+            for (size_t j = 0, node_sz = std::min(nodes1.size(), nodes2.size()); j < node_sz; j++) {
+                vertices.push_back(nodes1[j]->worldPosition);
+                vertices.push_back(nodes2[j]->worldPosition);
+            }
         }
     }
 

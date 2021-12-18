@@ -28,6 +28,7 @@ class Node
 {
 public:
     float		mass;
+    int         segmentID;      // 衣片边缘被分为很多段, 该点所属的段 ID; 若不是边缘上的点则置为 -1
     bool        isSewed;        // 判断该点是否已缝合
     bool        isSelected;     // 判断是否已经被选为缝合点
     bool        isTurningPoint; // 判断该点是否为缝合线上的转折点
@@ -81,6 +82,7 @@ private:
     void init()
     {
         mass = MASS;
+        segmentID = -1; // 默认不是边缘上的点
         isSewed = false;
         isSelected = false;
         worldPosition = glm::vec3(0);

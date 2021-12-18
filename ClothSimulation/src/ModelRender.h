@@ -122,16 +122,13 @@ public:
         float z_front = getDepth(frontPos, frontDepthMap);
         float z_back = getDepth(backPos, backDepthMap);
 
-        // std::cout << "frontPos.z:" << frontPos.z << " z_front:" << z_front << " backPos.z:" << backPos.z << " z_back:" << z_back << "\n";
-
         float tolerance = 0.05f;
         return (frontPos.z >= z_front - tolerance && backPos.z >= z_back - tolerance);
     }
 
     /*
      * 碰撞响应
-     * node: 检测到碰撞的质点
-     * modelVector: 将 node 的局部坐标转换为世界坐标的向量
+     * @param: node 检测到碰撞的质点
      */
     void collisionResponse(Node* node)
     {
