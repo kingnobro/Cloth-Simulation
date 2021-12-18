@@ -28,15 +28,9 @@ public:
         {
             // corners of bounding box
             // TODO: fixbug
-            glm::mat4 modelMatrix = cloth->modelMatrix;
-            glm::vec3 clothPos = cloth->clothPos;
-            float minX = cloth->minX;
-            float minY = cloth->minY;
-            float maxX = cloth->maxX;
-            float maxY = cloth->maxY;
-            glm::vec3 pointLeftUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(minX, maxY, 0.0f), 1.0f);
-            glm::vec3 pointRightUpper = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, maxY, 0.0f), 1.0f);
-            glm::vec3 pointRightBottom = modelMatrix * glm::vec4(clothPos + glm::vec3(maxX, minY, 0.0f), 1.0f);
+            glm::vec3 pointLeftUpper = cloth->leftUpper;
+            glm::vec3 pointRightUpper = cloth->rightUpper;
+            glm::vec3 pointRightBottom = cloth->rightBottom;
 
             // Point Of Intersection Of A Line And A Plane
             // -------------------------

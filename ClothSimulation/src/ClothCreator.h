@@ -114,7 +114,7 @@ private:
             for (size_t j = 0; j < cdt.vertices.size(); j++) {
                 const CDT::V2d<float>& p = cdt.vertices[j];
                 Node* n = new Node(p.x, p.y, 0.0f);
-                n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(clothPos + n->localPosition, 1.0f);
+                n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(n->localPosition, 1.0f);
 
                 cloth->nodes.push_back(n);
 

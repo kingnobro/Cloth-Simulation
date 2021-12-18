@@ -2,6 +2,7 @@
 #define CLOTH_H
 
 #include <vector>
+#include <glm/gtx/string_cast.hpp>
 
 #include "Spring.h"
 #include "ModelRender.h"
@@ -34,14 +35,17 @@ public:
     const float bendingCoef = BENDING_COEF;
     const float scaleCoef = SCALE_COEF;
 
-    glm::vec3 clothPos;             // world space of cloth
+    glm::vec3 leftUpper;
+    glm::vec3 rightUpper;
+    glm::vec3 rightBottom;
     glm::mat4 modelMatrix;
+    glm::mat4 invModelMatrix;
 
     int collisionCount;
     int clothID;
     int width;
     int height;
-    float minX, maxX, minY, maxY;
+    float minX, maxX, minY, maxY;   // corners of bounding box; local coords
     bool isSewed;                   // whether the cloth is sewed
 
     std::vector<Node*> nodes;
@@ -52,15 +56,19 @@ public:
 
     Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY): minX(minX), maxX(maxX), minY(minY), maxY(maxY)
     {
-        clothPos = position;
         width = int(maxX - minX);
         height = int(maxY - minY);
         clothID = ++clothNumber;
         isSewed = false;
         collisionCount = 0;
 
-        modelMatrix = glm::translate(glm::mat4(1.0f), clothPos);
+        modelMatrix = glm::translate(glm::mat4(1.0f), position);
         modelMatrix = glm::scale(modelMatrix, glm::vec3(scaleCoef, scaleCoef, scaleCoef));
+        invModelMatrix = glm::inverse(modelMatrix);
+
+        leftUpper = modelMatrix * glm::vec4(minX, maxY, 0.0f, 1.0f);
+        rightUpper = modelMatrix * glm::vec4(maxX, maxY, 0.0f, 1.0f);
+        rightBottom = modelMatrix * glm::vec4(maxX, minY, 0.0f, 1.0f);
     }
 
     ~Cloth()
@@ -110,12 +118,22 @@ public:
         computeFaceNormal();
     }
 
+    /*
+     * @param: offset 是世界坐标下的偏移量 
+     */
     void moveCloth(glm::vec3 offset)
     {
-        clothPos += offset;
+        leftUpper += offset;
+        rightUpper += offset;
+        rightBottom += offset;
+        glm::vec3 localOffset = invModelMatrix * glm::vec4(offset, 0.0f);
+
         for (Node* n : nodes) {
             n->worldPosition += offset;
             n->lastWorldPosition = n->worldPosition;
+            // localPosition should be modified either
+            // otherwise reset() will set cloths to original places, instead of positions before sewing
+            n->localPosition += localOffset;
         }
     }
 
@@ -128,7 +146,7 @@ public:
     {
         // reset position
         for (Node* n : nodes) {
-            n->lastWorldPosition = n->worldPosition = modelMatrix * glm::vec4(clothPos + n->localPosition, 1.0f);
+            n->lastWorldPosition = n->worldPosition = modelMatrix * glm::vec4(n->localPosition, 1.0f);
             n->reset();
         }
         isSewed = false;
