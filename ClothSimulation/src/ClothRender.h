@@ -175,6 +175,7 @@ struct ClothRender // Texture & Lighting
 
         /** Update Matrix **/
         shader.setMat4("uniViewMatrix", camera->GetViewMatrix());
+        shader.setMat4("uniProjMatrix", camera->GetPerspectiveProjectionMatrix());
         // points are already world coordinates, no need to transform
         shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
 

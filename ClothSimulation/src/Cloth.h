@@ -2,7 +2,6 @@
 #define CLOTH_H
 
 #include <vector>
-#include <glm/gtx/string_cast.hpp>
 
 #include "Spring.h"
 #include "ModelRender.h"
@@ -35,7 +34,7 @@ public:
     const float bendingCoef = BENDING_COEF;
     const float scaleCoef = SCALE_COEF;
 
-    glm::vec3 leftUpper;
+    glm::vec3 leftUpper;            // corners of the bounding box
     glm::vec3 rightUpper;
     glm::vec3 rightBottom;
     glm::mat4 modelMatrix;
@@ -45,7 +44,6 @@ public:
     int clothID;
     int width;
     int height;
-    float minX, maxX, minY, maxY;   // corners of bounding box; local coords
     bool isSewed;                   // whether the cloth is sewed
 
     std::vector<Node*> nodes;
@@ -54,7 +52,7 @@ public:
     std::vector<Node*> contour;
     std::vector<Spring*> springs;   // springs of cloth
 
-    Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY): minX(minX), maxX(maxX), minY(minY), maxY(maxY)
+    Cloth(glm::vec3 position, float minX, float maxX, float minY, float maxY)
     {
         width = int(maxX - minX);
         height = int(maxY - minY);

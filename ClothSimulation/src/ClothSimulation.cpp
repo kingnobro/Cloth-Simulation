@@ -19,6 +19,7 @@ void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // Window and world
 GLFWwindow* window;
@@ -32,6 +33,7 @@ float lastFrame = 0.0f;
 float lastX = scr_width / 2.0f;
 float lastY = scr_height / 2.0f;
 bool firstMouse = true;
+bool right_bottom_down = false;
 
 int main(int argc, const char* argv[])
 {
@@ -70,6 +72,7 @@ int main(int argc, const char* argv[])
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_position_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     /** Generate Object Renderers **/
     std::vector<ClothRender> clothRenders;
@@ -149,20 +152,26 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+    double mouse_x, mouse_y;
+    glfwGetCursorPos(window, &mouse_x, &mouse_y);
+
     // 3D Picking
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        double mouse_x, mouse_y;
-        glfwGetCursorPos(window, &mouse_x, &mouse_y);
-
         glm::vec3 ray = mouseRay.calculateMouseRay(mouse_x, mouse_y, (int)scr_width, (int)scr_height);
         selectedCloth = clothPicker.pickCloth(cloths, ray);
         sewMachine.setCandidateCloth(selectedCloth);
     }
-    // Sewing
+    // rotation
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
-        sewMachine.SewCloths();
+        right_bottom_down = true;
+        lastX = mouse_x;
+        lastY = mouse_y;
+    }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+    {
+        right_bottom_down = false;
     }
 }
 
@@ -170,6 +179,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 // -------------------------------------------------------
 void mouse_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    if (!right_bottom_down) {
+        return;
+    }
+
     if (firstMouse)
     {
         lastX = xpos;
@@ -184,6 +197,21 @@ void mouse_position_callback(GLFWwindow* window, double xpos, double ypos)
     lastY = ypos;
     
     camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+/*
+ * scroll can only generate yoffset, xoffset thus is always 0  
+ */
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    // speed up zoom
+    float sensitivity = 2.0f;
+    if (yoffset > 0) {
+        camera.ProcessMouseScroll(yoffset);
+    }
+    else if (yoffset < 0) {
+        camera.ProcessMouseScroll(yoffset);
+    }
 }
 
 void processInput(GLFWwindow* window)
@@ -209,10 +237,10 @@ void processInput(GLFWwindow* window)
 
     /** control : [W] [S] [A] [D] **/
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(UP, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(DOWN, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.ProcessKeyboard(LEFT, deltaTime);

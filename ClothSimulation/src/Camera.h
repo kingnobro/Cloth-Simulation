@@ -10,14 +10,16 @@ enum Camera_Movement
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN,
 };
 
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 13.0f;
-const float SENSITIVITY = 0.5f;
+const float SENSITIVITY = 0.2f;
 const float ZOOM = 45.0f;
 const float ASPECT = 1.0f;
 
@@ -31,6 +33,7 @@ public:
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
+    glm::vec3 Focus;
     // euler Angles
     float Yaw;
     float Pitch;
@@ -55,6 +58,7 @@ public:
         WorldUp = up;
         Yaw = yaw;
         Pitch = pitch;
+        Focus = glm::vec3(0.0f, 0.0f, -2.5f);   // TODO: fix hard code
         updateCameraVectors();
     }
     // constructor with scalar values
@@ -100,14 +104,22 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
-            Position += Front * velocity;
-        if (direction == BACKWARD)
-            Position -= Front * velocity;
-        if (direction == LEFT)
+        if (direction == UP) {
+            Position += WorldUp * velocity;
+            Focus += WorldUp * velocity;
+        }
+        if (direction == DOWN) {
+            Position -= WorldUp * velocity;
+            Focus -= WorldUp * velocity;
+        }
+        if (direction == LEFT) {
             Position -= Right * velocity;
-        if (direction == RIGHT)
+            Focus -= Right * velocity;
+        }
+        if (direction == RIGHT) {
             Position += Right * velocity;
+            Focus += Right * velocity;
+        }
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -116,17 +128,26 @@ public:
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 
-        Yaw += xoffset;
-        Pitch += yoffset;
+        // Arcball rotation
+        // https://gamedev.stackexchange.com/questions/20758/how-can-i-orbit-a-camera-about-its-target-point
+        glm::vec3 camFocusVector = Position - Focus;
+
+        glm::mat4 rotation = glm::mat4(1.0f);
+        rotation = glm::rotate(rotation, glm::radians(yoffset), Right);
+        rotation = glm::rotate(rotation, glm::radians(-xoffset), Up);
+
+        glm::vec3 newCamFocusVector = rotation * glm::vec4(camFocusVector, 0.0f);
 
         // make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch)
         {
-            if (Pitch > 89.0f)
-                Pitch = 89.0f;
-            if (Pitch < -89.0f)
-                Pitch = -89.0f;
+            float cos = glm::dot(newCamFocusVector, WorldUp) / (glm::length(newCamFocusVector) * glm::length(WorldUp));
+            if (1.0f - cos < 0.005f) {
+                newCamFocusVector = camFocusVector;
+            }
         }
+
+        Position = newCamFocusVector + Focus;
 
         // update Front, Right and Up Vectors using the updated Euler angles
         updateCameraVectors();
@@ -146,13 +167,10 @@ private:
     // calculates the front std::vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
-        // calculate the new Front std::vector
-        glm::vec3 front;
-        front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-        front.y = sin(glm::radians(Pitch));
-        front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+        // calculate the new Front vector
+        glm::vec3 front = Focus - Position;
         Front = glm::normalize(front);
-        // also re-calculate the Right and Up std::vector
+        // also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up = glm::normalize(glm::cross(Right, Front));
     }

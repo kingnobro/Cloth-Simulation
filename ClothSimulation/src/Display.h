@@ -11,7 +11,7 @@ glm::vec3 lightPos(-5.0f, 7.0f, 6.0f);
 glm::vec3 lightColor(0.7f, 0.7f, 1.0f);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 7.0f, 15.0f));
+Camera camera(glm::vec3(-1.0f, 20.0f, 16.0f));
 
 // Cloths
 ClothCreator clothCreator = ClothCreator("assets/cloth/woman-shirt.dxf");
