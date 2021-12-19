@@ -27,12 +27,11 @@ public:
         for (Cloth* cloth : cloths)
         {
             // corners of bounding box
-            // TODO: fixbug
             glm::vec3 pointLeftUpper = cloth->leftUpper;
             glm::vec3 pointRightUpper = cloth->rightUpper;
             glm::vec3 pointRightBottom = cloth->rightBottom;
 
-            // Point Of Intersection Of A Line And A Plane
+            // Intersection Point of a Line and a Plane
             // -------------------------
             // normal vector of the cloth
             glm::vec3 normal = glm::cross(pointRightBottom - pointLeftUpper, pointRightUpper - pointLeftUpper);

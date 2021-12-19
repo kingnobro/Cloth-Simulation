@@ -8,21 +8,24 @@ Draw_Mode Cloth::drawMode = DRAW_FACES;
 struct ClothRender // Texture & Lighting
 {
     const Cloth* cloth;
-    int nodeCount; // Number of all nodes in faces
+    int nodeCount; // Number of nodes in cloth.faces
+    int contourSize;    // Number of nodes in cloth.contour
 
     glm::vec3* vboPos; // Position
     glm::vec2* vboTex; // Texture
     glm::vec3* vboNor; // Normal
+    glm::vec3* vboSegmentPos;
 
-    GLuint vaoID;
-    GLuint vboIDs[3];
+    GLuint vaoIDs[2]; // 1 for cloth, 1 for segment
+    GLuint vboIDs[4]; // 3 for cloth, 1 for segment
     GLuint texID;
 
     GLint aPtrPos;
     GLint aPtrTex;
     GLint aPtrNor;
 
-    Shader shader;
+    Shader clothShader;
+    Shader segmentShader;   // shader of selected segments on cloth's contour
 
     /*
      * ÉèÖÃ shader VAO VBO 
@@ -30,9 +33,15 @@ struct ClothRender // Texture & Lighting
     ClothRender(Cloth* cloth)
     {
         nodeCount = (int)(cloth->faces.size());
+        contourSize = (int)(cloth->contour.size());
         if (nodeCount <= 0)
         {
             std::cout << "ERROR::ClothRender : No node exists." << std::endl;
+            exit(-1);
+        }
+        if (contourSize <= 0)
+        {
+            std::cout << "ERROR::ClothRender : No contour exists." << std::endl;
             exit(-1);
         }
 
@@ -41,6 +50,7 @@ struct ClothRender // Texture & Lighting
         vboPos = new glm::vec3[nodeCount];
         vboTex = new glm::vec2[nodeCount];
         vboNor = new glm::vec3[nodeCount];
+        vboSegmentPos = new glm::vec3[2 * contourSize]; // n nodes on contour will generate n lines at most, each line have 2 nodes
         for (int i = 0; i < nodeCount; i++)
         {
             Node* n = cloth->faces[i];
@@ -50,19 +60,21 @@ struct ClothRender // Texture & Lighting
         }
 
         /** Build shader **/
-        shader = Shader("src/shaders/ClothVS.glsl", "src/shaders/ClothFS.glsl");
-        std::cout << "Cloth Program ID: " << shader.ID << std::endl;
+        clothShader = Shader("src/shaders/ClothVS.glsl", "src/shaders/ClothFS.glsl");
+        segmentShader = Shader("src/shaders/LineVS.glsl", "src/shaders/LineFS.glsl");
+        std::cout << "Cloth Program ID: " << clothShader.ID << std::endl;
+        std::cout << "Segment Program ID: " << segmentShader.ID << std::endl;
 
         // Generate ID of VAO and VBOs
-        glGenVertexArrays(1, &vaoID);
-        glGenBuffers(3, vboIDs);
+        glGenVertexArrays(2, vaoIDs);
+        glGenBuffers(4, vboIDs);
 
         // Attribute pointers of VAO
         aPtrPos = 0;
         aPtrTex = 1;
         aPtrNor = 2;
         // Bind VAO
-        glBindVertexArray(vaoID);
+        glBindVertexArray(vaoIDs[0]);
 
         // Position buffer
         glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
@@ -108,18 +120,24 @@ struct ClothRender // Texture & Lighting
         stbi_image_free(data);
 
         /** Set uniform **/
-        shader.use(); // Active shader before set uniform
+        clothShader.use(); // Active shader before set uniform
         // Set texture sampler
-        shader.setInt("uniTex", 0);
-
-        /** Set Matrix **/
-        shader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
+        clothShader.setInt("uniTex", 0);
         // points are already world coordinates, no need to transform
-        shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
+        clothShader.setMat4("uniProjMatrix", camera.GetPerspectiveProjectionMatrix());
+        clothShader.setMat4("uniModelMatrix", glm::mat4(1.0f));
+        clothShader.setVec3("uniLightPos", lightPos);
+        clothShader.setVec3("uniLightColor", lightColor);
 
-        /** Set Light **/
-        shader.setVec3("uniLightPos", lightPos);
-        shader.setVec3("uniLightColor", lightColor);
+        // Set Segment Data
+        glBindVertexArray(vaoIDs[1]);
+        // Contour Segment buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboIDs[3]);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glEnableVertexAttribArray(0);
+        segmentShader.use();
+        segmentShader.setMat4("projection", camera.GetPerspectiveProjectionMatrix());
+        segmentShader.setMat4("view", camera.GetViewMatrix());
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -131,17 +149,25 @@ struct ClothRender // Texture & Lighting
         delete[] vboPos;
         delete[] vboTex;
         delete[] vboNor;
+        delete[] vboSegmentPos;
 
-        if (vaoID)
-        {
-            glDeleteVertexArrays(1, &vaoID);
-            glDeleteBuffers(3, vboIDs);
-            vaoID = 0;
+        for (int i = 0; i < 2; i++) {
+            if (vaoIDs[i])
+            {
+                glDeleteVertexArrays(1, &vaoIDs[i]);
+                glDeleteBuffers(3, vboIDs);
+                vaoIDs[i] = 0;
+            }
         }
-        if (shader.ID)
+        if (clothShader.ID)
         {
-            glDeleteProgram(shader.ID);
-            shader.ID = 0;
+            glDeleteProgram(clothShader.ID);
+            clothShader.ID = 0;
+        }
+        if (segmentShader.ID)
+        {
+            glDeleteProgram(segmentShader.ID);
+            segmentShader.ID = 0;
         }
     }
 
@@ -158,9 +184,9 @@ struct ClothRender // Texture & Lighting
             vboNor[i] = n->normal;
         }
 
-        shader.use();
+        clothShader.use();
 
-        glBindVertexArray(vaoID);
+        glBindVertexArray(vaoIDs[0]);
 
         glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, nodeCount * sizeof(glm::vec3), vboPos);
@@ -174,10 +200,10 @@ struct ClothRender // Texture & Lighting
         glBindTexture(GL_TEXTURE_2D, texID);
 
         /** Update Matrix **/
-        shader.setMat4("uniViewMatrix", camera->GetViewMatrix());
-        shader.setMat4("uniProjMatrix", camera->GetPerspectiveProjectionMatrix());
+        clothShader.setMat4("uniViewMatrix", camera->GetViewMatrix());
+        clothShader.setMat4("uniProjMatrix", camera->GetPerspectiveProjectionMatrix());
         // points are already world coordinates, no need to transform
-        shader.setMat4("uniModelMatrix", glm::mat4(1.0f));
+        clothShader.setMat4("uniModelMatrix", glm::mat4(1.0f));
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -188,12 +214,29 @@ struct ClothRender // Texture & Lighting
         case DRAW_NODES:
             glDrawArrays(GL_POINTS, 0, nodeCount);
             break;
-        case DRAW_LINES:
-            glDrawArrays(GL_LINES, 0, nodeCount);
-            break;
-        default:
+        case DRAW_FACES:
             glDrawArrays(GL_TRIANGLES, 0, nodeCount);
             break;
+        }
+
+		// draw segments
+        if (!cloth->isSewed) {
+            segmentShader.use();
+            glBindVertexArray(vaoIDs[1]);
+            glLineWidth(7);
+            for (int i = 0, seg_sz = cloth->sewNode.size(); i < seg_sz; i++) {
+                const std::vector<Node*>& seg = cloth->sewNode[i];
+                for (int j = 0, node_sz = seg.size(); j < node_sz - 1; j++) {
+                    vboSegmentPos[j * 2] = seg[j]->worldPosition;
+                    vboSegmentPos[j * 2 + 1] = seg[j + 1]->worldPosition;
+                }
+                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[3]);
+                glBufferData(GL_ARRAY_BUFFER, 2 * (seg.size() - 1) * sizeof(glm::vec3), vboSegmentPos, GL_DYNAMIC_DRAW);
+                segmentShader.setMat4("view", camera->GetViewMatrix());
+                segmentShader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
+                glDrawArrays(GL_LINES, 0, 2 * (seg.size() - 1));
+            }
+            glLineWidth(1);
         }
 
         // End flushing
