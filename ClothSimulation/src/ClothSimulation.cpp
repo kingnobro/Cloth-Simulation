@@ -242,7 +242,7 @@ void processInput(GLFWwindow* window)
     /** Move Cloth **/
     if (selectedCloth != nullptr)
     {
-        float moveStep = 0.04f;
+        float moveStep = 0.06f;
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
             selectedCloth->moveCloth(glm::vec3(0.0f, moveStep, 0.0f));
         }

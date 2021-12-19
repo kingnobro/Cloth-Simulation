@@ -45,6 +45,9 @@ public:
 
     void update(float timeStep)
     {
+        if (!cloth1 || !cloth2 || !cloth1->isSewed || !cloth2->isSewed) {
+            return;
+        }
         Node* n1 = nullptr;
         Node* n2 = nullptr;
         // 更新缝合点之间的弹簧

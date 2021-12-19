@@ -69,9 +69,10 @@ public:
                 int segmentId = nearPoint->segmentID;
                 std::vector<Node*> segment;
                 for (Node* n : selectedCloth->segments[segmentId]) {
-                    if (!n->isSelected) {   // turning point may be selected before
-                        segment.push_back(n);
-                    }
+                    // Potential Bug
+                    //if (!n->isSelected) {   // turning point may be selected before
+                    segment.push_back(n);   // there may be 2 springs between 2 points(ordinarily it should only be 1 spring)
+                    //}
                     n->isSelected = true;
                 }
                 selectedCloth->sewNode.push_back(segment);

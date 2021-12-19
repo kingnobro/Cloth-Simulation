@@ -93,8 +93,12 @@ public:
      */
     void update(float timeStep, ModelRender& modelRender)
     {
-        // no need to update positions after sewing
         if (collisionCount > MAX_COLLISION_TIME) {
+            return;
+        }
+        computeFaceNormal();
+        // no need to update positions after sewing
+        if (!isSewed) {
             return;
         }
         for (int i = 0; i < iterationFreq; i++) {
@@ -105,17 +109,13 @@ public:
                 n->integrate(timeStep);
             }
             // collision detection and response
-            if (isSewed) {
-                // TODO: this for loop can be merged with the last loop
-                for (Node* node : nodes) {
-                    if (modelRender.collideWithModel(node)) {
-                        modelRender.collisionResponse(node);
-                    }
+            for (Node* node : nodes) {
+                if (modelRender.collideWithModel(node)) {
+                    modelRender.collisionResponse(node);
                 }
-                collisionCount += 1;
             }
+            collisionCount += 1;
         }
-        computeFaceNormal();
     }
 
     /*

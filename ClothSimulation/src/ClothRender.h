@@ -223,18 +223,19 @@ struct ClothRender // Texture & Lighting
         if (!cloth->isSewed) {
             segmentShader.use();
             glBindVertexArray(vaoIDs[1]);
-            glLineWidth(7);
+            glLineWidth(5);
             for (int i = 0, seg_sz = cloth->sewNode.size(); i < seg_sz; i++) {
                 const std::vector<Node*>& seg = cloth->sewNode[i];
+                int lineCount = 2 * (seg.size() - 1);
                 for (int j = 0, node_sz = seg.size(); j < node_sz - 1; j++) {
                     vboSegmentPos[j * 2] = seg[j]->worldPosition;
                     vboSegmentPos[j * 2 + 1] = seg[j + 1]->worldPosition;
                 }
                 glBindBuffer(GL_ARRAY_BUFFER, vboIDs[3]);
-                glBufferData(GL_ARRAY_BUFFER, 2 * (seg.size() - 1) * sizeof(glm::vec3), vboSegmentPos, GL_DYNAMIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, lineCount * sizeof(glm::vec3), vboSegmentPos, GL_DYNAMIC_DRAW);
                 segmentShader.setMat4("view", camera->GetViewMatrix());
                 segmentShader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());
-                glDrawArrays(GL_LINES, 0, 2 * (seg.size() - 1));
+                glDrawArrays(GL_LINES, 0, lineCount);
             }
             glLineWidth(1);
         }
