@@ -14,7 +14,7 @@ const float SCALE_COEF = 0.0105;
 const int MAX_COLLISION_TIME = 500;
 const int iterationFreq = 7;
 
-// unique identifier of cloth
+// unique identifier of cloth, used to select cloths
 int clothNumber = 0;
 
 enum Draw_Mode
@@ -119,7 +119,7 @@ public:
     }
 
     /*
-     * @param: offset 是世界坐标下的偏移量 
+     * @param: offset is under world coordinates
      */
     void moveCloth(glm::vec3 offset)
     {
@@ -131,6 +131,7 @@ public:
         for (Node* n : nodes) {
             n->worldPosition += offset;
             n->lastWorldPosition = n->worldPosition;
+
             // localPosition should be modified either
             // otherwise reset() will set cloths to original places, instead of positions before sewing
             n->localPosition += localOffset;
@@ -144,13 +145,12 @@ public:
 
     void reset()
     {
-        // reset position
+        // set position to that before sewing 
         for (Node* n : nodes) {
             n->lastWorldPosition = n->worldPosition = modelMatrix * glm::vec4(n->localPosition, 1.0f);
             n->reset();
         }
         isSewed = false;
-        // TODO: bugfix
         sewNode.clear();
         collisionCount = 0;
     }

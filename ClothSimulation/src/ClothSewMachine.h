@@ -14,13 +14,13 @@ public:
     GLuint VBO;
     Shader shader;
 
-    std::vector<Node*> vertices;    // 衣片上的顶点, 两片衣片的顶点交错排列
-    std::vector<glm::vec3> positions;   // 衣片顶点的位置, 用于绘制缝合线
-    std::vector<Spring*> springs;		// 缝合点间的弹簧
+    std::vector<Node*> vertices;        // nodes to be sewed
+    std::vector<glm::vec3> positions;   // position of vertices for drawing sewing lines
+    std::vector<Spring*> springs;		// springs between nodes to be sewed
     const float sewCoef = 1200.0f;
     const float threshold = 0.05f;
-    bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
-                        // 用一个 bool 变量记录是否处于可以 reset 状态, 避免多次删除会报错
+    bool resetable;	    // after reset(), VAO VBO will be deleted
+                        // therefore 'resetable' is used to decide whether we can reset()
 
     ClothSewMachine(Camera* cam)
     {
@@ -50,11 +50,11 @@ public:
         }
         Node* n1 = nullptr;
         Node* n2 = nullptr;
-        // 更新缝合点之间的弹簧
+        // update springs between nodes to be sewed
         for (Spring* s : springs) {
             n1 = s->node1;
             n2 = s->node2;
-            // upgrade: (简单地) 将两个点 merge
+            // upgrade: now we just simply move nodes to middle point
             if (glm::distance(n1->worldPosition, n2->worldPosition) < threshold) {
                 glm::vec3 newPos = (n1->worldPosition + n2->worldPosition) / 2.0f;
                 n1->worldPosition = n2->worldPosition = newPos;
@@ -67,43 +67,35 @@ public:
     }
 
     /*
-     * 缝合衣片
-     * 不能直接修改 Cloth 的 clothPos, 因为修改 closhPos 会导致 modelMatrix 改变
-     * 这样的效果是, 下一个渲染循环中, 衣片瞬间移动
-     * 在即将缝合的两个点之间添加上弹簧, 并且将弹簧的初始长度设置为 0, 下一个渲染循环中, 两个点就会互相牵引靠近
-     * 为了避免缝合后布料之间的空隙, 当两个点的距离小于某个 threshold 时, 将它们 merge 为一个点
+     * Sew Cloth in Heuristic method: we add springs between nodes, therefore springs can drag them together
      */
     void SewCloths()
     {
-        // 缝合后的衣片不能再次缝合
+        // cloths that have been sewed should not be sewed again
         if (cloth1 == nullptr || cloth2 == nullptr || cloth1->isSewed || cloth2->isSewed) {
             return;
         }
-        // 把两片衣片中要缝合的点取出
+        
         Node* n1, * n2;
         for (int i = 0; i < vertices.size(); i += 2) {
             n1 = vertices[i];
             n2 = vertices[i + 1];
             n1->isSewed = n2->isSewed = true;
-            // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
+            // Heuristic method
             Spring* s = new Spring(n1, n2, sewCoef);
-            s->restLength = 0.001f;	// 让缝合点尽可能靠近
+            s->restLength = 0.001f;	// small rest length to make cloths closer
             springs.push_back(s);
         }
         cloth1->isSewed = cloth2->isSewed = true;
     }
 
-    /*
-     * 绘制衣片的缝合线
-     */
     void drawSewingLine(const glm::mat4& view, const glm::mat4& projection)
     {
         if (cloth1 == nullptr || cloth2 == nullptr || cloth1->isSewed || cloth2->isSewed) {
             return;
         }
-        // 衣片的位置会更新, 所以线的位置也要更新
+        // position of nodes may be updated, so we need to set them
         setSewNode();
-        // std::cout << positions.size() << std::endl;
 
         shader.use();
         glBindVertexArray(VAO);
@@ -145,12 +137,11 @@ public:
 
     void reset()
     {
-        // 重置衣片的局部坐标
         if (cloth1) cloth1->reset();
         if (cloth2) cloth2->reset();
         cloth1 = cloth2 = nullptr;
 
-        // VAO VBO 只能删除一次
+        // VAO VBO can only be deleted once
         if (resetable)
         {
             glDeleteVertexArrays(1, &VAO);
@@ -167,18 +158,17 @@ public:
 
 private:
     /* 
-     * 每个衣片有一个待缝合的顶点数组
-     * 两个衣片的待缝合数组中的顶点需要一一对应
-     * 衣片的顶点(世界坐标)存放在 vertices 中, 并且 vertices[i] 和 vertices[i+1] 即将缝合 (i%2=0)
+     * every Cloth has a vector SewNode, which stores nodes to be sewed later
+     * sewNodes in two cloths should be matched
+     * we put data in sewNode into 'vertices', plus vertices[i] and vertices[i+1] will be sewed (i % 2 = 0)
      */ 
     void setSewNode() {
         vertices.clear();
         positions.clear();
 
-        // 把两片衣片中要缝合的点取出
+        // retrieve data
         const std::vector<std::vector<Node*>>& sewNode1 = cloth1->sewNode;
         const std::vector<std::vector<Node*>>& sewNode2 = cloth2->sewNode;
-        // assert(sewNode1.size() == sewNode2.size());
 
         for (size_t i = 0, seg_sz = std::min(sewNode1.size(), sewNode2.size()); i < seg_sz; i++) {
             const std::vector<Node*>& nodes1 = sewNode1[i];
@@ -209,10 +199,9 @@ private:
     {
         resetable = true;
 
-        // 设置待缝合的顶点, 用于绘制缝合线
+        // set nodes to be sewed
         setSewNode();
 
-        // 绘制缝合线的 Shader
         shader = Shader("src/shaders/LineVS.glsl", "src/shaders/LineFS.glsl");
         std::cout << "Sew Program ID: " << shader.ID << std::endl;
 
@@ -232,7 +221,7 @@ private:
         glEnableVertexAttribArray(0);
 
         // set Uniforms
-        // 布料的顶点坐标是世界坐标, 所以不需要传入 model 矩阵
+        // no need to set model matrix, since coord is already world position
         shader.use();
         shader.setMat4("view", camera->GetViewMatrix());
         shader.setMat4("projection", camera->GetPerspectiveProjectionMatrix());

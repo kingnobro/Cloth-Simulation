@@ -18,10 +18,8 @@ public:
      */
     Cloth* pickCloth(const std::vector<Cloth*>& cloths, const glm::vec3& ray)
     {
-        // points on the cloth
         Cloth* selectedCloth = nullptr;
-        // distance between camera and hitpoint
-        float distance;
+        float distance; // distance between camera and hitpoint
         glm::vec3 hitPoint;
 
         for (Cloth* cloth : cloths)

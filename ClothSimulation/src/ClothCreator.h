@@ -132,7 +132,7 @@ private:
             ++contourIndex[e.v2()];
         }
 
-        // generate Node of Cloth
+        // generate inner Node of Cloth for triangulation
         for (size_t j = 0; j < cdt.vertices.size(); j++) {
             const CDT::V2d<float>& p = cdt.vertices[j];
             Node* n = new Node(p.x, p.y, 0.0f);
@@ -204,7 +204,7 @@ private:
             cloth->faces.push_back(n1);
             cloth->faces.push_back(n2);
             cloth->faces.push_back(n3);
-            // TODO: add different forces
+            // TODO: add different springs
             cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef + 50.0f));
             cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
             cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef - 50.0f));

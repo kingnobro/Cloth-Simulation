@@ -8,22 +8,24 @@ class Spring
 public:
     Node* node1;
     Node* node2;
-    float hookCoef;    // 胡克系数
-    float dampCoef;    // 阻尼系数
-    float restLength;  // 弹簧不被拉伸时的长度
+    float hookCoef;    // 'k' in Hooke's law
+    float dampCoef;    // avoid continuous dang swings
+    float restLength;  // length of spring when it is rest
 
     Spring(Node* n1, Node* n2, float hookCoefficient)
     {
         node1 = n1;
         node2 = n2;
         hookCoef = hookCoefficient;
-        dampCoef = 5.0;
+        dampCoef = 3.0;
         restLength = glm::distance(node1->worldPosition, node2->worldPosition);
     }
 
     /*
-     * 计算弹簧的弹力, 并把弹力施加到质点上
-     * 弹簧两个质点的受力 大小相同, 方向相反
+     * computer force of a spring
+     * ←○~~~○→      compressed
+     * ○→~~~~~~~~←○ stretched
+     * force and velocity of two nodes have different directions
      */
     void computeInternalForce(float timeStep)
     {

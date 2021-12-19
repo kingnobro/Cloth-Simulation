@@ -140,13 +140,19 @@ public:
         // https://gamedev.stackexchange.com/questions/20758/how-can-i-orbit-a-camera-about-its-target-point
         glm::vec3 camFocusVector = Position - Focus;
 
+        // rotate around two axis
         glm::mat4 rotation = glm::mat4(1.0f);
         rotation = glm::rotate(rotation, glm::radians(yoffset), Right);
         rotation = glm::rotate(rotation, glm::radians(-xoffset), Up);
 
+        // new 
         glm::vec3 newCamFocusVector = rotation * glm::vec4(camFocusVector, 0.0f);
 
         // make sure that when pitch is out of bounds, screen doesn't get flipped
+        //    \  |  /
+        //     \ | /    we use angle between Up and FocusVector as judgement
+        //      \|/
+        //       v
         if (constrainPitch)
         {
             float cos = glm::dot(newCamFocusVector, WorldUp) / (glm::length(newCamFocusVector) * glm::length(WorldUp));
@@ -155,6 +161,7 @@ public:
             }
         }
 
+        // new position after rotation
         Position = newCamFocusVector + Focus;
 
         // update Front, Right and Up Vectors using the updated Euler angles
@@ -175,6 +182,7 @@ private:
     // calculates the front std::vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
+        // Orthographic camera should not update Front, which is initialized in constructor
         if (Type == Perspective) {
             // calculate the new Front vector
             glm::vec3 front = Focus - Position;
