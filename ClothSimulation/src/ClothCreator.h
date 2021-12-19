@@ -205,9 +205,9 @@ private:
             cloth->faces.push_back(n2);
             cloth->faces.push_back(n3);
             // TODO: add different forces
-            cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
+            cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef + 50.0f));
             cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
-            cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
+            cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef - 50.0f));
 
             // traverse 3 neightbours, add springs between diagonal points
             for (size_t j = 0; j < 3; j++) {

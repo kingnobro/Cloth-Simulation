@@ -17,7 +17,8 @@ public:
     std::vector<Node*> vertices;    // 衣片上的顶点, 两片衣片的顶点交错排列
     std::vector<glm::vec3> positions;   // 衣片顶点的位置, 用于绘制缝合线
     std::vector<Spring*> springs;		// 缝合点间的弹簧
-    const float sewCoef = 500.0f;
+    const float sewCoef = 1200.0f;
+    const float threshold = 0.05f;
     bool resetable;	    // 经过 reset 处理后, VAO VBO 会被删除
                         // 用一个 bool 变量记录是否处于可以 reset 状态, 避免多次删除会报错
 
@@ -46,14 +47,14 @@ public:
     {
         Node* n1 = nullptr;
         Node* n2 = nullptr;
-        const float threshold = 0.15f;
         // 更新缝合点之间的弹簧
         for (Spring* s : springs) {
             n1 = s->node1;
             n2 = s->node2;
             // upgrade: (简单地) 将两个点 merge
             if (glm::distance(n1->worldPosition, n2->worldPosition) < threshold) {
-                n1->worldPosition = n2->worldPosition;
+                glm::vec3 newPos = (n1->worldPosition + n2->worldPosition) / 2.0f;
+                n1->worldPosition = n2->worldPosition = newPos;
                 continue;
             }
             s->computeInternalForce(timeStep);
@@ -83,7 +84,7 @@ public:
             n1->isSewed = n2->isSewed = true;
             // 启发式缝合方法: 在缝合点之间加上弹簧, 让它们自然靠近
             Spring* s = new Spring(n1, n2, sewCoef);
-            s->restLength = 0.0f;	// 让缝合点尽可能靠近
+            s->restLength = 0.001f;	// 让缝合点尽可能靠近
             springs.push_back(s);
         }
         cloth1->isSewed = cloth2->isSewed = true;

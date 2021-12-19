@@ -7,12 +7,12 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 500.0;
+const float STRUCTURAL_COEF = 700.0;
 const float SHEAR_COEF = 80.0;
-const float BENDING_COEF = 200.0;
-const float SCALE_COEF = 0.01;
-const int MAX_COLLISION_TIME = 2000;
-const int iterationFreq = 10;
+const float BENDING_COEF = 700.0;
+const float SCALE_COEF = 0.0105;
+const int MAX_COLLISION_TIME = 500;
+const int iterationFreq = 7;
 
 // unique identifier of cloth
 int clothNumber = 0;
@@ -106,6 +106,7 @@ public:
             }
             // collision detection and response
             if (isSewed) {
+                // TODO: this for loop can be merged with the last loop
                 for (Node* node : nodes) {
                     if (modelRender.collideWithModel(node)) {
                         modelRender.collisionResponse(node);
@@ -156,20 +157,6 @@ public:
 
 
 private:
-
-    /** Add springs **/
-    // /** Structural **/
-    // if (x < nodesPerRow - 1) springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y), structuralCoef));
-    // if (y < nodesPerCol - 1) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 1), structuralCoef));
-    // /** Shear **/
-    // if (x < nodesPerRow - 1 && y < nodesPerCol - 1) {
-    //     springs.push_back(new Spring(getNode(x, y), getNode(x + 1, y + 1), shearCoef));
-    //     springs.push_back(new Spring(getNode(x + 1, y), getNode(x, y + 1), shearCoef));
-    // }
-    // /** Bending **/
-    // if (x < nodesPerRow - 2) springs.push_back(new Spring(getNode(x, y), getNode(x + 2, y), bendingCoef));
-    // if (y < nodesPerCol - 2) springs.push_back(new Spring(getNode(x, y), getNode(x, y + 2), bendingCoef));
-
     /*
      * calculate face normals to generate lighting effects
      */

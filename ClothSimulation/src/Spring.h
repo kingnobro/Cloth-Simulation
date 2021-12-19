@@ -29,7 +29,7 @@ public:
     {
         float currentLength = glm::distance(node1->worldPosition, node2->worldPosition);
         // restrain min length; otherwise force will be very large
-        currentLength = std::max(currentLength, restLength / 50);
+        // currentLength = std::max(currentLength, restLength / 50);
         // todo: currentLength should have upper limit
         
         glm::vec3 forceDirection = (node2->worldPosition - node1->worldPosition) / currentLength;
