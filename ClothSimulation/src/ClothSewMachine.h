@@ -17,7 +17,7 @@ public:
     std::vector<Node*> vertices;        // nodes to be sewed
     std::vector<glm::vec3> positions;   // position of vertices for drawing sewing lines
     std::vector<Spring*> springs;		// springs between nodes to be sewed
-    const float sewCoef = 1200.0f;
+    const float sewCoef = 1500.0f;
     const float threshold = 0.05f;
     bool resetable;	    // after reset(), VAO VBO will be deleted
                         // therefore 'resetable' is used to decide whether we can reset()
@@ -45,9 +45,6 @@ public:
 
     void update(float timeStep)
     {
-        if (!cloth1 || !cloth2 || !cloth1->isSewed || !cloth2->isSewed) {
-            return;
-        }
         Node* n1 = nullptr;
         Node* n2 = nullptr;
         // update springs between nodes to be sewed
@@ -83,7 +80,7 @@ public:
             n1->isSewed = n2->isSewed = true;
             // Heuristic method
             Spring* s = new Spring(n1, n2, sewCoef);
-            s->restLength = 0.001f;	// small rest length to make cloths closer
+            s->restLength = 0.0f;	// small rest length to make cloths closer
             springs.push_back(s);
         }
         cloth1->isSewed = cloth2->isSewed = true;

@@ -7,12 +7,11 @@
 #include "ModelRender.h"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 700.0;
-const float SHEAR_COEF = 80.0;
-const float BENDING_COEF = 700.0;
+const float STRUCTURAL_COEF = 500.0;
+const float SHEAR_COEF = 100.0;
+const float BENDING_COEF = 200.0;
 const float SCALE_COEF = 0.0105;
-const int MAX_COLLISION_TIME = 500;
-const int iterationFreq = 7;
+const int MAX_COLLISION_TIME = 700;
 
 // unique identifier of cloth, used to select cloths
 int clothNumber = 0;
@@ -91,30 +90,35 @@ public:
     /*
      * update force, movement, collision and normals in every render loop
      */
-    void update(float timeStep, ModelRender& modelRender)
+    void update(float timeStep)
     {
-        if (collisionCount > MAX_COLLISION_TIME) {
-            return;
-        }
         computeFaceNormal();
-        // no need to update positions after sewing
-        if (!isSewed) {
-            return;
+        for (Spring* s : springs) {
+            s->computeInternalForce(timeStep);
         }
-        for (int i = 0; i < iterationFreq; i++) {
-            for (Spring* s : springs) {
-                s->computeInternalForce(timeStep);
+        for (Node* n : nodes) {
+            n->integrate(timeStep);
+        }
+    }
+
+    /*
+     * collision detection and response with model 
+     */
+    void modelCollision(ModelRender& modelRender) {
+        for (Node* node : nodes) {
+            if (modelRender.collideWithModel(node)) {
+                modelRender.collisionResponse(node);
             }
-            for (Node* n : nodes) {
-                n->integrate(timeStep);
-            }
-            // collision detection and response
-            for (Node* node : nodes) {
-                if (modelRender.collideWithModel(node)) {
-                    modelRender.collisionResponse(node);
-                }
-            }
-            collisionCount += 1;
+        }
+        collisionCount += 1;
+    }
+
+    /*
+     * cloth self collision detection and response 
+     */
+    void clothCollision() {
+        for (Node* n : nodes) {
+
         }
     }
 

@@ -11,6 +11,7 @@
 
 int scr_width = 600;
 int scr_height = 600;
+const int iterationFreq = 7;
 
 /** Functions **/
 void processInput(GLFWwindow* window);
@@ -115,7 +116,15 @@ int main(int argc, const char* argv[])
         for (size_t i = 0; i < cloths.size(); i += 1)
         {
             Cloth* cloth = cloths[i];
-            cloth->update((float)TIME_STEP, modelRender);
+            for (int iter = 0; iter < iterationFreq; iter++) {
+                if (cloth->collisionCount < MAX_COLLISION_TIME) {
+                    cloth->update((float)TIME_STEP);
+                    if (cloth->isSewed) {
+                        cloth->modelCollision(modelRender);
+                        cloth->clothCollision();
+                    }
+                }
+            }
         
             /** Display **/
             if (Cloth::drawMode == DRAW_LINES) {

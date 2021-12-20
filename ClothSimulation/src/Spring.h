@@ -17,7 +17,7 @@ public:
         node1 = n1;
         node2 = n2;
         hookCoef = hookCoefficient;
-        dampCoef = 3.0;
+        dampCoef = 2;
         restLength = glm::distance(node1->worldPosition, node2->worldPosition);
     }
 
@@ -25,7 +25,7 @@ public:
      * computer force of a spring
      * ¡û¡ð~~~¡ð¡ú      compressed
      * ¡ð¡ú~~~~~~~~¡û¡ð stretched
-     * force and velocity of two nodes have different directions
+     * force and velocity of two nodes have opposite directions
      */
     void computeInternalForce(float timeStep)
     {
@@ -40,6 +40,7 @@ public:
 
         node1->addForce(force);
         node2->addForce(-force);
+        //velocityModification();
     }
 
     /*

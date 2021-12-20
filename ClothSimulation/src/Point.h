@@ -29,6 +29,7 @@ class Node
 public:
     float		mass;
     int         segmentID;      // 衣片边缘被分为很多段, 该点所属的段 ID; 若不是边缘上的点则置为 -1
+    int         id;             // 如果该点在轮廓上 id = -1, 这个字段用于寻找该点周围的点, 从而在点之间生成弹簧
     bool        isSewed;        // 判断该点是否已缝合
     bool        isSelected;     // 判断是否已经被选为缝合点
     bool        isTurningPoint; // 判断该点是否为缝合线上的转折点
@@ -83,6 +84,7 @@ private:
     {
         mass = MASS;
         segmentID = -1; // 默认不是边缘上的点
+        id = -1;
         isSewed = false;
         isSelected = false;
         worldPosition = glm::vec3(0);

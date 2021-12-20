@@ -7,7 +7,7 @@ Draw_Mode Cloth::drawMode = DRAW_FACES;
 
 struct ClothRender // Texture & Lighting
 {
-    const Cloth* cloth;
+    Cloth* cloth;
     int nodeCount; // Number of nodes in cloth.faces
     int contourSize;    // Number of nodes in cloth.contour
 
