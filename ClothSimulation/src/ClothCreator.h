@@ -42,7 +42,7 @@ private:
      * dxf file parser
      */
     std::vector<std::vector<point2D>>*
-        readClothData(const std::string& clothFilePath) {
+    readClothData(const std::string& clothFilePath) {
         std::cout << "Reading file " << clothFilePath << "...\n";
 
         creationClass = new Test_CreationClass();
@@ -63,7 +63,7 @@ private:
         std::vector<std::vector<point2D>>* clothNodes = readClothData(clothFilePath);
         assert(clothNodes != nullptr);
 
-        // use for loop to retrieve all cloths
+        // a dxf file may have multiple cloths, thus use for loop to retrieve all cloths
         for (size_t i = 0, clth_sz = clothNodes->size(); i < clth_sz; i++) {
 
             // boundary of bounding box
@@ -72,6 +72,7 @@ private:
 
             // Constrained Delaunay Triangulation(CDT)
             // ---------------------------------------
+            // initialize data structure
             CDT::Triangulation<float> cdt;
             std::vector<CDT::V2d<float>> vertices;
             std::vector<CDT::Edge> edges;
@@ -87,7 +88,7 @@ private:
                     edges.push_back({ CDT::VertInd(0), CDT::VertInd(j) });
                 }
                 else {
-                    edges.push_back({ CDT::VertInd(j), CDT::VertInd(j + 1) });
+                    edges.push_back({ CDT::VertInd(j), CDT::VertInd(j + 1) });  // small index should come first
                 }
             }
 
@@ -98,19 +99,22 @@ private:
                 << " maxY: " << maxY
                 << std::endl;
 
-            // randomly generate vertex in the bounding box
+            // add vertex in the bounding box to generate triangle mesh
             // if the vertex lies outside of contour, eraseOuterTrianglesAndHoles will erase it
             for (float x = minX; x < maxX; x += step) {
                 for (float y = minY; y < maxY; y += step) {
+                    // there we add regular arranged points, because it's easier to create springs under this circumstances
                     vertices.push_back({ x, y });
                 }
             }
 
+            // triangulation
             CDT::RemoveDuplicatesAndRemapEdges(vertices, edges);
             cdt.insertVertices(vertices);
             cdt.insertEdges(edges);
             cdt.eraseOuterTrianglesAndHoles();
 
+            // create a cloth
             Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
             createCloth(cdt, cloth, minX, maxX, minY, maxY);
             cloths.push_back(cloth);
@@ -131,7 +135,7 @@ private:
     void createCloth(CDT::Triangulation<float>& cdt, Cloth* cloth, float minX, float maxX, float minY, float maxY) {
         // create Nodes of Cloth from 2D points
         std::map<int, Node*> idOfNode;  // 记录额外添加到衣片中的点的 id, id 是由坐标计算出来的
-        int nodesPerRow = round((maxX - minX) / step);
+        int nodesPerRow = round((maxX - minX) / step);  // 由于浮点计算的误差, 需要四舍五入, 否则会相差 1
         int nodesPerCol = round((maxY - minY) / step);
 
         // triangulation 之后, 多余的点并不会被移除出 cdt.vertices
@@ -142,8 +146,7 @@ private:
             ++contourIndex[e.v1()];
             ++contourIndex[e.v2()];
         }
-        // 先把轮廓上的点全部加入
-        // 如果放入 triangles 中加入, 轮廓上的点会乱序, 无法分段
+        // 先把轮廓上的点全部加入; 如果放入下一个循环中加入, 轮廓上的点会乱序, 无法按顺时针遍历
         for (std::map<CDT::VertInd, int>::iterator it = contourIndex.begin(); it != contourIndex.end(); it++) {
             int index = it->first;
             const CDT::V2d<float>& p = cdt.vertices[index];
@@ -196,7 +199,7 @@ private:
             float cos = glm::dot(v1, v2) / (len1 * len2);
             middle->isTurningPoint = glm::dot(v1, v2) < 0 || (cos < glm::cos(20));
             if (middle->isTurningPoint) {
-                index = j;
+                index = j;  // find a turning point, for segments generation 
             }
         }
 
@@ -212,7 +215,7 @@ private:
         for (int cnt = 0, ctr_sz = cloth->contour.size(); cnt <= ctr_sz; ++cnt) {
             Node* n = cloth->contour[(index + cnt) % ctr_sz];
             if (n->isTurningPoint && cnt != 0) {
-                segment.push_back(n);   // add turning points of two end
+                segment.push_back(n);   // add turning points of two end; potential bug exists
                 cloth->segments.push_back(segment);
                 segment.clear();
                 segmentID += 1;
@@ -236,7 +239,7 @@ private:
             cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef + 50.0f));
             cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
             cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef - 50.0f));
-            // store which two nodes have springs between them
+            // store which two nodes have springs between them already
             if (id1 != -1 && id2 != -1) {
                 ++springExist[{std::min(id1, id2), std::max(id1, id2)}];
             }
@@ -264,42 +267,10 @@ private:
             int y2 = y1;
             int y3 = y1 + 1;
             int y4 = y1 - 1;
-            // 左上角
-            if (x1 >= 0 && x1 < nodesPerRow && y1 >= 0 && y1 < nodesPerCol) {
-                int id1 = x1 + nodesPerRow * y1;
-                if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
-                    Node* n1 = idOfNode[id1];
-                    cloth->springs.push_back(new Spring(n, n1, cloth->shearCoef));
-                    ++springExist[{std::min(id1, id), std::max(id1, id)}];
-                }
-            }
-            // 右上角
-            if (x2 >= 0 && x2 < nodesPerRow && y2 >= 0 && y2 < nodesPerCol) {
-                int id1 = x2 + nodesPerRow * y2;
-                if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
-                    Node* n1 = idOfNode[id1];
-                    cloth->springs.push_back(new Spring(n, n1, cloth->shearCoef));
-                    ++springExist[{std::min(id1, id), std::max(id1, id)}];
-                }
-            }
-            // 上方 2 个单位
-            if (x3 >= 0 && x3 < nodesPerRow && y3 >= 0 && y3 < nodesPerCol) {
-                int id1 = x3 + nodesPerRow * y3;
-                if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
-                    Node* n1 = idOfNode[id1];
-                    cloth->springs.push_back(new Spring(n, n1, cloth->bendingCoef));
-                    ++springExist[{std::min(id1, id), std::max(id1, id)}];
-                }
-            }
-            // 右方 2 个单位
-            if (x4 >= 0 && x4 < nodesPerRow && y4 >= 0 && y4 < nodesPerCol) {
-                int id1 = x4 + nodesPerRow * y4;
-                if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
-                    Node* n1 = idOfNode[id1];
-                    cloth->springs.push_back(new Spring(n, n1, cloth->bendingCoef));
-                    ++springExist[{std::min(id1, id), std::max(id1, id)}];
-                }
-            }
+            addSpring(cloth, n, id, x1, y1, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 左上角
+            addSpring(cloth, n, id, x2, y2, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 右下角
+            addSpring(cloth, n, id, x3, y3, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 正上方2个单位
+            addSpring(cloth, n, id, x4, y4, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 正右方2个单位
         }
         // add bending springs on contour
         for (int j = 0, ctr_sz = cloth->contour.size(); j < ctr_sz; j++) {
@@ -326,6 +297,24 @@ private:
         Node* n = new Node(position.x, position.y, 0.0f);
         n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(n->localPosition, 1.0f);
         return n;
+    }
+    
+    // 根据 x, y 获取质点 id, 并连接弹簧
+    void addSpring(
+        Cloth* cloth, 
+        Node* n, int id,
+        int x, int y, float coef,
+        int nodesPerRow, int nodesPerCol,
+        std::map<int, Node*>& idOfNode,
+        std::map<std::pair<int, int>, int>& springExist) {
+        if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
+            int id1 = x + nodesPerRow * y;
+            if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
+                Node* n1 = idOfNode[id1];
+                cloth->springs.push_back(new Spring(n, n1, coef));
+                ++springExist[{std::min(id1, id), std::max(id1, id)}];
+            }
+        }
     }
 };
 
