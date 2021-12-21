@@ -169,6 +169,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Spring.h" />
     <ClInclude Include="src\test_creationclass.h" />
+    <ClInclude Include="src\utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\ClothFS.glsl" />

@@ -101,6 +101,9 @@
     <ClInclude Include="src\CollisionBox.h">
       <Filter>头文件\model</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils.hpp">
+      <Filter>头文件\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\SpringVS.glsl">

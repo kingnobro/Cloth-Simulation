@@ -5,11 +5,12 @@
 
 #include "Spring.h"
 #include "ModelRender.h"
+#include "utils.hpp"
 
 // Default Cloth Values
-const float STRUCTURAL_COEF = 500.0;
-const float SHEAR_COEF = 100.0;
-const float BENDING_COEF = 200.0;
+const float STRUCTURAL_COEF = 700.0;
+const float SHEAR_COEF = 700.0;
+const float BENDING_COEF = 700.0;
 const float SCALE_COEF = 0.0105;
 const int MAX_COLLISION_TIME = 700;
 
@@ -27,12 +28,12 @@ class Cloth
 {
 public:
     static Draw_Mode drawMode;
+    static float scaleCoef;
 
     const float structuralCoef = STRUCTURAL_COEF;
     const float shearCoef = SHEAR_COEF;
     const float bendingCoef = BENDING_COEF;
-    const float scaleCoef = SCALE_COEF;
-
+    
     glm::vec3 leftUpper;            // corners of the bounding box
     glm::vec3 rightUpper;
     glm::vec3 rightBottom;
@@ -114,12 +115,9 @@ public:
     }
 
     /*
-     * cloth self collision detection and response 
+     * cloth self collision detection and response
      */
-    void clothCollision() {
-        for (Node* n : nodes) {
-
-        }
+    void clothCollision(ClothCollision* clthCollid) {
     }
 
     /*

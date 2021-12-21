@@ -12,6 +12,7 @@
 // Defaults
 const float STEP = 20.0f;
 const glm::vec3 CLOTH_POSITION = glm::vec3(-3.0f, 9.0f, 0.0f);
+int globalID = 0;
 
 class ClothCreator
 {
@@ -167,10 +168,10 @@ private:
                     // 已经添加过轮廓上的点了, 所以 id != -1
                     // (p.x-minX) 和 (p.y-minY) 必定是 step 的倍数, 所以可以用 round 取整
                     // 假如用 int, 会出现精度问题
-                    n->id = getIdFromPos(n->localPosition);
+                    n->meshId = getIdFromPos(n->localPosition);
                     cloth->nodes.push_back(n);
                     indexOfNode[index] = n;
-                    idOfNode[n->id] = n;
+                    idOfNode[n->meshId] = n;
                 }
                 else {  // 这个点出现过了
                     n = indexOfNode[index];
@@ -233,9 +234,9 @@ private:
             Node* n1 = indexOfNode[tri.vertices[0]];
             Node* n2 = indexOfNode[tri.vertices[1]];
             Node* n3 = indexOfNode[tri.vertices[2]];
-            int id1 = n1->id;
-            int id2 = n2->id;
-            int id3 = n3->id;
+            int id1 = n1->meshId;
+            int id2 = n2->meshId;
+            int id3 = n3->meshId;
 
             cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
             cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
@@ -254,7 +255,7 @@ private:
         // add shear springs on mesh nodes
         for (int j = 0, node_sz = cloth->nodes.size(); j < node_sz; j++) {
             Node* n = cloth->nodes[j];
-            if (n->id < 0) {
+            if (n->meshId < 0) {
                 continue;
             }
 
@@ -290,14 +291,15 @@ private:
     Node* newNodeFromIndex(const CDT::V2d<float>& position, Cloth* cloth, int index) {
         Node* n = new Node(position.x, position.y, 0.0f);
         n->lastWorldPosition = n->worldPosition = cloth->modelMatrix * glm::vec4(n->localPosition, 1.0f);
+        n->globalID = globalID++;
         return n;
     }
     
     void addSpring(
         Cloth* cloth, Node* n1, Node* n2, float coef,
         std::map<std::pair<int, int>, int>& springExist) {
-        int id1 = std::min(n1->id, n2->id);
-        int id2 = std::max(n1->id, n2->id);
+        int id1 = std::min(n1->meshId, n2->meshId);
+        int id2 = std::max(n1->meshId, n2->meshId);
         if (!springExist.count({ id1, id2 })) {
             cloth->springs.push_back(new Spring(n1, n2, coef));
             ++springExist[{id1, id2}];

@@ -4,6 +4,7 @@
 #include "Cloth.h"
 
 Draw_Mode Cloth::drawMode = DRAW_FACES;
+float Cloth::scaleCoef = SCALE_COEF;
 
 struct ClothRender // Texture & Lighting
 {

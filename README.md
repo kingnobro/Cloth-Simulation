@@ -1,25 +1,49 @@
 # Naive-Cloth-Sewing
 
+### Cloth Sewing
+
 <img src="https://s3.bmp.ovh/imgs/2021/12/7ecf29a3095153af.gif" style="zoom: 50%;" />
 
-### Characteristic
 
-1. cloth Simulation based on mass spring system
-2. $O(1)$ collision detection
+
+### Triangulation
+
+<img src="https://s3.bmp.ovh/imgs/2021/12/8554f5923b5141a5.png" style="zoom: 67%;" />
+
+
+
+### Implementation
+
+1. Cloth Simulation based on Mass-Spring System
+2. High Efficiency Collision Detection
 3. Constrained Delaunay Triangulation
-4. `.dxf` parser using `dxflib`
-5. model import using `assimp` library
-6. click and select
+4. Parsing Cloth Data from `.dxf` and Sewing them together.
+
+
 
 ### Build
 
-需要在 Visual Studio 中配置的属性
+You need to make following modifications in Visual Studio,
 
-- INCLUDE 设置为项目的 `includes` 路径
-- LIB，设置为项目的 `lib` 路径
-- 链接器/输入/附加依赖项，添加 `glfw3.lib` 和 `assimp-vc142-mt.lib`（如果 assimp 的 dll 库运行失败，可能需要自己重新下载源码并在本地机编译）
-- 预处理加上标志 `_CRT_SECURE_NO_WARNINGS`
+- INCLUDE
+- LIB
+- Additional Dependencies: `glfw3.lib`, `assimp-vc142-mt.lib`
+- Preprocessor Definitions: `_CRT_SECURE_NO_WARNINGS`
+
+
+
+### Future Work
+
+- Cloth Self Collision
+- Multilayer Cloth Simulation
+
+
 
 ### Reference
 
-- [ClothSimulation](https://github.com/xxMeow/ClothSimulation)
+1. [Cloth Simulation](https://github.com/xxMeow/ClothSimulation)
+2. [CDT: Constrained Delaunay Triangulation](https://github.com/artem-ogre/CDT)
+3. [Efficient Cloth Model and Collision Detection for Dressing Virtual People](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.103.4540&rep=rep1&type=pdf)
+4. [dxflib](https://qcad.org/en/90-dxflib)
+5. [assimp](https://www.assimp.org/)
+

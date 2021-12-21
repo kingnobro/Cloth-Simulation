@@ -13,6 +13,7 @@ int scr_width = 600;
 int scr_height = 600;
 const int iterationFreq = 7;
 
+
 /** Functions **/
 void processInput(GLFWwindow* window);
 
@@ -97,6 +98,11 @@ int main(int argc, const char* argv[])
         window
     );
 
+    // cloth self collision
+    std::cout << "sphereR: " << clthCollid.sphereR << std::endl;
+    std::cout << "cellUnit: " << clthCollid.cellUnit << std::endl;
+    std::cout << "spaceDim: " << clthCollid.spaceDim.x << " " << clthCollid.spaceDim.y << " " << clthCollid.spaceDim.z << std::endl;
+
     /** Redering loop **/
     while (!glfwWindowShouldClose(window))
     {
@@ -121,7 +127,7 @@ int main(int argc, const char* argv[])
                     cloth->update((float)TIME_STEP);
                     if (cloth->isSewed) {
                         cloth->modelCollision(modelRender);
-                        cloth->clothCollision();
+                        //cloth->clothCollision(&clthCollid);
                     }
                 }
             }
