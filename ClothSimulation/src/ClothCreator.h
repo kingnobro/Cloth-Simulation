@@ -19,6 +19,8 @@ public:
     glm::vec3 clothPos = CLOTH_POSITION;     // world position of cloth
     std::vector<Cloth*> cloths;  // cloths parsed from .dxf file;
     const float step = STEP;     // steps between points
+    float minX, maxX, minY, maxY;
+    int nodesPerRow, nodesPerCol;
 
     // dxf parser
     Test_CreationClass* creationClass;
@@ -65,10 +67,9 @@ private:
 
         // a dxf file may have multiple cloths, thus use for loop to retrieve all cloths
         for (size_t i = 0, clth_sz = clothNodes->size(); i < clth_sz; i++) {
-
             // boundary of bounding box
-            float minX = FLT_MAX, minY = FLT_MAX;
-            float maxX = -FLT_MAX, maxY = -FLT_MAX;
+            minX = FLT_MAX, minY = FLT_MAX;
+            maxX = -FLT_MAX, maxY = -FLT_MAX;
 
             // Constrained Delaunay Triangulation(CDT)
             // ---------------------------------------
@@ -82,7 +83,7 @@ private:
                 const point2D& p = (*clothNodes)[i][j];
                 vertices.push_back({ p.first, p.second });
 
-                updateBoundary(p, minX, maxX, minY, maxY);
+                updateBoundary(p);
 
                 if (j == ctr_sz - 1) {
                     edges.push_back({ CDT::VertInd(0), CDT::VertInd(j) });
@@ -92,6 +93,8 @@ private:
                 }
             }
 
+            nodesPerRow = round((maxX - minX) / step);  // 由于浮点计算的误差, 需要四舍五入, 否则会相差 1
+            nodesPerCol = round((maxY - minY) / step);
             std::cout << "contour size: " << vertices.size() << "\n";
             std::cout << "minX: " << minX
                 << " maxX: " << maxX
@@ -116,7 +119,7 @@ private:
 
             // create a cloth
             Cloth* cloth = new Cloth(clothPos, minX, maxX, minY, maxY);
-            createCloth(cdt, cloth, minX, maxX, minY, maxY);
+            createCloth(cdt, cloth);
             cloths.push_back(cloth);
 
             // TODO: delete me
@@ -132,11 +135,9 @@ private:
      * 3. 利用拐点将轮廓分成 segments
      * 4. 添加三种弹簧: structural, shear, bending
      */
-    void createCloth(CDT::Triangulation<float>& cdt, Cloth* cloth, float minX, float maxX, float minY, float maxY) {
+    void createCloth(CDT::Triangulation<float>& cdt, Cloth* cloth) {
         // create Nodes of Cloth from 2D points
         std::map<int, Node*> idOfNode;  // 记录额外添加到衣片中的点的 id, id 是由坐标计算出来的
-        int nodesPerRow = round((maxX - minX) / step);  // 由于浮点计算的误差, 需要四舍五入, 否则会相差 1
-        int nodesPerCol = round((maxY - minY) / step);
 
         // triangulation 之后, 多余的点并不会被移除出 cdt.vertices
         // 所以只能从 cdt.triangles 中找到所有被用到的点的下标
@@ -166,7 +167,7 @@ private:
                     // 已经添加过轮廓上的点了, 所以 id != -1
                     // (p.x-minX) 和 (p.y-minY) 必定是 step 的倍数, 所以可以用 round 取整
                     // 假如用 int, 会出现精度问题
-                    n->id = round((n->localPosition.x - minX) / step) + nodesPerRow * round((n->localPosition.y - minY) / step);
+                    n->id = getIdFromPos(n->localPosition);
                     cloth->nodes.push_back(n);
                     indexOfNode[index] = n;
                     idOfNode[n->id] = n;
@@ -236,9 +237,9 @@ private:
             int id2 = n2->id;
             int id3 = n3->id;
 
-            cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef + 50.0f));
+            cloth->springs.push_back(new Spring(n1, n2, cloth->structuralCoef));
             cloth->springs.push_back(new Spring(n1, n3, cloth->structuralCoef));
-            cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef - 50.0f));
+            cloth->springs.push_back(new Spring(n2, n3, cloth->structuralCoef));
             // store which two nodes have springs between them already
             if (id1 != -1 && id2 != -1) {
                 ++springExist[{std::min(id1, id2), std::max(id1, id2)}];
@@ -253,24 +254,18 @@ private:
         // add shear springs on mesh nodes
         for (int j = 0, node_sz = cloth->nodes.size(); j < node_sz; j++) {
             Node* n = cloth->nodes[j];
-            int id = n->id;
-            if (id < 0) {
+            if (n->id < 0) {
                 continue;
             }
 
-            // id of diagonal nodes
-            int x1 = round((n->localPosition.x + step - minX) / step);
-            int x2 = x1 - 2;
-            int x3 = x1 - 1;
-            int x4 = x1 + 1;
-            int y1 = round((n->localPosition.y + step - minY) / step);
-            int y2 = y1;
-            int y3 = y1 + 1;
-            int y4 = y1 - 1;
-            addSpring(cloth, n, id, x1, y1, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 左上角
-            addSpring(cloth, n, id, x2, y2, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 右下角
-            addSpring(cloth, n, id, x3, y3, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 正上方2个单位
-            addSpring(cloth, n, id, x4, y4, cloth->shearCoef, nodesPerRow, nodesPerCol, idOfNode, springExist);   // 正右方2个单位
+            int id1 = getIdFromPos(n->localPosition + glm::vec3(step, step, 0));
+            int id2 = getIdFromPos(n->localPosition + glm::vec3(-step, step, 0));
+            int id3 = getIdFromPos(n->localPosition + glm::vec3(0, 2 * step, 0));
+            int id4 = getIdFromPos(n->localPosition + glm::vec3(2 * step, 0, 0));
+            if (id1 != -1 && idOfNode.count(id1)) addSpring(cloth, n, idOfNode[id1], cloth->shearCoef, springExist);    // 左上角
+            if (id2 != -1 && idOfNode.count(id2)) addSpring(cloth, n, idOfNode[id2], cloth->shearCoef, springExist);    // 右下角
+            if (id3 != -1 && idOfNode.count(id3)) addSpring(cloth, n, idOfNode[id3], cloth->bendingCoef, springExist);  // 正上方2个单位
+            if (id4 != -1 && idOfNode.count(id4)) addSpring(cloth, n, idOfNode[id4], cloth->bendingCoef, springExist);  // 正右方2个单位
         }
         // add bending springs on contour
         for (int j = 0, ctr_sz = cloth->contour.size(); j < ctr_sz; j++) {
@@ -281,8 +276,7 @@ private:
         std::cout << "Initialize cloth with " << cloth->nodes.size() << " nodes and " << cloth->faces.size() / 3 << " triangles\n";
     }
 
-
-    void updateBoundary(point2D point, float& minX, float& maxX, float& minY, float& maxY) {
+    void updateBoundary(point2D point) {
         float x = point.first;
         float y = point.second;
 
@@ -299,21 +293,25 @@ private:
         return n;
     }
     
-    // 根据 x, y 获取质点 id, 并连接弹簧
     void addSpring(
-        Cloth* cloth, 
-        Node* n, int id,
-        int x, int y, float coef,
-        int nodesPerRow, int nodesPerCol,
-        std::map<int, Node*>& idOfNode,
+        Cloth* cloth, Node* n1, Node* n2, float coef,
         std::map<std::pair<int, int>, int>& springExist) {
+        int id1 = std::min(n1->id, n2->id);
+        int id2 = std::max(n1->id, n2->id);
+        if (!springExist.count({ id1, id2 })) {
+            cloth->springs.push_back(new Spring(n1, n2, coef));
+            ++springExist[{id1, id2}];
+        }
+    }
+
+    int getIdFromPos(glm::vec3 position) {
+        int x = round((position.x - minX) / step);
+        int y = round((position.y - minY) / step);
         if (x >= 0 && x < nodesPerRow && y >= 0 && y < nodesPerCol) {
-            int id1 = x + nodesPerRow * y;
-            if (idOfNode.count(id1) && !springExist.count({ std::min(id1, id), std::max(id1, id) })) {
-                Node* n1 = idOfNode[id1];
-                cloth->springs.push_back(new Spring(n, n1, coef));
-                ++springExist[{std::min(id1, id), std::max(id1, id)}];
-            }
+            return x + nodesPerRow * y;
+        }
+        else {
+            return -1;
         }
     }
 };
