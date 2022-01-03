@@ -2,13 +2,14 @@
 
 ### Cloth Sewing
 
-<img src="https://s3.bmp.ovh/imgs/2021/12/7ecf29a3095153af.gif" style="zoom: 50%;" />
+[![T7HWdO.png](https://s4.ax1x.com/2022/01/03/T7HWdO.png)](https://imgtu.com/i/T7HWdO)
+[![T7HReK.png](https://s4.ax1x.com/2022/01/03/T7HReK.png)](https://imgtu.com/i/T7HReK)
 
 
 
 ### Triangulation
 
-<img src="https://s3.bmp.ovh/imgs/2021/12/8554f5923b5141a5.png" style="zoom: 67%;" />
+[![T7HgL6.png](https://s4.ax1x.com/2022/01/03/T7HgL6.png)](https://imgtu.com/i/T7HgL6)
 
 
 
